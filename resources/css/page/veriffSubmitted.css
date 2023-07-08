@@ -1,0 +1,71 @@
+* {
+    font-family: 'Helvetica Light', sans-serif;
+}
+
+div>h1 {
+    font-family: 'Helvetica Rounded', sans-serif;
+    width: 50% !important;
+    transition: ease 0.5s;
+    text-align: center;
+    font-size: 1.7em;
+}
+
+@media screen and (max-width: 820px) {
+    div>h1 {
+        width: 100% !important;
+        padding-right: 50%;
+        font-size: 1em;
+        padding-top: 2em;
+    }
+}
+@media screen and (max-width: 688px) {
+    div>h1 {
+        width: 100% !important;
+        padding-right: 0%;
+        font-size: 1em;
+        padding-top: 14em;
+    }
+}
+@media screen and (max-width: 460px) {
+    div>h1 {
+        width: 100% !important;
+        padding-right: 0%;
+        font-size: 1em;
+        padding-top: 10em;
+    }
+}
+@media screen and (max-width: 360px) {
+    div>h1 {
+        font-size: 0.7em;
+    }
+}
+
+.logo>a>img {
+    transition: ease 0.7s;
+}
+
+.logo>a>img:hover {
+    width: auto;
+    transform: rotate(360deg);
+    transition: ease 0.7s;
+}
+
+div>h1:hover {
+    transition: ease 0.5s;
+    transform: translateX(5%) scale(1.1);
+}
+
+div>h1: {
+    transition: ease 0.5s;
+    transform: translateX(5%) scale(1.1);
+}
+
+.bf:hover {
+    transition: ease 0.5s;
+    background-size: 43% !important;
+}
+
+.bf {
+    transition: ease 0.5s;
+}
+

@@ -1,0 +1,24 @@
+@import '~bootstrap/dist/css/bootstrap';
+@import '../vendor/chartist/css/chartist.min.css';
+@import '~/sweetalert2/dist/sweetalert2.min.css';
+@import '../vendor/linearicons/style.css';
+@import '~/@fortawesome/fontawesome-free/css/brands.css';
+@import '~/@fortawesome/fontawesome-free/css/solid.css';
+@import '~/@fortawesome/fontawesome-free/css/fontawesome.css';
+
+@font-face {
+    font-family: "Helvetica Bold";
+    src: url(../fonts/Helvetica-Bold.ttf);
+}
+@font-face {
+    font-family: "Helvetica";
+    src: url(../fonts/Helvetica.ttf);
+}
+@font-face {
+    font-family: "Helvetica Light";
+    src: url(../fonts/helvetica_light.ttf);
+}
+@font-face {
+    font-family: "Helvetica Rounded";
+    src: url(../fonts/helvetica-rounded-bold-5871d05ead8de.otf);
+}
