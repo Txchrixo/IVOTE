@@ -2,11 +2,34 @@
 
 namespace App\Policies;
 
+use App\Enums\Role;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
 class UserPolicy
 {
+       /**
+     * Détermine si l'utilisateur est une autorité d'inscription (RA).
+     *
+     * @param  \App\Models\User  $user
+     * @return bool
+     */
+    public function isRA(User $user)
+    {
+        return $user->role == Role::$RA;
+    }
+    
+    /**
+     * Détermine si l'utilisateur est une autorité electorale.
+     *
+     * @param  \App\Models\User  $user
+     * @return bool
+     */
+    public function isEA(User $user)
+    {
+        return $user->role == Role::$EA;
+    }
+
     /**
      * Determine whether the user can view any models.
      */
