@@ -47,7 +47,7 @@ class VoteController extends Controller
     {
         $data = VoteList::all();
 
-        return view('ea.election', ['data' => $data]);
+        return view('ea.election', ['data' => $data])->with('success', 'Election added successfully!');
     }
 
     /**

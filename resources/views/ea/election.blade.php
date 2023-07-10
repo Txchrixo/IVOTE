@@ -8,6 +8,9 @@
                     <h3 class="panel-title">Voting List</h3>
                 </div>
                 <div class="panel-body">
+                    @if ($message = Session::get('success'))
+                    <div class="alert alert-success alert-block">{{ $message }}</div>
+                    @endif
 
                     <table class="table table-striped">
                         <thead>
