@@ -53,5 +53,19 @@ class VoteList extends Model
         return 'initial';
     }
 
+    /**
+     * Mutateur pour le titre.
+     *
+     * @param  string  $value
+     * @return void
+     */
+    protected function title(): Attribute
+    {
+        return Attribute::make(
+            get: fn (string $value) => str_replace('-', ' ', ucfirst(strtolower($value))),
+            set: fn (string $value) => str_replace(' ', '-', strtolower($value))
+        );
+    }
+
 
 }
