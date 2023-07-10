@@ -14,6 +14,10 @@ return [
         'main-text' => 'Nous vous remercions d\'avoir participé à notre système de vote électronique basé sur la blockchain. Votre identification a été réalisée avec succès, et nous tenons à vous informer que le résultat de cette étape ainsi que les prochaines étapes du processus de vote vous seront communiqués par email dans les semaines à venir.
             <br><br>NOUS VOUS REVIENDRONS BIENTOT !!!',
     ],
+    'veriffFail' => [
+        'title' => 'Not found Election',
+        'main-text' => 'Nous avons pas reussi à trouver l\'élection :election !',
+    ],
     'ready' => [
         'title' => 'IVOTE - Prét à voter',
         'main-title' => 'ETAPE 1 : Prêt à voter maintenant',

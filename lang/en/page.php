@@ -14,6 +14,10 @@ return [
         'main-text' => 'Thank you for participating in our blockchain-based electronic voting system. Your identification has been successfully completed, and we would like to inform you that the result of this step as well as the next steps of the voting process will be communicated to you by email in the coming weeks.
         <br><br>WE WILL GET BACK TO YOU SOON!!!',
     ],
+    'veriffFail' => [
+        'title' => 'Not found Election',
+        'main-text' => 'Nous avons pas reussi à trouver l\'élection :election !',
+    ],
     'ready' => [
         'title' => 'IVOTE - Ready to vote',
         'main-title' => 'STEP 1 : Ready to vote now',
