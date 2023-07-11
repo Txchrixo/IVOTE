@@ -5,6 +5,7 @@
 @section('content')
 
     <input data-lang-input="@lang('page.veriff.form.input')" data-lang-btn="@lang('page.veriff.form.button')" data-redirect="{{ route('voter.veriffSubmitted') }}"
+        data-veriff-host="{{ config('services.veriff.host') }}" data-veriff-key="{{ config('services.veriff.api_key') }}"
         hidden>
     <div class="d-flex h-100 flex-shrink-1">
         <div class="bf d-flex flex-column w-50 flex-grow-1 align-items-center justify-content-center pt-3"

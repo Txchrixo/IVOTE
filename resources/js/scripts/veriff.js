@@ -1,49 +1,35 @@
-
+/**
+ * Veriff page
+ *
+ * La clé publique Veriff est injectée par le serveur (config/services.php),
+ * elle n'est plus écrite en dur dans le code.
+ * La décision KYC devra être reçue côté serveur via un webhook signé (Phase 3) :
+ * le navigateur ne décide jamais de l'éligibilité.
+ */
 $(function () {
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-    veriffSession('dd','dddddddd');
-    function veriffSession(sessionId,hmacSignature) {
-        let data = {
-            sessionId : sessionId,
-            hmacSignature : hmacSignature 
-        }
-        $.post("/postVeriffParams", data, function (result) {
-            console.log(result);
-           
-        });
-        
-    }
-  
+    const config = document.querySelector('input[data-redirect]');
+
     const veriff = Veriff({
-        host: 'https://stationapi.veriff.com',
-        apiKey: 'REDACTED_VERIFF_KEY',
+        host: config.dataset.veriffHost,
+        apiKey: config.dataset.veriffKey,
         parentId: 'veriff-root',
         onSession: function (err, response) {
+            if (err) {
+                console.error('Veriff session error');
+                return;
+            }
             window.veriffSDK.createVeriffFrame({
                 url: response.verification.url,
                 lang: document.querySelector('html').lang,
                 onEvent: function (msg) {
-                    console.log(msg);
-                    switch (msg) {
-                        case 'FINISHED':
-                            window.location.href = document.querySelector('input[data-redirect]').dataset.redirect;
-                            break;
+                    if (msg === 'FINISHED') {
+                        window.location.href = config.dataset.redirect;
                     }
                 },
                 onReload: () => {
-                    // Logic to re-open Veriff SDK after page reload
-                    // e.g. sessionStorage.setItem('@veriff-session-url', url);
                     window.location.reload();
                 }
             });
-            const sessionId = response.session.id;
-            const hmacSignature = response.session.hmac;
-    
-   
         }
     });
     veriff.setParams({
@@ -53,64 +39,25 @@ $(function () {
         },
     });
     veriff.mount({
-        submitBtnText: document.querySelector('input[data-lang-btn]').dataset.langBtn,
+        submitBtnText: config.dataset.langBtn,
         formLabel: {
-            vendorData: document.querySelector('input[data-lang-input]').dataset.langInput
+            vendorData: config.dataset.langInput
         }
     });
 
     const veriffInput = document.querySelector('.veriff-text');
-    const veriffBtn = document.querySelector('.veriff-submit');
     const up_arrow = document.querySelector('.up-arrow');
-    veriffInput.size = 30;
-    veriffInput.type = 'email';
-
-    veriffInput.addEventListener('input', () => {
-        up_arrow.style.transition = ' ease 0.7s';
-        up_arrow.style.transform = 'translate(125%, 60%) rotate(250deg)';
-        if (veriffInput.value == '' && window.innerWidth > 680) {
-            up_arrow.style.transform = 'none';
-        }
-    });
-    veriffInput.addEventListener('blur', () => {
+    if (veriffInput) {
+        veriffInput.size = 30;
         veriffInput.type = 'email';
-        if (document.querySelector('.veriff-text').value != '') {
-            $.ajax({
-                url: '/encrypt-data',
-                method: 'GET',
-                data: {
-                    data: document.querySelector('.veriff-text').value
-                },
-                success: function (response) {
-                    //console.log('Encrypted successfully:', response);
-                    document.querySelector('.veriff-text').value = response;
-                },
-                error: function (error) {
-                    console.error('Error:', error);
-                },
-            });
-        }
-    })
-    veriffInput.addEventListener('focus', () => {
-        if (document.querySelector('.veriff-text').value != '') {
-            veriffInput.type = 'email';
-            $.ajax({
-                url: '/decrypt-data',
-                method: 'GET',
-                data: {
-                    encryptedData: document.querySelector('.veriff-text').value
-                },
-                success: function (response) {
-                    //console.log('Decrypted successfully:', response);
-                    document.querySelector('.veriff-text').value = response;
-                },
-                error: function (error) {
-                    console.error('Error:', error);
-                },
-            });
-        }
 
-    })
-
-
+        veriffInput.addEventListener('input', () => {
+            if (!up_arrow) return;
+            up_arrow.style.transition = ' ease 0.7s';
+            up_arrow.style.transform = 'translate(125%, 60%) rotate(250deg)';
+            if (veriffInput.value === '' && window.innerWidth > 680) {
+                up_arrow.style.transform = 'none';
+            }
+        });
+    }
 });
