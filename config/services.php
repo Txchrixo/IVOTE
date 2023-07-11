@@ -31,4 +31,23 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'blockio' => [
+        'api_key' => env('BLOCKIO_API_KEY'),
+        'pin' => env('BLOCKIO_PIN'),
+        'version' => 2,
+        // Montant envoyé à chaque adresse d'électeur pour couvrir les frais de vote
+        'fee_amount' => env('BLOCKIO_FEE_AMOUNT', '0.0001'),
+    ],
+
+    'cryptoapis' => [
+        'api_key' => env('CRYPTOAPIS_API_KEY'),
+        'base_url' => env('CRYPTOAPIS_BASE_URL', 'https://rest.cryptoapis.io'),
+    ],
+
+    'veriff' => [
+        'host' => env('VERIFF_HOST', 'https://stationapi.veriff.com'),
+        'api_key' => env('VERIFF_API_KEY'),
+        'secret' => env('VERIFF_SECRET_KEY'),
+    ],
+
 ];
