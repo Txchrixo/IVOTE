@@ -5,8 +5,6 @@
         data-address="{{ $data['bitcoin_address'] }}">
     <input type="hidden" class="blockchain" value="bitcoin" data-network="testnet"
         data-address="{{ $data['bitcoin_address'] }}">
-    <!--<input type="hidden" class="blockchain" value="ethereum" data-network ="testnet" data-address="REDACTED_BLOCKIO_KEY">
-                                <input type="hidden" class="blockchain" value="solana" data-network ="testnet" data-address="REDACTED_BLOCKIO_KEY">-->
     <div class="panel panel-headline"
         style="background-image: url('{{ Vite::image('bg.jpg') }}'); border-radius: 15px; background-repeat: no-repeat; background-size: 100%;">
         <div class="panel-heading">

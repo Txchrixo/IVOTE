@@ -2,7 +2,6 @@
 
 @section('content')
     <input type="hidden" class="bitcoin-address" value="{{ $user['bitcoin_address'] }}">
-    <input type="hidden" class="bitcoin-wif" value="{{ $user['bitcoin_priv_key'] }}">
 
     <div class="row">
         <div class="col-md-12">

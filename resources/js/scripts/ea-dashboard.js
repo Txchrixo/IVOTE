@@ -8,19 +8,19 @@ $(function () {
     $('.blockchain').each((index, input) => {
         let blockchain = input.value;
         let network = input.getAttribute('data-network');
-        let address = ['tb1qzw30qyf5kankatqr9ju8xamvfd5p396d73jxwq'];
-        console.log(`/cryptoapis-proxy/blockchain-data/${blockchain}/${network}/addresses/${address}/balance`);
-
-        $.getJSON(`/cryptoapis-proxy/blockchain-data/${blockchain}/${network}/addresses/${address}/balance`, function (result) {
-            console.log(result);
-            if (result.data) {
-                $(".number-btc").html(result.data.item.confirmedBalance.amount + result.data.item.confirmedBalance.unit);
+        // L'adresse est celle de l'EA connecté, lue côté serveur
+        $.getJSON('/ea/api/balance', { blockchain: blockchain, network: network }, function (result) {
+            if (result.success && result.data) {
+                $(".number-btc").text(result.data.amount + " " + result.data.unit);
                 $(".number-network").html(input.getAttribute('data-network').toUpperCase());
             } else {
                 $(".number-btc").html("Unconfigured");
                 $(".number-network").html("Unconfigured");
             }
-        })
+        }).fail(function () {
+            $(".number-btc").text("Unconfigured");
+            $(".number-network").text("Unconfigured");
+        });
     });
     $('.btn-toggleStage').on('click', function loadCandidate() {
         let id = $(this).data('id');
@@ -38,12 +38,14 @@ $(function () {
             showLoaderOnConfirm: true,
             preConfirm: (password) => {
                 data.password = password;
-                console.log(data);
                 return fetch(`/api/election/toggleStage`, {
                     method: 'PUT', // Use PUT method
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     },
+                    credentials: 'same-origin',
                     body: JSON.stringify(data)
                 })
                     .then(response => response.json())
