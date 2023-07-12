@@ -1,8 +1,6 @@
 <?php
 
 use App\Http\Controllers\API\CandidateAPIController;
-use App\Http\Controllers\API\ElectionAPIController;
-use App\Http\Middleware\EAMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,10 +22,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Public API
 Route::get('candidates', [CandidateAPIController::class, 'getCandidates']);
 
-Route::middleware(EAMiddleware::class)->group(function () {
-    Route::get('election/details', [ElectionAPIController::class, 'getElectionDetails']);
-    Route::put('election/update', [ElectionAPIController::class, 'updateElection']);
-    Route::put('election/toggleStage', [ElectionAPIController::class, 'toggleStage']);
-    Route::get('allbitcoinaddress', [ElectionAPIController::class, 'getAllBitcoinAddress']);
-});
-
+// Les routes EA (election/details, election/update, election/toggleStage, allbitcoinaddress)
+// sont dans routes/web.php : elles ont besoin de la session et de la protection CSRF.

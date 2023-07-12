@@ -4,7 +4,10 @@ import Swal from 'sweetalert2/dist/sweetalert2'
  * EA Vote
  * @author  TxChrixo
  */
+
 $(function () {
+
+   
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -190,12 +193,14 @@ $(function () {
             showLoaderOnConfirm: true,
             preConfirm: (password) => {
                 data.password = password;
-                console.log(data);
                 return fetch(`/api/election/toggleStage`, {
                     method: 'PUT', // Use PUT method
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     },
+                    credentials: 'same-origin',
                     body: JSON.stringify(data)
                 })
                     .then(response => response.json())

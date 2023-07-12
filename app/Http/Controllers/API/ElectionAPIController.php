@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Enums\StageElection;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\bgElectionUpload;
 use App\Http\Requests\PostElectionRequest;
@@ -46,14 +47,19 @@ class ElectionAPIController extends BaseAPIController
             return $this->sendError('Validation Error', $validator->errors(), 422);
         }
 
-        $EA = User::where('username', 'ea')->first();
-        $Authorized = Hash::check($validator->safe(['password'])['password'], $EA->password);
+        // Ré-authentification de l'EA connecté (et non d'un compte « ea » codé en dur)
+        $Authorized = Hash::check($validator->safe(['password'])['password'], Auth::user()->password);
 
         if (!$Authorized) {
             return $this->sendError('Unauthorized', 'Password Incorrect', 401);
         }
 
-        $election = VoteList::find($validator->safe()->only(['id']))->first();
+        $election = VoteList::findOrFail($validator->safe()->only(['id'])['id']);
+
+        if ($election->stage >= StageElection::$done) {
+            return $this->sendError('Invalid transition', 'The election is already closed', 422);
+        }
+
         $election->stage += 1;
         $election->save();
 
@@ -108,7 +114,6 @@ class ElectionAPIController extends BaseAPIController
             'end_vote' => 'bail|nullable|date|required_with:start_vote|after:start_date',
             'start_veriff' => 'bail|nullable|date|required_with:end_veriff|after:tomorrow',
             'end_veriff' => 'bail|nullable|date|required_with:start_veriff|after:start_date',
-            'stage' => 'bail|integer|exists:Vote,stage',
         ]);
 
         if ($validator->fails()) {
