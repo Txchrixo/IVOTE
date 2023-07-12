@@ -3,79 +3,66 @@
 namespace App\Http\Controllers\EA;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 /**
  * Class EASettingController
  * @author TxChrixo
- * The EASetting Controller to show the page of setting in EA users
+ * Réglages des adresses et clés de l'EA.
+ * Les clés privées ne sont jamais renvoyées au navigateur : le champ reste vide
+ * et n'écrase la clé existante que s'il est rempli. Elles sont chiffrées au repos (cast `encrypted`).
  * @package Controllers\EA
  */
 class EASettingController extends Controller
 {
-    /**
-     * user setting Pages
-     * @return View
-    */
-    public function getSetting() : View
+    public function getSetting(): View
     {
-        $data = Auth::user();
-        return view('ea.setting', ['user' => $data]);
+        return view('ea.setting', ['user' => Auth::user()]);
     }
 
-    /**
-     * POST: update Bitcoin Address & Keys
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function postBitcoinSetting(Request $request)
+    public function postBitcoinSetting(Request $request): RedirectResponse
     {
-        $validator = Validator::make($request->all(), [
-            'bitcoin_address' => 'bail|required|max:255',
-            'bitcoin_priv_key' => 'bail|required|max:255',
-        ]);
-
-
-        Auth::user()->update($validator->safe()->all());
-
+        $this->saveChain($request, 'bitcoin');
         return back()->with('bitcoin_success', 'Bitcoin Address & keys updated successfully!');
     }
 
-    /**
-     * POST: update Bitcoin Address & Keys
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function postEthSetting(Request $request)
+    public function postEthSetting(Request $request): RedirectResponse
     {
-        $validator = Validator::make($request->all(), [
-            'eth_address' => 'bail|required|max:255',
-            'eth_priv_key' => 'bail|required|max:255',
-        ]);
-
-
-        Auth::user()->update($validator->safe()->all());
-
+        $this->saveChain($request, 'eth');
         return back()->with('eth_success', 'Ethereum Address & keys updated successfully!');
     }
-    /**
-     * POST: update Solana Address & Keys
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function postSolanaSetting(Request $request)
+
+    public function postSolanaSetting(Request $request): RedirectResponse
     {
-        $validator = Validator::make($request->all(), [
-            'solana_address' => 'bail|required|max:255',
-            'solana_priv_key' => 'bail|required|max:255',
+        $this->saveChain($request, 'solana');
+        return back()->with('solana_success', 'Solana Address & keys updated successfully!');
+    }
+
+    private function saveChain(Request $request, string $chain): void
+    {
+        $address = $chain . '_address';
+        $privKey = $chain . '_priv_key';
+
+        $validated = $request->validate([
+            $address => ['bail', 'required', 'string', 'regex:/^[a-zA-Z0-9]{25,90}$/'],
+            $privKey => ['bail', 'nullable', 'string', 'max:255', 'regex:/^[a-zA-Z0-9]+$/'],
         ]);
 
+        $data = [$address => $validated[$address]];
+        if (!empty($validated[$privKey])) {
+            $data[$privKey] = $validated[$privKey];
+        }
 
-        Auth::user()->update($validator->safe()->all());
+        Auth::user()->update($data);
 
-        return back()->with('solana_success', 'Solana Address & keys updated successfully!');
+        Log::info('EA wallet settings updated', [
+            'user_id' => Auth::id(),
+            'chain' => $chain,
+            'private_key_changed' => isset($data[$privKey]),
+        ]);
     }
 }

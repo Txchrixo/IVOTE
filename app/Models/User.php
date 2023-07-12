@@ -29,6 +29,8 @@ class User extends  Authenticatable
         'bitcoin_address',
         'eth_priv_key',
         'eth_address',
+        'solana_priv_key',
+        'solana_address',
     ];
 
     /**
@@ -37,7 +39,21 @@ class User extends  Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        'password'
+        'password',
+        'remember_token',
+        'bitcoin_priv_key',
+        'eth_priv_key',
+        'solana_priv_key',
+    ];
+
+    /**
+     * Les clés privées sont chiffrées au repos avec l'APP_KEY (AES-256-CBC + MAC).
+     * Mesure transitoire : en Phase 3 elles sortiront complètement de la base (KMS / signataire séparé).
+     */
+    protected $casts = [
+        'bitcoin_priv_key' => 'encrypted',
+        'eth_priv_key' => 'encrypted',
+        'solana_priv_key' => 'encrypted',
     ];
 
 
