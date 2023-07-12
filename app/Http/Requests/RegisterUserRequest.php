@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\Role;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 
 class RegisterUserRequest extends FormRequest
 {
@@ -11,7 +13,7 @@ class RegisterUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->user()?->role === Role::$EA;
     }
 
     /**
@@ -22,8 +24,8 @@ class RegisterUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => 'required|max:255|unique:users',
-            'password' => 'required|min:2|max:255'
+            'username' => ['required', 'string', 'min:3', 'max:64', 'alpha_dash', 'unique:users,username'],
+            'password' => ['required', 'confirmed', 'max:255', Password::min(12)->letters()->mixedCase()->numbers()->symbols()],
         ];
     }
 }

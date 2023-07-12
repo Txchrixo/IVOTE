@@ -13,17 +13,21 @@
                 @csrf
                 <div class="form-group mb-2">
                     <input type="input" class="form-control login-input  @error('username') mb-0 is-invalid @enderror"
-                        name="username" value="{{ old('email') }}" placeholder="@lang('form.input.username')">
+                        name="username" value="{{ old('username') }}" placeholder="@lang('form.input.username')">
                     @error('username')
                         <span class="text-white p-1 m-3" style="background-color: #DD090B">{{ $message }}</span>
                     @enderror
                 </div>
                 <div class="form-group mt-2">
                     <input type="password" class="form-control login-input @error('password') mb-0 is-invalid @enderror"
-                        name="password" value="{{ old('password') }}" placeholder="@lang('form.input.password')">
+                        name="password" autocomplete="new-password" placeholder="@lang('form.input.password')">
                     @error('password')
                     <span class="text-white p-1" style="background-color: #DD090B">{{ $message }}</span>
                     @enderror
+                </div>
+                <div class="form-group mt-2">
+                    <input type="password" class="form-control login-input"
+                        name="password_confirmation" autocomplete="new-password" placeholder="@lang('form.input.password') (confirmation)">
                 </div>
                 <button type="submit" class="btn btn-primary btn-lg btn-block btn-login">@lang('form.btn.register')</button>
             </form>

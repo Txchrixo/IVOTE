@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use App\Enums\Role;
 
@@ -26,9 +27,12 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
-    public function logOut(): RedirectResponse
+    public function logOut(Request $request): RedirectResponse
     {
         Auth::logout();
+        // Invalide la session et régénère le jeton CSRF (évite la réutilisation de session)
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
         return to_route('auth.login');
     }
 
@@ -59,15 +63,22 @@ class AuthController extends Controller
         ]);
     }
 
-    public function postRegister(RegisterUserRequest $request): RedirectResponse | View
+    /**
+     * Création d'un compte RA par l'EA connecté (route protégée par le middleware EA).
+     * Le rôle est imposé côté serveur et l'EA reste connecté.
+     */
+    public function postRegister(RegisterUserRequest $request): RedirectResponse
     {
         $credentials = $request->validated();
-        User::create([
-            'username' => $credentials['username'],
-            'password' => Hash::make($credentials['password']),
-            'role' => 2,
-        ]);
-        Auth::attempt($credentials);
-        return to_route('auth.dashboard')->with('info', 'You have been signed up!');
+
+        $user = new User();
+        $user->username = $credentials['username'];
+        $user->password = Hash::make($credentials['password']);
+        $user->role = Role::$RA;
+        $user->save();
+
+        Log::info('RA account created', ['created_user_id' => $user->id, 'by' => Auth::id()]);
+
+        return back()->with('success', 'RA account created.');
     }
 }
