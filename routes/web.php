@@ -6,19 +6,16 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\BlockChainController;
 use App\Http\Controllers\EA\EASettingController;
-use App\Http\Controllers\EA\ElectionAPIController;
+use App\Http\Controllers\API\ElectionAPIController;
 use App\Http\Controllers\EA\VoteController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\API\PublicAPIController;
 use App\Http\Controllers\RA\BallotController;
 use App\Http\Controllers\RA\CandidateController;
 use App\Http\Controllers\Voter\VoterController;
 use App\Http\Middleware\EAMiddleware;
 use App\Http\Middleware\RAMiddleware;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Response;
 
 /*
@@ -43,6 +40,7 @@ Route::get('language/{locale}', function ($locale) {
     }
     return redirect()->back();
 });
+
 Route::get('/cryptoapisverifydomain', function () {
     $filePath = public_path('cryptoapisverifydomain.txt');
 
@@ -52,38 +50,23 @@ Route::get('/cryptoapisverifydomain', function () {
 
     return response('File not found.', 404);
 });
+
 Route::get('img/{filename}', function ($filename) {
     return response()->redirectTo('http://[::1]:5173/resources/img/' . $filename);
 })->where('filename', '.*');
 
 
-
-Route::get('/', [HomeController::class, 'index'])->name('home');
-
 Route::prefix('/auth')->name('auth.')->controller(AuthController::class)->group(function () {
-    Route::get('/', 'getLoginForm' );
-    Route::get('/dashboard', 'getDashboard' )->name('dashboard')->middleware('auth');
+    Route::get('/', 'getLoginForm');
     Route::get('/login', 'getLoginForm')->name('login');
-    Route::post('/login', 'postLogin')->name('postLogin');
-    Route::get('/register', 'getRegisterForm')->name('register');
-    Route::post('/register', 'postRegister')->name('postRegister');
-    Route::delete('/logout', 'logOut')->name('logout');
+    Route::post('/login', 'postLogin')->name('postLogin')->middleware('throttle:login');
+    Route::get('/dashboard', 'getDashboard')->name('dashboard')->middleware('auth');
+    Route::delete('/logout', 'logOut')->name('logout')->middleware('auth');
+
+    // Seule l'autorité électorale (EA) peut créer des comptes (RA)
+    Route::get('/register', 'getRegisterForm')->name('register')->middleware('EA');
+    Route::post('/register', 'postRegister')->name('postRegister')->middleware('EA');
 });
-
-Route::prefix('/cryptoapis-proxy')->name('cryptoapis.')->group(function () {
-    Route::get('/blockchain-data/{blockchain}/{network}/addresses/{address}/balance', function (Request $request, $blockchain, $network, $address) {
-        $url = 'https://rest.cryptoapis.io/blockchain-data/' . $blockchain . '/' . $network . '/addresses/' . $address . '/balance';
-
-        // Ajoutez les en-têtes CORS appropriés pour autoriser les requêtes cross-origin depuis votre domaine local
-        return Http::withHeaders([
-            'Access-Control-Allow-Origin' => 'http://localhost:8000',
-            'Access-Control-Allow-Methods' => 'GET, POST, PUT, DELETE',
-            'Access-Control-Allow-Headers' => 'Content-Type, Accept',
-            'x-api-key' => 'REDACTED_CRYPTOAPIS_KEY'
-        ])->get($url);
-    });
-});
-
 
 Route::prefix('/auth')->name('auth.')->controller(PasswordController::class)->group(function () {
     Route::get('/password/change', 'getChangePassword' )->name('password.change');
@@ -91,25 +74,18 @@ Route::prefix('/auth')->name('auth.')->controller(PasswordController::class)->gr
 });
 Route::prefix('/veriff')->name('voter.')->group(function () {
     Route::get('/submitted', [VoterController::class, 'getVeriffSubmitted'])->name('veriffSubmitted');
-    Route::get('/{election}', [VoterController::class, 'getVeriff'])->name('veriff');
+    Route::get('/election/{election}', [VoterController::class, 'getVeriff'])->name('veriff');
 });
 Route::prefix('/voter')->name('voter.')->group(function () {
     Route::get('/ready', [VoterController::class, 'getReady'])->name('ready');
     Route::get('/generateKeys', [VoterController::class, 'getGenerateKeys'])->name('generateKeys');
     Route::get('/wait', [VoterController::class, 'getWait'])->name('wait');
     Route::get('/vote', [VoterController::class, 'getVote'])->name('vote');
-    //Route::get('/{election}', [VoterController::class, 'getVeriff'])->name('veriff');
 });
 
-Route::get('/encrypt-data', [VoterController::class, 'encryptData'])->name('encrypt');
-Route::get('/decrypt-data', [VoterController::class, 'decryptData'])->name('decrypt');
-
-Route::get('/api/blockio/get_balance', [PublicAPIController::class, 'getBalance']);
-Route::get('/api/blockio/get_address_balance', [PublicAPIController::class, 'getAddressBalance']);
 Route::get('/api/getAllPubKeys', [PublicAPIController::class, 'getAllPubKeys']);
-Route::post('/postVeriffParams', [PublicAPIController::class, 'postVeriffParams']);
 
-Route::middleware(EAMiddleware::class)->group( function () {
+Route::middleware('EA')->group( function () {
     Route::get('/ea/dashboard', [VoteController::class, 'getDashboard'])->name('ea.dashboard');
 
 
@@ -121,6 +97,18 @@ Route::middleware(EAMiddleware::class)->group( function () {
     Route::get('/ea/balance', [BlockChainController::class, 'getBalanceList'])->name('ea.balance');
     Route::get('/ea/fee', [BlockChainController::class, 'getFeeList'])->name('ea.fee');
 
+    // Appels aux services blockchain : les clés API restent côté serveur
+    Route::get('/ea/api/balance', [BlockChainController::class, 'getEABalance'])->name('ea.api.balance');
+    Route::get('/api/blockio/get_balance', [BlockChainController::class, 'getBlockIoBalance']);
+    Route::get('/api/blockio/get_address_balance', [BlockChainController::class, 'getBlockIoAddressBalance']);
+    Route::post('/ea/api/blockio/pay', [BlockChainController::class, 'payVoterAddress'])
+        ->name('ea.api.blockio.pay')->middleware('throttle:30,1');
+
+
+    Route::get('/api/election/details', [ElectionAPIController::class, 'getElectionDetails']);
+    Route::put('/api/election/update', [ElectionAPIController::class, 'updateElection']);
+    Route::put('/api/election/toggleStage', [ElectionAPIController::class, 'toggleStage'])->middleware('throttle:10,1');
+    Route::get('/api/allbitcoinaddress', [ElectionAPIController::class, 'getAllBitcoinAddress']);
 
     Route::get('/ea/setting', [EASettingController::class, 'getSetting'])->name('ea.setting');
     Route::post('/ea/bitcoin/setting', [EASettingController::class, 'postBitcoinSetting'])->name('ea.bitcoin.setting');
@@ -128,7 +116,7 @@ Route::middleware(EAMiddleware::class)->group( function () {
     Route::post('/ea/solana/setting', [EASettingController::class, 'postSolanaSetting'])->name('ea.solana.setting');
 });
 
-Route::middleware(RAMiddleware::class)->group( function () {
+Route::middleware('RA')->group( function () {
     Route::get('/ra/dashboard', [BallotController::class, 'getDashboard'])->name('ra.dashboard');
 
     Route::get('/ra/addVoter', [BallotController::class, 'getAddVoter'])->name('ra.addVoter');
