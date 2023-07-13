@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -21,7 +20,8 @@ return new class extends Migration
 
         foreach ($this->columns as $column) {
             if (Schema::hasColumn('users', $column)) {
-                DB::statement("ALTER TABLE `users` MODIFY `{$column}` TEXT NULL");
+                // Column change through doctrine/dbal, works on MySQL, MariaDB, PostgreSQL and SQLite
+                Schema::table('users', fn ($table) => $table->text($column)->nullable()->change());
             } else {
                 Schema::table('users', fn ($table) => $table->text($column)->nullable());
             }
