@@ -41,6 +41,10 @@ Route::get('language/{locale}', function ($locale) {
     return redirect()->back();
 });
 
+Route::get('/', function () {
+    return auth()->check() ? to_route('auth.dashboard') : to_route('auth.login');
+})->name('home');
+
 Route::get('/cryptoapisverifydomain', function () {
     $filePath = public_path('cryptoapisverifydomain.txt');
 
