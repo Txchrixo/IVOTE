@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\EA;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\bgElectionUpload;
-use App\Http\Requests\PostElectionRequest;
+use App\Http\Requests\Election\StoreElectionRequest;
+use App\Http\Requests\Election\UploadBackgroundRequest;
 use App\Models\Code;
 use App\Models\VoteList;
 use Illuminate\Http\RedirectResponse;
@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -47,7 +48,7 @@ class VoteController extends Controller
     {
         $data = VoteList::all();
 
-        return view('ea.election', ['data' => $data])->with('success', 'Election added successfully!');
+        return view('ea.election', ['data' => $data]);
     }
 
     /**
@@ -65,39 +66,35 @@ class VoteController extends Controller
      * @param Request $request
      * @return RedirectResponse
      */
-    public function postElection(PostElectionRequest $request)
+    public function postElection(StoreElectionRequest $request): RedirectResponse
     {
-        $validator = $request->safe();
+        VoteList::create($request->safe()->only(['title', 'number', 'description']));
 
-        $vote_item = VoteList::create([
-            'title' => $request->input('title'),
-            'number' => $request->input('number'),
-            'description' => $request->input('description') ?? null,
-        ]);
-
-        return to_route('ea.election');
+        return to_route('ea.election')->with('success', 'Election added successfully!');
     }
-    public function uploadBg(bgElectionUpload $request)
+
+    /**
+     * Stores the election background under a generated name with the extension of the
+     * detected MIME type, and removes the previous file.
+     */
+    public function uploadBg(UploadBackgroundRequest $request): RedirectResponse
     {
-        $electionId = $request->input('election');
-        $election = VoteList::find($electionId);
+        $election = VoteList::findOrFail($request->validated('election'));
+        $disk = Storage::disk('public');
 
-        $bg_path = 'uploads/bg';
-        $uploadedFile = $request->file('file');
-        $fileName = 'bg-' . $electionId . '.jpg';
-
-        if(Storage::disk('public')->exists($bg_path.'/'.$fileName)){
-            Storage::delete($fileName);
+        if ($election->bg && $disk->exists('uploads/bg/' . basename($election->bg))) {
+            $disk->delete('uploads/bg/' . basename($election->bg));
         }
 
-        $filePath = $uploadedFile->storeAs($bg_path, $fileName, 'public');
+        $file = $request->file('file');
+        $fileName = 'bg-' . $election->id . '-' . Str::random(16) . '.' . $file->extension();
+        $file->storeAs('uploads/bg', $fileName, 'public');
 
-        //Save the image path to the election
         $election->bg = $fileName;
         $election->save();
 
         return back()->with('success', 'Background uploaded successfully.')->withInput([
-            'election' => $electionId
+            'election' => $election->id,
         ]);
     }
 }

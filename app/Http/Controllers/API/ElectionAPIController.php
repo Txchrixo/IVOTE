@@ -3,58 +3,25 @@
 namespace App\Http\Controllers\API;
 
 use App\Enums\StageElection;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\bgElectionUpload;
-use App\Http\Requests\PostElectionRequest;
-use App\Models\Code;
+use App\Http\Requests\Election\ChangeStageRequest;
+use App\Http\Requests\Election\ShowElectionRequest;
+use App\Http\Requests\Election\UpdateElectionRequest;
 use App\Models\Key;
-use App\Models\User;
 use App\Models\VoteList;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\View\View;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Illuminate\Http\JsonResponse;
 
+/**
+ * JSON endpoints of the election authority (routes protected by auth + can:ea).
+ * Validation and authorization live in the form requests.
+ */
 class ElectionAPIController extends BaseAPIController
 {
-
     /**
-     * API: toggle the voting
-     * Goal: If the item of the voting is started,
-     *       then stop it by marking the is_started as 0,
-     *       Else start the item of the voting by marking the is_started as 1.
-     *
-     * ($vote + 1) % 2 is a great mathematics way to achieve this goal which is smarter and more efficiency
-     * compared to the way of using if sentences.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param \Illuminate\Http\Response $response
-     * @return \Illuminate\Http\JsonResponse
+     * Moves the election to its next stage after re-authenticating the EA.
      */
-    public function toggleStage(Request $request, Response $response)
+    public function toggleStage(ChangeStageRequest $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'id' => 'bail|required|integer|exists:Vote,id',
-            'password' => 'required|max:255',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->sendError('Validation Error', $validator->errors(), 422);
-        }
-
-        // Ré-authentification de l'EA connecté (et non d'un compte « ea » codé en dur)
-        $Authorized = Hash::check($validator->safe(['password'])['password'], Auth::user()->password);
-
-        if (!$Authorized) {
-            return $this->sendError('Unauthorized', 'Password Incorrect', 401);
-        }
-
-        $election = VoteList::findOrFail($validator->safe()->only(['id'])['id']);
+        $election = VoteList::findOrFail($request->validated('id'));
 
         if ($election->stage >= StageElection::$done) {
             return $this->sendError('Invalid transition', 'The election is already closed', 422);
@@ -63,89 +30,31 @@ class ElectionAPIController extends BaseAPIController
         $election->stage += 1;
         $election->save();
 
-
         return $this->sendResponse(['stage' => $election->stage], 'Election stage updated successfully!');
     }
 
-    /**
-     * API: get all keys for vote id
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param \Illuminate\Http\Response $response
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function getKeysList(Request $request, Response $response)
+    public function getElectionDetails(ShowElectionRequest $request): JsonResponse
     {
-        $id = (int) $request->input('id');
-        $data = Key::where('used_for', $id)->get();
-        return response()->json($data);
+        $election = VoteList::findOrFail($request->electionId());
+
+        return $this->sendResponse($election, 'Election details retrieved successfully!');
+    }
+
+    public function updateElection(UpdateElectionRequest $request): JsonResponse
+    {
+        $election = VoteList::findOrFail($request->validated('id'));
+        $election->update($request->electionData());
+
+        return $this->sendResponse($election->fresh(), 'Election updated successfully!');
     }
 
     /**
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * Voter addresses of an election (never the private keys).
      */
-    public function getElectionDetails(Request $request): \Illuminate\Http\JsonResponse
+    public function getAllBitcoinAddress(ShowElectionRequest $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'id' => 'bail|required|integer|exists:Vote,id',
-        ]);
+        $data = Key::where('used_for', $request->electionId())->get(['id', 'bitcoin_address', 'is_paid']);
 
-        if ($validator->fails()) {
-            return $this->sendError('Validation Error', $validator->errors(), 422);
-        }
-
-        $data = VoteList::where('id', $validator->safe()->only(['id']))->first();
-
-        return $this->sendResponse($data, 'Election details retrieved successfully!');
-    }
-
-    /**
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function updateElection(Request $request): \Illuminate\Http\JsonResponse
-    {
-        $validator = Validator::make($request->all(), [
-            'id' => 'bail|required|integer|exists:Vote,id',
-            'title' => 'bail|required|min:2|max:255',
-            'number' => 'bail|required|integer|min:3|max:5000000',
-            'start_vote' => 'bail|nullable|date|required_with:end_vote|after:tomorrow',
-            'end_vote' => 'bail|nullable|date|required_with:start_vote|after:start_date',
-            'start_veriff' => 'bail|nullable|date|required_with:end_veriff|after:tomorrow',
-            'end_veriff' => 'bail|nullable|date|required_with:start_veriff|after:start_date',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->sendError('Validation Error', $validator->errors(), 422);
-        }
-
-        $data = VoteList::where('id', $validator->safe()->only(['id']))->update($validator->safe()->except(['id']));
-
-        return $this->sendResponse($data, 'Election updated successfully!');
-    }
-
-    /**
-     * Get all bitcoin address
-     * @param $request
-     * @return mixed
-     */
-    public function getAllBitcoinAddress(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'election_id' => 'bail|required|integer|exists:Vote,id',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->sendError('Validation Error', $validator->errors(), 422);
-        }
-
-        $data = Key::where('used_for', $validator->safe()->only(['election_id']))->get(['id', 'bitcoin_address', 'is_paid']);
-
-        if ($data) {
-            return $this->sendResponse($data, 'bitcoin found successfully!');
-        } else {
-            return $this->sendError($data, 'Not found any bitcoin Address', 401);
-        }
+        return $this->sendResponse($data, 'Addresses retrieved successfully!');
     }
 }

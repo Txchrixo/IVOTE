@@ -63,8 +63,14 @@ class VoteList extends Model
     {
         return Attribute::make(
             get: fn (string $value) => str_replace('-', ' ', ucfirst(strtolower($value))),
-            set: fn (string $value) => str_replace(' ', '-', strtolower($value))
+            set: fn (string $value) => self::slug($value)
         );
+    }
+
+    /** Storage format of election titles. */
+    public static function slug(string $title): string
+    {
+        return str_replace(' ', '-', strtolower(trim($title)));
     }
 
 
