@@ -2,28 +2,30 @@
 
 namespace App\Providers;
 
-// use Illuminate\Support\Facades\Gate;
-
+use App\Models\Candidate;
 use App\Models\User;
-use App\Policies\UserPolicy;
+use App\Models\VoteList;
+use App\Policies\CandidatePolicy;
+use App\Policies\ElectionPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
     /**
-     * The model to policy mappings for the application.
-     *
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        User::class => UserPolicy::class,
+        VoteList::class => ElectionPolicy::class,
+        Candidate::class => CandidatePolicy::class,
     ];
 
-    /**
-     * Register any authentication / authorization services.
-     */
     public function boot(): void
     {
         $this->registerPolicies();
+
+        // Role gates used by the route groups (can:ea / can:ra)
+        Gate::define('ea', fn (User $user) => $user->isEA());
+        Gate::define('ra', fn (User $user) => $user->isRA());
     }
 }

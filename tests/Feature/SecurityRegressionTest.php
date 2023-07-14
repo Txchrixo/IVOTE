@@ -13,9 +13,10 @@ use Tests\TestCase;
  */
 class SecurityRegressionTest extends TestCase
 {
-    private function user(int $role): User
+    private function user(Role $role): User
     {
-        $user = new User(['username' => 'test', 'role' => $role]);
+        $user = new User(['username' => 'test']);
+        $user->role = $role;
         $user->id = 999;
         $user->exists = true;
         return $user;
@@ -41,7 +42,7 @@ class SecurityRegressionTest extends TestCase
     {
         foreach (['/ea/api/balance', '/api/blockio/get_balance', '/api/blockio/get_address_balance', '/api/allbitcoinaddress', '/api/election/details'] as $uri) {
             $this->get($uri)->assertRedirect(route('auth.login'));
-            $this->actingAs($this->user(Role::$RA))->get($uri)->assertRedirect(route('auth.login'));
+            $this->actingAs($this->user(Role::RA))->get($uri)->assertForbidden();
             auth()->logout();
         }
         $this->post('/ea/api/blockio/pay')->assertRedirect(route('auth.login'));
@@ -51,7 +52,7 @@ class SecurityRegressionTest extends TestCase
     {
         $this->get('/auth/register')->assertRedirect(route('auth.login'));
         $this->post('/auth/register', ['username' => 'x', 'password' => 'x'])->assertRedirect(route('auth.login'));
-        $this->actingAs($this->user(Role::$RA))->get('/auth/register')->assertRedirect(route('auth.login'));
+        $this->actingAs($this->user(Role::RA))->get('/auth/register')->assertForbidden();
     }
 
     public function test_wildcard_cors_is_disabled(): void

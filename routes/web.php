@@ -13,8 +13,6 @@ use App\Http\Controllers\API\PublicAPIController;
 use App\Http\Controllers\RA\BallotController;
 use App\Http\Controllers\RA\CandidateController;
 use App\Http\Controllers\Voter\VoterController;
-use App\Http\Middleware\EAMiddleware;
-use App\Http\Middleware\RAMiddleware;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Response;
 
@@ -68,11 +66,11 @@ Route::prefix('/auth')->name('auth.')->controller(AuthController::class)->group(
     Route::delete('/logout', 'logOut')->name('logout')->middleware('auth');
 
     // Seule l'autorité électorale (EA) peut créer des comptes (RA)
-    Route::get('/register', 'getRegisterForm')->name('register')->middleware('EA');
-    Route::post('/register', 'postRegister')->name('postRegister')->middleware('EA');
+    Route::get('/register', 'getRegisterForm')->name('register')->middleware(['auth', 'can:ea']);
+    Route::post('/register', 'postRegister')->name('postRegister')->middleware(['auth', 'can:ea']);
 });
 
-Route::prefix('/auth')->name('auth.')->controller(PasswordController::class)->group(function () {
+Route::prefix('/auth')->name('auth.')->middleware('auth')->controller(PasswordController::class)->group(function () {
     Route::get('/password/change', 'getChangePassword' )->name('password.change');
     Route::post('/password/change', 'postChangePassword' )->name('password.postChange');
 });
@@ -89,7 +87,7 @@ Route::prefix('/voter')->name('voter.')->group(function () {
 
 Route::get('/api/getAllPubKeys', [PublicAPIController::class, 'getAllPubKeys']);
 
-Route::middleware('EA')->group( function () {
+Route::middleware(['auth', 'can:ea'])->group(function () {
     Route::get('/ea/dashboard', [VoteController::class, 'getDashboard'])->name('ea.dashboard');
 
 
@@ -120,7 +118,7 @@ Route::middleware('EA')->group( function () {
     Route::post('/ea/solana/setting', [EASettingController::class, 'postSolanaSetting'])->name('ea.solana.setting');
 });
 
-Route::middleware('RA')->group( function () {
+Route::middleware(['auth', 'can:ra'])->group(function () {
     Route::get('/ra/dashboard', [BallotController::class, 'getDashboard'])->name('ra.dashboard');
 
     Route::get('/ra/addVoter', [BallotController::class, 'getAddVoter'])->name('ra.addVoter');
