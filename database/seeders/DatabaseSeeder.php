@@ -2,21 +2,42 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Enums\Role;
+use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
     /**
-     * Seed the application's database.
+     * Creates the election authority (EA) and registration authority (RA) accounts.
+     * Passwords come from SEED_EA_PASSWORD / SEED_RA_PASSWORD; when missing, a random
+     * password is generated and printed once. Existing accounts are never modified.
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
+        $this->account(Role::EA, env('SEED_EA_USERNAME', 'ea'), env('SEED_EA_PASSWORD'));
+        $this->account(Role::RA, env('SEED_RA_USERNAME', 'ra'), env('SEED_RA_PASSWORD'));
+    }
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+    private function account(Role $role, string $username, ?string $password): void
+    {
+        if (User::where('username', $username)->exists()) {
+            $this->command?->info("{$role->label()} account '{$username}' already exists, skipped.");
+            return;
+        }
+
+        $generated = blank($password);
+        $password = $generated ? Str::password(20) : $password;
+
+        $user = new User(['username' => $username, 'password' => Hash::make($password)]);
+        $user->role = $role;
+        $user->save();
+
+        $this->command?->info("{$role->label()} account '{$username}' created.");
+        if ($generated) {
+            $this->command?->warn("Generated password for '{$username}': {$password}");
+        }
     }
 }
