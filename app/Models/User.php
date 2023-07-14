@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Role;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -13,8 +14,6 @@ class User extends  Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    protected $guarded = ['id'];
-
     /**
      * The attributes that are mass assignable.
      *
@@ -24,7 +23,6 @@ class User extends  Authenticatable
         'username',
         'nickname',
         'password',
-        'role',
         'bitcoin_priv_key',
         'bitcoin_address',
         'eth_priv_key',
@@ -51,6 +49,7 @@ class User extends  Authenticatable
      * Mesure transitoire : en Phase 3 elles sortiront complètement de la base (KMS / signataire séparé).
      */
     protected $casts = [
+        'role' => Role::class,
         'bitcoin_priv_key' => 'encrypted',
         'eth_priv_key' => 'encrypted',
         'solana_priv_key' => 'encrypted',
@@ -92,4 +91,13 @@ class User extends  Authenticatable
         ]);
     }
 
+    public function isEA(): bool
+    {
+        return $this->role === Role::EA;
+    }
+
+    public function isRA(): bool
+    {
+        return $this->role === Role::RA;
+    }
 }

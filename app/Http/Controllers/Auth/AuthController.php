@@ -40,11 +40,11 @@ class AuthController extends Controller
     {
         $role = Auth::user()->role;
 
-        if ($role === Role::$RA) {
+        if ($role === Role::RA) {
             return to_route('ra.dashboard')->with('success', 'You are logged in as a RA');
         }
 
-        if ($role === Role::$EA) {
+        if ($role === Role::EA) {
             return to_route('ea.dashboard')->with('success', 'You are logged in as an EA');
         }
 
@@ -74,7 +74,7 @@ class AuthController extends Controller
         $user = new User();
         $user->username = $credentials['username'];
         $user->password = Hash::make($credentials['password']);
-        $user->role = Role::$RA;
+        $user->role = Role::RA;
         $user->save();
 
         Log::info('RA account created', ['created_user_id' => $user->id, 'by' => Auth::id()]);

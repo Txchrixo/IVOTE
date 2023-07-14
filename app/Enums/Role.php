@@ -2,9 +2,18 @@
 
 namespace App\Enums;
 
-class Role
+enum Role: int
 {
-    public static $EA = 2;
-    public static $RA = 1;
-    public static $VOTER = 3;
+    case RA = 1;
+    case EA = 2;
+    case VOTER = 3;
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::RA => 'Registration authority',
+            self::EA => 'Election authority',
+            self::VOTER => 'Voter',
+        };
+    }
 }

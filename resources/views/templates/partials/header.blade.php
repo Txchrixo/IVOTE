@@ -107,7 +107,7 @@
                         <i class="lnr lnr-home"></i>
                         <span>Dashboard</span>
                     </a>
-                    @if (\Illuminate\Support\Facades\Auth::user()->role == \App\Enums\Role::$RA)
+                    @if (\Illuminate\Support\Facades\Auth::user()->role === \App\Enums\Role::RA)
                         <a class="nav-link text-center p-3" aria-current="page" href="#subVoters"
                             data-bs-toggle="collapse" data-bs-target="#subVoters" aria-expanded="false">
                             <i class="lnr lnr-file-empty"></i>
@@ -153,7 +153,7 @@
                             <i class="lnr lnr-list"></i> <span>View Result</span>
                         </a>
                     @endif
-                    @if (\Illuminate\Support\Facades\Auth::user()->role == \App\Enums\Role::$EA)
+                    @if (\Illuminate\Support\Facades\Auth::user()->role === \App\Enums\Role::EA)
                         <a class="nav-link text-center p-3" aria-current="page" href="#subBlockChain"
                             data-bs-toggle="collapse" data-bs-target="#subBlockChain" aria-expanded="false">
                             <i class="lnr lnr-bold"></i>
@@ -198,7 +198,7 @@
                             <i class="lnr lnr-cog"></i> <span>Setting</span>
                         </a>
                     @endif
-                    @if (\Illuminate\Support\Facades\Auth::user()->role == \App\Enums\Role::$VOTER)
+                    @if (\Illuminate\Support\Facades\Auth::user()->role === \App\Enums\Role::VOTER)
                         <a class="menu-vote nav-link text-center p-3" href="{{ route('voter.vote') }}">
                             <i class="lnr lnr-inbox"></i>
                             <span>View Result</span>

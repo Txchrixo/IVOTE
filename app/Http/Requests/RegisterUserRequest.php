@@ -13,7 +13,7 @@ class RegisterUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->role === Role::$EA;
+        return $this->user()?->role === Role::EA;
     }
 
     /**
