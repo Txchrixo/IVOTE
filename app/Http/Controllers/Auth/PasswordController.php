@@ -4,42 +4,30 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ChangePasswordRequest;
-use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\View\View;
 
 class PasswordController extends Controller
 {
-
-    /**
-     * Change the password Page
-     * 
-     */
-    public function getChangePassword()
+    public function getChangePassword(): View
     {
         return view('auth.password.change');
     }
 
     /**
-     * POST: change the password
-     * @param Request $request
+     * Changes the password and logs out the user's other sessions.
      */
-    public function postChangePassword(ChangePasswordRequest $request)
+    public function postChangePassword(ChangePasswordRequest $request): RedirectResponse
     {
-        $request->validated([
-            'password_old' => 'required',
-            'password' => 'required',
-        ]);
+        $user = $request->user();
+        $user->password = Hash::make($request->validated('password'));
+        $user->save();
 
-        if ($request->validated()) {
-            return redirect()->route('auth.password.change');
-        }
+        Auth::logoutOtherDevices($request->validated('password'));
+        $request->session()->regenerate();
 
-
-        $user = User::find(Auth::user()->getAuthIdentifier());
-
-        $this->auth->user()->setPassword($request->getParam('password'));
-
-        return redirect()->route('home')->with('info', 'Your password was changed');
+        return to_route('auth.password.change')->with('info', 'Your password was changed.');
     }
 }
