@@ -25,7 +25,7 @@ class RegisterUserRequest extends FormRequest
     {
         return [
             'username' => ['required', 'string', 'min:3', 'max:64', 'alpha_dash', 'unique:users,username'],
-            'password' => ['required', 'confirmed', 'max:255', Password::min(12)->letters()->mixedCase()->numbers()->symbols()],
+            'password' => ['required', 'confirmed', 'max:255', Password::defaults()],
         ];
     }
 }
