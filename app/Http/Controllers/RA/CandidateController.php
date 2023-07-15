@@ -7,7 +7,9 @@ use App\Models\Candidate;
 use App\Models\VoteList;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\Candidate\StoreCandidateRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class CandidateController extends Controller
@@ -36,26 +38,20 @@ class CandidateController extends Controller
         return view('ra.candidates', ['data' => $data]);
     }
     /**
-     * Post Candidate 
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
+     * Registers a candidate; the photo is stored under a generated name.
      */
-    public function postAddCandidate(Request $request) : \Illuminate\Http\RedirectResponse
-    { 
-        $validator = Validator::make($request->all(), [
-            'name' => 'bail|required|max:135',
-            'cni' => 'bail|required|min:8|max:255',
-            'des' => 'bail|required|max:500',
-            'vote_id' => 'bail|required|integer|exists:Vote,id',
-            'file' => 'bail|nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
-        ]);
+    public function postAddCandidate(StoreCandidateRequest $request): RedirectResponse
+    {
+        $data = $request->safe()->only(['name', 'cni', 'des', 'vote_id']);
 
-        $data = $validator->safe()->all();
+        if ($request->hasFile('photo')) {
+            $photo = $request->file('photo');
+            $data['photo'] = Str::random(32) . '.' . $photo->extension();
+            $photo->storeAs('candidates', $data['photo'], 'public');
+        }
 
-        $vote_item = Candidate::create($data);
+        Candidate::create($data);
 
         return to_route('ra.addCandidate')->with('success', 'Candidate registered successfully.');
     }
-
-
 }

@@ -1,7 +1,7 @@
 @extends('templates.app')
 
 @section('content')
-    <form id='candidateForm' method="post">
+    <form id='candidateForm' method="post" enctype="multipart/form-data">
         @csrf
         <div class="row">
             <div class="col-md-4">

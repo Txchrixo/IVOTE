@@ -2,47 +2,41 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Requests\Candidate\DeleteCandidateRequest;
+use App\Http\Requests\Candidate\ListCandidatesRequest;
+use App\Http\Requests\Candidate\UpdateCandidateRequest;
 use App\Models\Candidate;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 
 class CandidateAPIController extends BaseAPIController
 {
-    /**
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function getCandidates(Request $request) : \Illuminate\Http\JsonResponse
+    /** Public list of the candidates of an election (no identity number). */
+    public function getCandidates(ListCandidatesRequest $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'vote_id' => 'bail|required|integer|exists:Vote,id',
-        ]);
+        $data = Candidate::where('vote_id', $request->validated('vote_id'))
+            ->get(['id', 'name', 'des', 'photo', 'vote_id']);
 
-        if($validator->fails()){
-            return $this->sendError('Validation Error', $validator->errors(), 422);
-        }
-
-        $data = Candidate::where('vote_id', $validator->safe()->only(['vote_id']))->get();
-
-        return $this->sendResponse($data, 'Election details retrieved successfully!');
-    }
-    /**
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function postDelCandidate(Request $request) : \Illuminate\Http\JsonResponse
-    {
-        $validator = Validator::make($request->all(), [
-            'id' => 'bail|required|integer|exists:Candidate,id',
-        ]);
-
-        if($validator->fails()){
-            return $this->sendError('Validation Error', $validator->errors(), 422);
-        }
-
-        $data = Candidate::where('id', $validator->safe()->only(['id']))->delete();
-
-        return $this->sendResponse($data, 'Candidate deleted successfully!');
+        return $this->sendResponse($data, 'Candidates retrieved successfully!');
     }
 
+    public function postUpdateCandidate(UpdateCandidateRequest $request): JsonResponse
+    {
+        $candidate = Candidate::findOrFail($request->validated('id'));
+        $candidate->update($request->safe()->only(['name', 'des']));
+
+        return $this->sendResponse($candidate->only(['id', 'name', 'des']), 'Candidate updated successfully!');
+    }
+
+    public function postDelCandidate(DeleteCandidateRequest $request): JsonResponse
+    {
+        $candidate = Candidate::findOrFail($request->validated('id'));
+
+        if ($candidate->photo) {
+            Storage::disk('public')->delete('candidates/' . basename($candidate->photo));
+        }
+        $candidate->delete();
+
+        return $this->sendResponse(['id' => $candidate->id], 'Candidate deleted successfully!');
+    }
 }

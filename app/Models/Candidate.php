@@ -12,11 +12,15 @@ class Candidate extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'id',
         'name',
         'des',
-        'vote_id'
+        'cni',
+        'photo',
+        'vote_id',
     ];
+
+    /** The national identity number is never exposed in JSON. */
+    protected $hidden = ['cni'];
 
     public function addCandidate($name,$description,$vote_id){
         $this->create([

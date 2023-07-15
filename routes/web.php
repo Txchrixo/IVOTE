@@ -131,7 +131,6 @@ Route::middleware(['auth', 'can:ra'])->group(function () {
     Route::get('/ra/candidates', [CandidateController::class, 'getCandidatesList'])->name('ra.candidates');
 
     Route::post('/api/addvoter', [BallotAPIController::class, 'postAddVoter']);
-    Route::post('/api/addcandidate', [CandidateAPIController::class, 'postAddCandidate']);
     Route::put('/api/updatecandidate', [CandidateAPIController::class, 'postUpdateCandidate']);
     Route::delete('/api/delcandidate', [CandidateAPIController::class, 'postDelCandidate']);
 
