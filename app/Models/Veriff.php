@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\StageElection;
+
 use DateTime;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

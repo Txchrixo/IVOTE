@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Voter;
 
-use App\Enums\StageElection;
+use App\Enums\ElectionStage;
 use App\Http\Controllers\Controller;
 use App\Models\VoteList;
 use Illuminate\Http\JsonResponse;
@@ -23,7 +23,7 @@ class VoterController extends Controller
     {
         $election = str_replace(' ', '-', strtolower($election));
         $data = VoteList::where('title', $election)
-            ->where('stage', StageElection::$veriff);
+            ->where('stage', ElectionStage::Veriff->value);
 
         if ($data->get()->isNotEmpty()) {
             $exactMatch = $data->get()->first();

@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Enums\StageElection;
+use App\Actions\AdvanceElectionStage;
+use App\Exceptions\InvalidStageTransition;
 use App\Http\Requests\Election\ChangeStageRequest;
 use App\Http\Requests\Election\ShowElectionRequest;
 use App\Http\Requests\Election\UpdateElectionRequest;
 use App\Models\Key;
 use App\Models\VoteList;
+use App\Support\Audit;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -19,18 +21,17 @@ class ElectionAPIController extends BaseAPIController
     /**
      * Moves the election to its next stage after re-authenticating the EA.
      */
-    public function toggleStage(ChangeStageRequest $request): JsonResponse
+    public function toggleStage(ChangeStageRequest $request, AdvanceElectionStage $advance): JsonResponse
     {
         $election = VoteList::findOrFail($request->validated('id'));
 
-        if ($election->stage >= StageElection::$done) {
-            return $this->sendError('Invalid transition', 'The election is already closed', 422);
+        try {
+            $stage = $advance($election);
+        } catch (InvalidStageTransition $e) {
+            return $this->sendError('Invalid transition', $e->getMessage(), 422);
         }
 
-        $election->stage += 1;
-        $election->save();
-
-        return $this->sendResponse(['stage' => $election->stage], 'Election stage updated successfully!');
+        return $this->sendResponse(['stage' => $stage->value], 'Election stage updated successfully!');
     }
 
     public function getElectionDetails(ShowElectionRequest $request): JsonResponse
@@ -44,6 +45,7 @@ class ElectionAPIController extends BaseAPIController
     {
         $election = VoteList::findOrFail($request->validated('id'));
         $election->update($request->electionData());
+        Audit::record('election.updated', $election, ['fields' => array_keys($election->getChanges())]);
 
         return $this->sendResponse($election->fresh(), 'Election updated successfully!');
     }

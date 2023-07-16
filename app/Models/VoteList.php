@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-use App\Enums\StageElection;
+use App\Enums\ElectionStage;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use DateTime;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -35,22 +36,19 @@ class VoteList extends Model
         ]);
     }
 
-    public function getPhase(int $phase) : string
+    public function getPhase(int $phase): string
     {
-        if (StageElection::$veriff == $phase){
-            return 'veriff';
-        }
-        if (StageElection::$waiting == $phase){
-            return 'waiting';
-        }
-        if (StageElection::$ongoing == $phase){
-            return 'ongoing';
-        }
-        if (StageElection::$done == $phase){
-            return 'done';
-        }
+        return (ElectionStage::tryFrom($phase) ?? ElectionStage::Initial)->label();
+    }
 
-        return 'initial';
+    public function currentStage(): ElectionStage
+    {
+        return ElectionStage::from((int) $this->stage);
+    }
+
+    public function candidates(): HasMany
+    {
+        return $this->hasMany(Candidate::class, 'vote_id');
     }
 
     /**
