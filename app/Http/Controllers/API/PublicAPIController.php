@@ -2,45 +2,26 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\API\BaseAPIController;
+use App\Http\Requests\Election\PublicKeysRequest;
 use App\Models\Code;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\JsonResponse;
 
 class PublicAPIController extends BaseAPIController
 {
-    public function getAllBitcoinAddress(Request $request)
+    /**
+     * Public keys registered for an election, optionally excluding the caller's own code.
+     */
+    public function getAllPubKeys(PublicKeysRequest $request): JsonResponse
     {
-        $query = new Code();
-        $data = $query->select('public_key')->where([
-            ['public_key', '<>', '0']
-        ])->get();
+        $query = Code::query()
+            ->where('item_id', $request->validated('election_id'))
+            ->whereNotNull('public_key')
+            ->where('public_key', '<>', '0');
 
-        return response()->json($data);
-    }
-
-    public function getAllPubKeys(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'election_id' => 'bail|required|integer|exists:Vote,id',
-            'code' => 'nullable|exists:Code,code'
-        ]);
-
-        $id = $validator->safe()->only(['election_id'])['election_id'];
-
-
-        $data = DB::table('code')
-        ->select('public_key')
-        ->where('item_id', $id)
-        ->where('public_key', '<>', '0');
-
-        if($code = $validator->safe()->only(['code'])){
-            $data->where('code', '<>', $code);
+        if ($code = $request->validated('code')) {
+            $query->where('code', '<>', $code);
         }
 
-        $data = $data->get();
-
-        return $this->sendResponse($data, 'Address balance retrieved!');
+        return $this->sendResponse($query->pluck('public_key')->map(fn ($key) => ['public_key' => $key]), 'Public keys retrieved!');
     }
 }

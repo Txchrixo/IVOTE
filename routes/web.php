@@ -85,7 +85,7 @@ Route::prefix('/voter')->name('voter.')->group(function () {
     Route::get('/vote', [VoterController::class, 'getVote'])->name('vote');
 });
 
-Route::get('/api/getAllPubKeys', [PublicAPIController::class, 'getAllPubKeys']);
+Route::get('/api/getAllPubKeys', [PublicAPIController::class, 'getAllPubKeys'])->middleware('throttle:60,1');
 
 Route::middleware(['auth', 'can:ea'])->group(function () {
     Route::get('/ea/dashboard', [VoteController::class, 'getDashboard'])->name('ea.dashboard');
