@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Support\Audit;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\RegisterUserRequest;
@@ -10,7 +11,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use App\Enums\Role;
 
@@ -77,7 +77,7 @@ class AuthController extends Controller
         $user->role = Role::RA;
         $user->save();
 
-        Log::info('RA account created', ['created_user_id' => $user->id, 'by' => Auth::id()]);
+        Audit::record('user.created', $user, ['role' => $user->role->label()]);
 
         return back()->with('success', 'RA account created.');
     }

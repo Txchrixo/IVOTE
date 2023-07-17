@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\EA;
 
+use App\Support\Audit;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 /**
@@ -59,8 +59,7 @@ class EASettingController extends Controller
 
         Auth::user()->update($data);
 
-        Log::info('EA wallet settings updated', [
-            'user_id' => Auth::id(),
+        Audit::record('wallet.settings_updated', Auth::user(), [
             'chain' => $chain,
             'private_key_changed' => isset($data[$privKey]),
         ]);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\RA;
 
+use App\Support\Audit;
 use App\Http\Controllers\Controller;
 use App\Models\Candidate;
 use App\Models\VoteList;
@@ -50,7 +51,8 @@ class CandidateController extends Controller
             $photo->storeAs('candidates', $data['photo'], 'public');
         }
 
-        Candidate::create($data);
+        $candidate = Candidate::create($data);
+        Audit::record('candidate.created', $candidate);
 
         return to_route('ra.addCandidate')->with('success', 'Candidate registered successfully.');
     }

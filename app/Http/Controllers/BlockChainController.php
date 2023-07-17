@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\Audit;
 use App\Models\Key;
 use App\Models\VoteList;
 use BlockIo\Client as BlockIoClient;
@@ -140,7 +141,7 @@ class BlockChainController extends Controller
             $key->is_paid = 1;
             $key->save();
 
-            Log::info('Voter address funded', ['key_id' => $key->id, 'by' => Auth::id()]);
+            Audit::record('wallet.voter_address_funded', $key, ['txid' => data_get($result, 'data.txid')]);
 
             return response()->json([
                 'success' => true,

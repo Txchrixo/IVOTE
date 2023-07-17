@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Support\Audit;
 use App\Http\Requests\Candidate\DeleteCandidateRequest;
 use App\Http\Requests\Candidate\ListCandidatesRequest;
 use App\Http\Requests\Candidate\UpdateCandidateRequest;
@@ -24,6 +25,7 @@ class CandidateAPIController extends BaseAPIController
     {
         $candidate = Candidate::findOrFail($request->validated('id'));
         $candidate->update($request->safe()->only(['name', 'des']));
+        Audit::record('candidate.updated', $candidate);
 
         return $this->sendResponse($candidate->only(['id', 'name', 'des']), 'Candidate updated successfully!');
     }
@@ -36,6 +38,7 @@ class CandidateAPIController extends BaseAPIController
             Storage::disk('public')->delete('candidates/' . basename($candidate->photo));
         }
         $candidate->delete();
+        Audit::record('candidate.deleted', $candidate, ['vote_id' => $candidate->vote_id]);
 
         return $this->sendResponse(['id' => $candidate->id], 'Candidate deleted successfully!');
     }

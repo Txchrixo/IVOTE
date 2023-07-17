@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\EA;
 
+use App\Support\Audit;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Election\StoreElectionRequest;
 use App\Http\Requests\Election\UploadBackgroundRequest;
@@ -68,7 +69,8 @@ class VoteController extends Controller
      */
     public function postElection(StoreElectionRequest $request): RedirectResponse
     {
-        VoteList::create($request->safe()->only(['title', 'number', 'description']));
+        $election = VoteList::create($request->safe()->only(['title', 'number', 'description']));
+        Audit::record('election.created', $election);
 
         return to_route('ea.election')->with('success', 'Election added successfully!');
     }
@@ -92,6 +94,7 @@ class VoteController extends Controller
 
         $election->bg = $fileName;
         $election->save();
+        Audit::record('election.background_uploaded', $election);
 
         return back()->with('success', 'Background uploaded successfully.')->withInput([
             'election' => $election->id,
