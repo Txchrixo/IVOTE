@@ -77,7 +77,7 @@ class ElectionManagementTest extends TestCase
 
     public function test_stage_change_requires_the_current_ea_password(): void
     {
-        $election = $this->election();
+        $election = $this->readyElection();
 
         $this->actingAs($this->ea)
             ->putJson('/api/election/toggleStage', ['id' => $election->id, 'password' => 'wrong'])
@@ -88,6 +88,50 @@ class ElectionManagementTest extends TestCase
             ->putJson('/api/election/toggleStage', ['id' => $election->id, 'password' => 'password'])
             ->assertOk()
             ->assertJsonPath('data.stage', 1);
+
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => 'election.stage_changed',
+            'subject_id' => $election->id,
+            'user_id' => $this->ea->id,
+        ]);
+    }
+
+    public function test_stage_transitions_have_preconditions(): void
+    {
+        $election = $this->election();
+
+        $this->actingAs($this->ea)
+            ->putJson('/api/election/toggleStage', ['id' => $election->id, 'password' => 'password'])
+            ->assertStatus(422)
+            ->assertJsonPath('data', 'Set the identity verification dates first.');
+
+        $election = $this->readyElection(['title' => 'Other election']);
+        $election->forceFill(['stage' => 2])->save();
+
+        $this->actingAs($this->ea)
+            ->putJson('/api/election/toggleStage', ['id' => $election->id, 'password' => 'password'])
+            ->assertStatus(422)
+            ->assertJsonPath('data', 'Set the voting dates first.');
+
+        $election->forceFill(['stage' => 4])->save();
+        $this->actingAs($this->ea)
+            ->putJson('/api/election/toggleStage', ['id' => $election->id, 'password' => 'password'])
+            ->assertStatus(422)
+            ->assertJsonPath('data', 'The election is already closed.');
+    }
+
+    private function readyElection(array $attributes = []): VoteList
+    {
+        $election = $this->election(array_merge([
+            'start_veriff' => now()->addDay(),
+            'end_veriff' => now()->addDays(2),
+        ], $attributes));
+        $election->candidates()->createMany([
+            ['name' => 'Alice', 'des' => 'A'],
+            ['name' => 'Bob', 'des' => 'B'],
+        ]);
+
+        return $election;
     }
 
     public function test_background_upload_only_accepts_real_images(): void

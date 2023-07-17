@@ -43,7 +43,7 @@ class SecurityRegressionTest extends TestCase
         foreach (['/ea/api/balance', '/api/blockio/get_balance', '/api/blockio/get_address_balance', '/api/allbitcoinaddress', '/api/election/details'] as $uri) {
             $this->get($uri)->assertRedirect(route('auth.login'));
             $this->actingAs($this->user(Role::RA))->get($uri)->assertForbidden();
-            auth()->logout();
+            auth()->forgetUser();
         }
         $this->post('/ea/api/blockio/pay')->assertRedirect(route('auth.login'));
     }
