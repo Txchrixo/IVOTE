@@ -42,6 +42,8 @@ class User extends  Authenticatable
         'bitcoin_priv_key',
         'eth_priv_key',
         'solana_priv_key',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
     ];
 
     /**
@@ -53,6 +55,9 @@ class User extends  Authenticatable
         'bitcoin_priv_key' => 'encrypted',
         'eth_priv_key' => 'encrypted',
         'solana_priv_key' => 'encrypted',
+        'two_factor_secret' => 'encrypted',
+        'two_factor_recovery_codes' => 'encrypted:array',
+        'two_factor_confirmed_at' => 'datetime',
     ];
 
 
@@ -99,5 +104,16 @@ class User extends  Authenticatable
     public function isRA(): bool
     {
         return $this->role === Role::RA;
+    }
+
+    /** Back-office accounts must use a second factor. */
+    public function requiresTwoFactor(): bool
+    {
+        return $this->isEA() || $this->isRA();
+    }
+
+    public function hasTwoFactorEnabled(): bool
+    {
+        return $this->two_factor_secret !== null && $this->two_factor_confirmed_at !== null;
     }
 }
