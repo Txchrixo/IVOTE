@@ -1,5 +1,8 @@
 import './bootstrap';
 
+// Images referenced with Vite::image() must be part of the build manifest
+import.meta.glob(['../img/**']);
+
 
 import 'jquery/dist/jquery.min';
 import '@popperjs/core/dist/umd/popper.min.js';

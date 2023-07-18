@@ -10,19 +10,16 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @vite(['resources/js/app.js', 'resources/css/app.css'])
     <!--
-    <link rel="stylesheet" href="{{ Vite::asset('/assets/css/main.css') }}">
-    <link rel="stylesheet" href="{{ Vite::asset('/assets/css/voter.css') }}">
-    <link rel="stylesheet" href="{{ Vite::asset('/assets/css/verify.css') }}">
-    <link rel="stylesheet" href="{{ Vite::asset('/assets/css/tally.css') }}">
+    <link rel="stylesheet" href="{{ Vite::asset('resources/css/main.css') }}">
+    <link rel="stylesheet" href="{{ Vite::asset('resources/css/voter.css') }}">
+    <link rel="stylesheet" href="{{ Vite::asset('resources/css/verify.css') }}">
+    <link rel="stylesheet" href="{{ Vite::asset('resources/css/tally.css') }}">
     -->
     @if (Route::currentRouteName() == \App\Enums\RouteApp::$veriff)
         <link rel="stylesheet" href="{{ Vite::asset('resources/css/page/veriff.css') }}">
     @endif
     @if (Route::currentRouteName() == \App\Enums\RouteApp::$veriffSubmitted)
         <link rel="stylesheet" href="{{ Vite::asset('resources/css/page/veriffSubmitted.css') }}">
-    @endif
-    @if (Route::currentRouteName() == \App\Enums\RouteApp::$ready)
-        <link rel="stylesheet" href="{{ Vite::asset('resources/css/page/ready.css') }}">
     @endif
     <!-- ICONS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@6.6.6/css/flag-icons.min.css" />

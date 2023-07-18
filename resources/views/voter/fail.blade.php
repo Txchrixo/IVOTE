@@ -15,7 +15,7 @@
 					<p>If you haven't voted and close the browser unexpectedly, your vote will be regarded as abstention.</p>
 					<p>Please feel free to ask our team if you have more questions</p>
 					<p align="right">BlockVotes Team</p>
-					<p align="right"><img src="{{ Vite::image('/assets/img/logo-dark.png') }}" alt="Logo" width="120px"></p>
+					<p align="right"><img src="{{ Vite::image('logo-dark.png') }}" alt="Logo" width="120px"></p>
 				</div>
 			</div>
 		</div>

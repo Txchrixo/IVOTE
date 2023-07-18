@@ -8,6 +8,14 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/css/app.css',
+                // Stylesheets loaded with Vite::asset() in the layouts
+                'resources/css/admin.css',
+                'resources/css/main.css',
+                'resources/css/voter.css',
+                'resources/css/verify.css',
+                'resources/css/tally.css',
+                'resources/css/page/veriff.css',
+                'resources/css/page/veriffSubmitted.css',
                 'resources/js/app.js',
                 'resources/js/index.js',
                 // Page scripts loaded with Vite::asset() in the layouts
