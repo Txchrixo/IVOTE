@@ -14,7 +14,8 @@ class AuditLogTest extends TestCase
 
     public function test_logins_and_failed_logins_are_audited(): void
     {
-        $user = User::factory()->ea()->create(['username' => 'authority']);
+        // A voter account: back-office accounts are only logged in after the second factor
+        $user = User::factory()->create(['username' => 'authority']);
 
         $this->post('/auth/login', ['username' => 'authority', 'password' => 'wrong-password']);
         $this->post('/auth/login', ['username' => 'authority', 'password' => 'password']);

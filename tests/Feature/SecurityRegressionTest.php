@@ -4,22 +4,24 @@ namespace Tests\Feature;
 
 use App\Enums\Role;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
 use Tests\TestCase;
 
 /**
  * Regression tests for the security fixes.
- * These tests do not need a database.
  */
 class SecurityRegressionTest extends TestCase
 {
+    use RefreshDatabase;
+
     private function user(Role $role): User
     {
-        $user = new User(['username' => 'test']);
-        $user->role = $role;
-        $user->id = 999;
-        $user->exists = true;
-        return $user;
+        return match ($role) {
+            Role::EA => User::factory()->ea()->create(),
+            Role::RA => User::factory()->ra()->create(),
+            default => User::factory()->create(),
+        };
     }
 
     public function test_encryption_oracle_endpoints_are_gone(): void
