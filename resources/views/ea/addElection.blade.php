@@ -93,7 +93,7 @@
             </div>
         </div>
     </div>
-    <script>
+    <script nonce="{{ Vite::cspNonce() }}">
         document.addEventListener('DOMContentLoaded', function() {
             // Event listener for when an election is selected
             var selectElection = document.querySelector('.select-election');
