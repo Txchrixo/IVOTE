@@ -38,6 +38,11 @@ class RouteServiceProvider extends ServiceProvider
             ];
         });
 
+        // Second factor: 5 attempts per minute for a pending login
+        RateLimiter::for('two-factor', function (Request $request) {
+            return Limit::perMinute(5)->by('2fa|' . ($request->session()->get('login.id') ?: $request->ip()));
+        });
+
         $this->routes(function () {
             Route::middleware('api')
                 ->prefix('api')

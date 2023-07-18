@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\RegisterUserRequest;
 use App\Models\User;
+use Illuminate\Auth\Events\Failed;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +17,8 @@ use App\Enums\Role;
 
 class AuthController extends Controller
 {
+    /** bcrypt hash of a random string, used to keep failed logins constant-time. */
+    private const DUMMY_HASH = '$2y$12$elHHl/fLTrLucPrDh1vpAejVweWf/lNkFcEXXl34rzw1NQchQE/Ri';
 
     public function getLoginForm(): View
     {
@@ -51,16 +54,40 @@ class AuthController extends Controller
         return back()->with('error', 'You are not logged in');
     }
 
-    public function postLogin(LoginUserRequest $request): RedirectResponse | View
+    /**
+     * Checks the password. Back-office accounts (EA, RA) then go through the second
+     * factor (or its enrollment) before the session is authenticated.
+     */
+    public function postLogin(LoginUserRequest $request): RedirectResponse
     {
         $credentials = $request->validated();
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-            return redirect()->intended('auth/dashboard');
+        $user = User::where('username', $credentials['username'])->first();
+
+        // Hash something even for unknown usernames so timing does not reveal accounts
+        $valid = Hash::check($credentials['password'], $user?->password ?? self::DUMMY_HASH);
+
+        if (!$user || !$valid) {
+            event(new Failed('web', $user, $credentials));
+
+            return to_route('auth.login')->with('error', __('validation.error.check-username&password'))->withInput([
+                'username' => $credentials['username'],
+            ]);
         }
-        return to_route('auth.login')->with('error', __('validation.error.check-username&password'))->withInput([
-            'username' => $credentials['username']
-        ]);
+
+        if ($user->requiresTwoFactor()) {
+            $request->session()->regenerate();
+            $request->session()->put('login.id', $user->getKey());
+            $request->session()->put('login.expires_at', now()->addMinutes(5)->getTimestamp());
+
+            return $user->hasTwoFactorEnabled()
+                ? to_route('auth.two-factor.challenge')
+                : to_route('auth.two-factor.setup');
+        }
+
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        return redirect()->intended('auth/dashboard');
     }
 
     /**

@@ -4,6 +4,7 @@ use App\Http\Controllers\API\BallotAPIController;
 use App\Http\Controllers\API\CandidateAPIController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordController;
+use App\Http\Controllers\Auth\TwoFactorController;
 use App\Http\Controllers\BlockChainController;
 use App\Http\Controllers\EA\EASettingController;
 use App\Http\Controllers\API\ElectionAPIController;
@@ -62,15 +63,24 @@ Route::prefix('/auth')->name('auth.')->controller(AuthController::class)->group(
     Route::get('/', 'getLoginForm');
     Route::get('/login', 'getLoginForm')->name('login');
     Route::post('/login', 'postLogin')->name('postLogin')->middleware('throttle:login');
-    Route::get('/dashboard', 'getDashboard')->name('dashboard')->middleware('auth');
+    Route::get('/dashboard', 'getDashboard')->name('dashboard')->middleware(['auth', 'two-factor']);
     Route::delete('/logout', 'logOut')->name('logout')->middleware('auth');
 
     // Seule l'autorité électorale (EA) peut créer des comptes (RA)
-    Route::get('/register', 'getRegisterForm')->name('register')->middleware(['auth', 'can:ea']);
-    Route::post('/register', 'postRegister')->name('postRegister')->middleware(['auth', 'can:ea']);
+    Route::get('/register', 'getRegisterForm')->name('register')->middleware(['auth', 'two-factor', 'can:ea']);
+    Route::post('/register', 'postRegister')->name('postRegister')->middleware(['auth', 'two-factor', 'can:ea']);
 });
 
-Route::prefix('/auth')->name('auth.')->middleware('auth')->controller(PasswordController::class)->group(function () {
+// Second factor for back-office accounts (the session is not authenticated yet)
+Route::prefix('/auth/two-factor')->name('auth.two-factor.')->controller(TwoFactorController::class)->group(function () {
+    Route::get('/challenge', 'showChallenge')->name('challenge');
+    Route::post('/challenge', 'postChallenge')->name('postChallenge')->middleware('throttle:two-factor');
+    Route::get('/setup', 'showSetup')->name('setup');
+    Route::post('/setup', 'postSetup')->name('postSetup')->middleware('throttle:two-factor');
+    Route::get('/recovery-codes', 'showRecoveryCodes')->name('recovery-codes')->middleware('auth');
+});
+
+Route::prefix('/auth')->name('auth.')->middleware(['auth', 'two-factor'])->controller(PasswordController::class)->group(function () {
     Route::get('/password/change', 'getChangePassword' )->name('password.change');
     Route::post('/password/change', 'postChangePassword' )->name('password.postChange');
 });
@@ -87,7 +97,7 @@ Route::prefix('/voter')->name('voter.')->group(function () {
 
 Route::get('/api/getAllPubKeys', [PublicAPIController::class, 'getAllPubKeys'])->middleware('throttle:60,1');
 
-Route::middleware(['auth', 'can:ea'])->group(function () {
+Route::middleware(['auth', 'two-factor', 'can:ea'])->group(function () {
     Route::get('/ea/dashboard', [VoteController::class, 'getDashboard'])->name('ea.dashboard');
 
 
@@ -118,7 +128,7 @@ Route::middleware(['auth', 'can:ea'])->group(function () {
     Route::post('/ea/solana/setting', [EASettingController::class, 'postSolanaSetting'])->name('ea.solana.setting');
 });
 
-Route::middleware(['auth', 'can:ra'])->group(function () {
+Route::middleware(['auth', 'two-factor', 'can:ra'])->group(function () {
     Route::get('/ra/dashboard', [BallotController::class, 'getDashboard'])->name('ra.dashboard');
 
     Route::get('/ra/addVoter', [BallotController::class, 'getAddVoter'])->name('ra.addVoter');
