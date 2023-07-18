@@ -54,10 +54,6 @@ Route::get('/cryptoapisverifydomain', function () {
     return response('File not found.', 404);
 });
 
-Route::get('img/{filename}', function ($filename) {
-    return response()->redirectTo('http://[::1]:5173/resources/img/' . $filename);
-})->where('filename', '.*');
-
 
 Route::prefix('/auth')->name('auth.')->controller(AuthController::class)->group(function () {
     Route::get('/', 'getLoginForm');
