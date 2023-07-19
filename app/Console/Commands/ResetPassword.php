@@ -18,6 +18,8 @@ class ResetPassword extends Command
 {
     protected $signature = 'ivote:reset-password {username : Account to recover}';
 
+    private const ATTEMPTS = 3;
+
     protected $description = 'Set a new password for an account and reset its two-factor authentication';
 
     public function handle(): int
@@ -29,18 +31,34 @@ class ResetPassword extends Command
             return self::FAILURE;
         }
 
-        $password = (string) $this->secret('New password');
-        $confirmation = (string) $this->secret('Confirm the new password');
+        $this->line('The password needs at least 12 characters with upper and lower case letters, a number and a symbol.');
+        $this->line('Nothing is displayed while you type.');
 
-        $validator = Validator::make(
-            ['password' => $password, 'password_confirmation' => $confirmation],
-            ['password' => ['required', 'confirmed', 'max:255', Password::defaults()]]
-        );
+        $password = null;
+        for ($attempt = 1; $attempt <= self::ATTEMPTS && $password === null; $attempt++) {
+            $candidate = (string) $this->secret('New password');
+            $confirmation = (string) $this->secret('Confirm the new password');
 
-        if ($validator->fails()) {
+            $validator = Validator::make(
+                ['password' => $candidate, 'password_confirmation' => $confirmation],
+                ['password' => ['required', 'confirmed', 'max:255', Password::defaults()]]
+            );
+
+            if ($validator->passes()) {
+                $password = $candidate;
+                break;
+            }
+
             foreach ($validator->errors()->all() as $message) {
                 $this->error($message);
             }
+            if ($attempt < self::ATTEMPTS) {
+                $this->warn('Please try again.');
+            }
+        }
+
+        if ($password === null) {
+            $this->error('Password not changed.');
             return self::FAILURE;
         }
 
