@@ -153,4 +153,15 @@ class ElectionManagementTest extends TestCase
         $this->assertStringEndsWith('.png', $stored);
         Storage::disk('public')->assertExists('uploads/bg/' . $stored);
     }
+
+    public function test_dashboard_links_uploaded_backgrounds_from_storage(): void
+    {
+        $this->election(['bg' => 'bg-1-abc.png']);
+        $this->election(['title' => 'No background']);
+
+        $this->actingAs($this->ea)->get('/ea/dashboard')
+            ->assertOk()
+            ->assertSee('/storage/uploads/bg/bg-1-abc.png', false)
+            ->assertSee('/storage/uploads/bg/voting-bg.jpg', false);
+    }
 }

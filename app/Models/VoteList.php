@@ -41,6 +41,17 @@ class VoteList extends Model
         return (ElectionStage::tryFrom($phase) ?? ElectionStage::Initial)->label();
     }
 
+    /**
+     * Public URL of the uploaded background (served through the public/storage link),
+     * or of the default background.
+     */
+    public function backgroundUrl(): string
+    {
+        $file = $this->bg ? basename($this->bg) : 'voting-bg.jpg';
+
+        return asset('storage/uploads/bg/' . rawurlencode($file));
+    }
+
     public function currentStage(): ElectionStage
     {
         return ElectionStage::from((int) $this->stage);

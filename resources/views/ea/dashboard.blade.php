@@ -123,7 +123,7 @@
                                 <div class="profile-header">
                                     <div class="overlay"></div>
                                     <div class="profile-main"
-                                        style='background-image: url({{ $item['bg'] != null ? Vite::bg($item['bg']) : Vite::bg('voting-bg.jpg') }}); height:220px;'>
+                                        style='background-image: url('{{ $item->backgroundUrl() }}'); height:220px;'>
                                         <h3 class="name">{{ $item['title'] }}</h3>
                                         @if ($item['stage'] == 0)
                                             <span class="offline-status status-available">Unbegun</span>

@@ -34,6 +34,5 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Vite::macro('image', fn (string $asset) => $this->asset("resources/img/{$asset}"));
-        Vite::macro('bg', fn (string $asset) => $this->asset("storage/app/public/uploads/bg/{$asset}"));
     }
 }

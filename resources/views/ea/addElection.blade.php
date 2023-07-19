@@ -61,7 +61,7 @@
                                 <option value="">Select election</option>
                                 @foreach ($elections as $election)
                                     <option value="{{ $election['id'] }}"
-                                        @if ($election['bg']) data-bg="{{ $election['bg'] }}" @endif>
+                                        @if ($election['bg']) data-bg="{{ $election['bg'] }}" data-bg-url="{{ $election->backgroundUrl() }}" @endif>
                                         {{ $election['title'] }}</option>
                                 @endforeach
                                 @if (empty($elections))
@@ -136,12 +136,13 @@
 
             // Function to handle the change in selected election
             function handleSelectChange() {
-                var selectedElection = selectElection.options[selectElection.selectedIndex].dataset.bg;
+                var selectedOption = selectElection.options[selectElection.selectedIndex];
+                var selectedElection = selectedOption.dataset.bg;
                 if (selectedElection) {
                     // Check if a background exists for the selected election
                     // Replace 'your-background-path' with the actual path to the background image
                     var fileName = selectedElection;
-                    var backgroundPath = `{{ Vite::bg('${fileName}') }}`;
+                    var backgroundPath = selectedOption.dataset.bgUrl;
                     // Update the input file and background image
                     var file = new File([], fileName, {
                         type: 'image/jpeg'

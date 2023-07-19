@@ -18,7 +18,7 @@
                                             <div class="overlay"></div>
                                             <div class="profile-main text-body-emphasis rounded-4 p-4"
                                                 id="profile-main-bg"
-                                                style='background-image: url({{ $item['bg'] != null ? Vite::bg($item['bg']) : Vite::bg('voting-bg.jpg') }}); height:150px;'>
+                                                style='background-image: url('{{ $item->backgroundUrl() }}'); height:150px;'>
                                                 <h3 class="name">{{ $item['title'] }}</h3>
                                                 <span class="online-status status-available">Done</span>
                                             </div>
