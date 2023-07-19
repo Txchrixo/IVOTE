@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('audit_logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            // No foreign key: the trail must outlive deleted accounts
+            $table->unsignedBigInteger('user_id')->nullable()->index();
             $table->string('action', 64)->index();
             $table->string('subject_type', 64)->nullable();
             $table->unsignedBigInteger('subject_id')->nullable();

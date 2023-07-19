@@ -6,7 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 /**
  * Elections a user took part in.
- * Skipped when the table already exists (databases created before migrations were tracked).
+ * Foreign key columns follow the type of the referenced ids, which are signed
+ * INT on databases created before migrations were tracked.
+ * Skipped when the table already exists.
  */
 return new class extends Migration
 {
@@ -18,8 +20,8 @@ return new class extends Migration
 
         Schema::create('vote_user', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('vote_id')->constrained('vote')->cascadeOnDelete();
+            $this->foreignKey($table, 'user_id', 'users');
+            $this->foreignKey($table, 'vote_id', 'vote');
             $table->unique(['user_id', 'vote_id']);
         });
     }
@@ -27,5 +29,14 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('vote_user');
+    }
+
+    private function foreignKey(Blueprint $table, string $column, string $parent): void
+    {
+        $type = strtolower(Schema::getColumnType($parent, 'id', true));
+        $legacy = str_starts_with($type, 'int') && !str_contains($type, 'unsigned');
+
+        ($legacy ? $table->integer($column) : $table->unsignedBigInteger($column));
+        $table->foreign($column)->references('id')->on($parent)->cascadeOnDelete();
     }
 };
