@@ -5,12 +5,9 @@ namespace App\Http\Controllers\Voter;
 use App\Enums\ElectionStage;
 use App\Http\Controllers\Controller;
 use App\Models\VoteList;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Response;
-use SebastianBergmann\Type\ObjectType;
 
 class VoterController extends Controller
 {
@@ -19,25 +16,24 @@ class VoterController extends Controller
      * @param Request $request
      * @return View | \Illuminate\Http\RedirectResponse
      */
-    public function getVeriff(Request $request, string $election)
+    public function getVeriff(Request $request, string $election): View|RedirectResponse|\Illuminate\Http\Response
     {
-        $election = str_replace(' ', '-', strtolower($election));
-        $data = VoteList::where('title', $election)
-            ->where('stage', ElectionStage::Veriff->value);
+        $slug = VoteList::slug($election);
+        $open = VoteList::where('stage', ElectionStage::Veriff->value);
 
-        if ($data->get()->isNotEmpty()) {
-            $exactMatch = $data->get()->first();
-            return view('voter.veriff')->with('election', $exactMatch->title);
+        $exact = (clone $open)->where('title', $slug)->first();
+        if ($exact) {
+            return view('voter.veriff', ['election' => $exact->title]);
         }
 
-        $data = $data->orWhere('title', 'like', '%' . $election . '%')->get();
-
-        if ($data->isEmpty()) {
-            abort(404);
+        // Close match among elections in the verification stage: redirect to the canonical URL
+        $like = '%' . addcslashes($slug, '%_\\') . '%';
+        $close = (clone $open)->where('title', 'like', $like)->orderBy('id')->first();
+        if ($close) {
+            return to_route('voter.veriff', ['election' => VoteList::slug($close->title)]);
         }
 
-        $matchingTitle = $data->first()->title;
-        return to_route('voter.veriff')->with('election', $matchingTitle);
+        return response()->view('voter.veriff-fail', ['election' => $election], 404);
     }
 
     public function getVeriffSubmitted(Request $request)
