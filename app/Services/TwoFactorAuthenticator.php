@@ -32,7 +32,7 @@ class TwoFactorAuthenticator
 
     public function qrCodeSvg(string $username, string $secret): string
     {
-        $url = $this->engine->getQRCodeUrl(config('app.name', 'iVote'), $username, $secret);
+        $url = $this->engine->getQRCodeUrl(config('app.name', 'IVote'), $username, $secret);
         $writer = new Writer(new ImageRenderer(new RendererStyle(200, 1), new SvgImageBackEnd()));
 
         return $writer->writeString($url);
