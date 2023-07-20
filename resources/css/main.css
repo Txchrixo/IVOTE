@@ -2477,3 +2477,152 @@ body.page-bg::before {
     overflow-wrap: anywhere;
 }
 
+/* ------------------------------------------------------------------
+ * Authentication pages (login, two-factor): the card grows with its
+ * content instead of a fixed 450px height, and stacks on small screens.
+ * ------------------------------------------------------------------ */
+body.page-bg .vertical-align-wrap {
+    position: static;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 48px);
+    padding: 24px 0;
+}
+
+body.page-bg .vertical-align-middle {
+    display: block;
+    width: 100%;
+}
+
+.auth-box {
+    display: flex;
+    width: min(1040px, 92%);
+    height: auto;
+    min-height: 460px;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.auth-box:before,
+.auth-box .left:before,
+.auth-box .right:before {
+    content: none;
+    display: none;
+}
+
+.auth-box .left {
+    float: none;
+    flex: 0 0 44%;
+    width: auto;
+    height: auto;
+    padding: 40px 36px;
+    color: rgba(255, 255, 255, 0.92);
+    text-align: left;
+}
+
+.auth-box .left .content {
+    width: 100%;
+}
+
+.auth-box .right {
+    float: none;
+    flex: 1 1 auto;
+    width: auto;
+    height: auto;
+    /* Keep the logo (top left of the artwork) visible when the card gets taller */
+    background-position: left top;
+}
+
+.auth-box .right .text {
+    padding: 0 clamp(24px, 8%, 96px);
+}
+
+.auth-box .right .heading {
+    font-size: clamp(2rem, 1.2rem + 2.2vw, 3rem);
+    line-height: 1.1;
+}
+
+.auth-box .header {
+    margin-bottom: 24px;
+}
+
+.auth-box .lead {
+    margin: 0;
+    font-size: clamp(1.5rem, 1.1rem + 1.2vw, 2.25rem);
+    line-height: 1.2;
+    text-align: left;
+    overflow-wrap: anywhere;
+}
+
+.auth-box .auth-help {
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.auth-box .auth-help ol {
+    padding-left: 1.2rem;
+    margin: 0;
+}
+
+.auth-box .auth-qr {
+    display: flex;
+    justify-content: center;
+    margin: 16px 0;
+}
+
+.auth-box .auth-qr svg {
+    width: min(200px, 100%);
+    height: auto;
+    padding: 8px;
+    background: #fff;
+    border-radius: 8px;
+}
+
+.auth-box .auth-secret {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.28);
+    border-radius: 6px;
+    word-break: break-all;
+}
+
+.auth-box details summary {
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.auth-box .recovery-codes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    padding: 12px;
+    margin: 0 0 16px;
+    list-style: none;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+}
+
+@media screen and (max-width: 1023px) {
+    .auth-box {
+        width: min(480px, 92%);
+        min-height: 0;
+    }
+
+    .auth-box .left {
+        flex-basis: 100%;
+        padding: 32px 24px;
+    }
+
+    .auth-box .right {
+        display: none;
+    }
+}
+
