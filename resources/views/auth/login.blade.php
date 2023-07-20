@@ -16,14 +16,14 @@
                     <input type="input" class="form-control login-input @error('username') mb-0 is-invalid @enderror"
                         name="username" value="{{ old('username') }}" placeholder="@lang('form.input.username')">
                     @error('username')
-                        <span class="text-white p-1 m-3" style="background-color: #DD090B">{{ $message }}</span>
+                        <span class="text-white p-1 d-inline-block mt-1" style="background-color: #DD090B">{{ $message }}</span>
                     @enderror
                 </div>
                 <div class="form-group mt-2">
                     <input type="password" class="form-control login-input @error('password') mb-0 is-invalid @enderror"
                         name="password" value="" placeholder="@lang('form.input.password')">
                     @error('password')
-                        <span class="text-white p-1" style="background-color: #DD090B">{{ $message }}</span>
+                        <span class="text-white p-1 d-inline-block mt-1" style="background-color: #DD090B">{{ $message }}</span>
                     @enderror
                 </div>
                 <button type="submit" class="btn btn-primary btn-lg btn-block btn-login">@lang('form.btn.login')</button>
@@ -37,6 +37,5 @@
             <p>@lang('Based on Blockchain')</p>
         </div>
     </div>
-    <div class="clearfix"></div>
 @endsection
 

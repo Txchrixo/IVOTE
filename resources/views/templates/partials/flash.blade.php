@@ -1,3 +1,9 @@
+@if (session()->get('success'))
+    <div class="alert alert-success">
+        {{ session()->get('success') }}
+    </div>
+@endif
+
 @if (session()->get('info'))
     <div class="alert alert-info">
         {{ session()->get('info') }}
