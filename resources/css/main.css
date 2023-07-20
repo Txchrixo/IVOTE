@@ -2460,3 +2460,20 @@ body.page-bg::before {
     background: #06292b url("../img/login-bg.png") center / cover no-repeat;
 }
 
+/* Icon of a metric card: fixed size so it never squeezes the text next to it */
+.metric .metric-icon {
+    flex: 0 0 auto;
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+}
+
+.metric .metric-body {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.metric .metric-body .title {
+    overflow-wrap: anywhere;
+}
+

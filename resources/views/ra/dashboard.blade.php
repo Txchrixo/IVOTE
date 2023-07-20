@@ -12,13 +12,11 @@
                 <div class="panel-body">
                     <div class="row">
 
-                        <div class="col-md-6 pt-2">
+                        <div class="col-lg-6 pt-2">
                             <div class="metric" style="border-radius: 15px;">
-                                <div class="d-flex align-content-between p-2 flex-xl-nowrap flex-md-nowrap flex-wrap gap-4">
-                                    <div>
-                                        <img src="{{ Vite::image('bitcoin.png') }}" alt="toggle bouton" style="min-width: 35px; height: auto; max-width: 25%;">
-                                    </div>
-                                    <div class="d-flex flex-column w-100">
+                                <div class="d-flex align-items-center gap-3 p-2">
+                                    <img src="{{ Vite::image('bitcoin.png') }}" alt="" class="metric-icon">
+                                    <div class="d-flex flex-column w-100 metric-body">
                                         <p class="d-flex flex-column align-items-end justify-content-center gap-2">
                                             <span class="number number-eaaddress">EA address</span>
                                             <span class="title text-break"> {{ $data['ea_address'] }}</span>
@@ -27,13 +25,11 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6 pt-2">
+                        <div class="col-lg-6 pt-2">
                             <div class="metric" style="border-radius: 15px;">
-                                <div class="d-flex justify-content-between p-2 flex-xl-nowrap flex-md-nowrap flex-wrap gap-4">
-                                    <div>
-                                        <img src="{{ Vite::image('bitcoin.png') }}" alt="toggle bouton" style="min-width: 35px; height: auto; max-width: 25%;">
-                                    </div>
-                                    <div class="d-flex flex-column w-100">
+                                <div class="d-flex align-items-center gap-3 p-2">
+                                    <img src="{{ Vite::image('bitcoin.png') }}" alt="" class="metric-icon">
+                                    <div class="d-flex flex-column w-100 metric-body">
                                         <p class="d-flex flex-column align-items-end justify-content-center gap-2">
                                             <span class="number">Voter numbers</span>
                                             <span class="title text-break">{{ $data['voters'] }}</span>

@@ -16,14 +16,11 @@
                 <div class="row py-3 mb-3"
                     style="background-color: rgba(217, 217, 217, 0.14); border-radius: 15px; border:1px solid #DBE5EA;">
                     <h3 class="card-title p-3">Blockchains</h3>
-                    <div class="col-md-4 pt-2">
+                    <div class="col-md-6 col-xl-4 pt-2">
                         <div class="metric" style="border-radius: 15px;">
-                            <div class="d-flex justify-content-around align-items-center p-2">
-                                <div>
-                                    <img src="{{ Vite::image('bitcoin.png') }}" alt="toggle bouton" width="50%"
-                                        height="auto">
-                                </div>
-                                <div class="d-flex flex-column gap-3">
+                            <div class="d-flex justify-content-between align-items-center gap-3 p-2">
+                                <img src="{{ Vite::image('bitcoin.png') }}" alt="" class="metric-icon">
+                                <div class="d-flex flex-column gap-3 metric-body">
                                     <p class="d-flex flex-column align-items-end justify-content-center">
                                         <span class="number number-btc">Loading..</span>
                                         <span class="title">Balance</span>
@@ -36,14 +33,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4 pt-2">
+                    <div class="col-md-6 col-xl-4 pt-2">
                         <div class="metric" style="border-radius: 15px;">
-                            <div class="d-flex justify-content-around align-items-center p-2">
-                                <div>
-                                    <img src="{{ Vite::image('eth.png') }}" alt="toggle bouton" width="30%"
-                                        height="auto">
-                                </div>
-                                <div class="d-flex flex-column gap-3">
+                            <div class="d-flex justify-content-between align-items-center gap-3 p-2">
+                                <img src="{{ Vite::image('eth.png') }}" alt="" class="metric-icon">
+                                <div class="d-flex flex-column gap-3 metric-body">
                                     <p class="d-flex flex-column align-items-end justify-content-center">
                                         <span class="number number-eth">Loading..</span>
                                         <span class="title">Balance</span>
@@ -56,14 +50,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4 pt-2">
+                    <div class="col-md-6 col-xl-4 pt-2">
                         <div class="metric" style="border-radius: 15px;">
-                            <div class="d-flex justify-content-around align-items-center p-2">
-                                <div>
-                                    <img src="{{ Vite::image('solana.png') }}" alt="toggle bouton" width="50%"
-                                        height="auto">
-                                </div>
-                                <div class="d-flex flex-column gap-3">
+                            <div class="d-flex justify-content-between align-items-center gap-3 p-2">
+                                <img src="{{ Vite::image('solana.png') }}" alt="" class="metric-icon">
+                                <div class="d-flex flex-column gap-3 metric-body">
                                     <p class="d-flex flex-column align-items-end justify-content-center">
                                         <span class="number number-solana">Loading..</span>
                                         <span class="title">Balance</span>
@@ -82,7 +73,7 @@
                     <h3 class="card-title p-3">System Information</h3>
                     <div class="col-md-6 pt-2">
                         <div class="metric" style="border-radius: 15px;">
-                            <div class="d-flex justify-content-around align-items-center p-2">
+                            <div class="d-flex justify-content-between align-items-center gap-3 p-2">
                                 <div>
                                     <img src="{{ Vite::image('elections.png') }}" alt="toggle bouton" width="20%"
                                         height="auto">
@@ -98,7 +89,7 @@
                     </div>
                     <div class="col-md-6 pt-2">
                         <div class="metric" style="border-radius: 15px;">
-                            <div class="d-flex justify-content-around align-items-center p-2">
+                            <div class="d-flex justify-content-between align-items-center gap-3 p-2">
                                 <div>
                                     <img src="{{ Vite::image('vote.png') }}" alt="toggle bouton" width="20%"
                                         height="auto">
