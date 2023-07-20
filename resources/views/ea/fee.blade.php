@@ -66,6 +66,7 @@
                         </div>
 
                     </div>
+                    <div class="table-responsive">
                     <table class="table table-striped">
                         <thead>
                             <tr>
@@ -78,6 +79,7 @@
                         <tbody class="table-fee">
                         </tbody>
                     </table>
+                    </div>
                 </div>
             </div>
         </div>

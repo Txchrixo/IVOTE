@@ -12,6 +12,7 @@
                     <div class="alert alert-success alert-block">{{ $message }}</div>
                     @endif
 
+                    <div class="table-responsive">
                     <table class="table table-striped">
                         <thead>
                             <tr>
@@ -77,6 +78,7 @@
                             @endif
                         </tbody>
                     </table>
+                    </div>
                 </div>
             </div>
         </div>

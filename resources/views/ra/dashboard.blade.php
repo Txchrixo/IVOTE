@@ -65,6 +65,7 @@
                     <h4 class="modal-title" id="myModalLabel">Keys Pool</h4>
                 </div>
                 <div class="modal-body">
+                    <div class="table-responsive">
                     <table class="table table-striped">
                         <thead>
                             <tr>
@@ -87,6 +88,7 @@
                             @endempty
                         </tbody>
                     </table>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
