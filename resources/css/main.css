@@ -2501,7 +2501,6 @@ body.page-bg .vertical-align-middle {
     height: auto;
     min-height: 460px;
     overflow: hidden;
-    border-radius: 12px;
 }
 
 .auth-box:before,
@@ -2578,7 +2577,6 @@ body.page-bg .vertical-align-middle {
     height: auto;
     padding: 8px;
     background: #fff;
-    border-radius: 8px;
 }
 
 .auth-box .auth-secret {
@@ -2588,7 +2586,6 @@ body.page-bg .vertical-align-middle {
     letter-spacing: 0.05em;
     color: #fff;
     background: rgba(0, 0, 0, 0.28);
-    border-radius: 6px;
     word-break: break-all;
 }
 
@@ -2607,7 +2604,6 @@ body.page-bg .vertical-align-middle {
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     color: #fff;
     background: rgba(0, 0, 0, 0.25);
-    border-radius: 8px;
 }
 
 @media screen and (max-width: 1023px) {
