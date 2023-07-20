@@ -18,8 +18,7 @@
     <link rel="icon" type="image/png" sizes="96x96" href="{{ Vite::image('favicon.png') }}">
 </head>
 
-<body
-    style="background-image: url('{{ Vite::image('login-bg.png') }}'); background-size: 100% auto; background-size: cover;">
+<body class="page-bg">
     <div class="d-flex justify-content-center pt-8 justify-content-sm-start bg-light p-1 align-items-center">
         @include('templates.partials.language_switcher')
     </div>

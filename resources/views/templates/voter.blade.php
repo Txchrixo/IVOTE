@@ -37,9 +37,8 @@
     }
 </style>
 @stack('css')
-<body class="vh-100"
-    style="background-image: url('{{ Vite::image('login-bg.png') }}'); background-size: 100% auto; background-size: cover;">
-    <div class="container-fluid vh-100">
+<body class="page-bg">
+    <div class="container-fluid min-vh-100">
         <div class="row">
             <!-- Contenu de la première div, taille du nav -->
             <div class="d-flex justify-content-center pt-8 justify-content-sm-start bg-light p-1 align-items-center">

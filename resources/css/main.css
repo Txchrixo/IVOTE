@@ -2444,3 +2444,19 @@ ul.activity-timeline > li:last-child:after {
     background-color: #FF5F0F;
     border: 3px solid #FF5F0F;
 }
+
+/* Full-screen background of the login and voter pages.
+   A fixed layer covers the viewport, so the image never tiles when the page scrolls. */
+body.page-bg {
+    min-height: 100vh;
+    background: transparent;
+}
+
+body.page-bg::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: #06292b url("../img/login-bg.png") center / cover no-repeat;
+}
+
