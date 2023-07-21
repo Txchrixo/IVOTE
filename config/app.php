@@ -109,7 +109,7 @@ return [
 
     'available_locales' => [
         'English' => 'en',
-        'French' => 'fr',
+        'Français' => 'fr',
     ],
 
     /*

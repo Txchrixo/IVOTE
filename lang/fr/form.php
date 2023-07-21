@@ -7,7 +7,7 @@ return [
     ],
     'input' => [
         'username' => 'Nom d\'utilisateur',
-        'password' => 'Mote de passe',
+        'password' => 'Mot de passe',
     ],
     'btn' => [
         'login' => 'Se connecter',
