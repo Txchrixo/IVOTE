@@ -39,12 +39,7 @@
 @stack('css')
 <body class="page-bg">
     <div class="container-fluid min-vh-100">
-        <div class="row">
-            <!-- Contenu de la première div, taille du nav -->
-            <div class="d-flex justify-content-center pt-8 justify-content-sm-start bg-light p-1 align-items-center">
-                @include('templates.partials.language_switcher')
-            </div>
-        </div>
+        @include('templates.partials.language_switcher', ['floating' => true])
         <div class="row main-content">
             <div class="container-fluid bg-white rounded-4 p-3 d-flex flex-column">
                 @yield('content')

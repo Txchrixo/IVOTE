@@ -246,8 +246,7 @@
                         </form>
                     </li>
                 </ul>
-                <div
-                    class="d-flex justify-content-center pt-8 justify-content-sm-start bg-light p-1 align-items-center rounded-2 p-2 ps-3">
+                <div class="d-flex justify-content-center align-items-center py-2 py-lg-0">
                     @include('templates.partials.language_switcher')
                 </div>
             </div>

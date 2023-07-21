@@ -19,7 +19,7 @@
 </head>
 
 <body class="page-bg">
-    @include('templates.partials.language_select')
+    @include('templates.partials.language_switcher', ['floating' => true])
     <div id="wrapper">
         <div class="vertical-align-wrap">
             <div class="vertical-align-middle">
