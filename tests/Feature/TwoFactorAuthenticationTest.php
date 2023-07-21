@@ -83,7 +83,14 @@ class TwoFactorAuthenticationTest extends TestCase
             ->assertRedirect(route('auth.two-factor.recovery-codes'));
         $this->assertAuthenticatedAs($user);
         $this->assertTrue($user->fresh()->hasTwoFactorEnabled());
-        $this->assertCount(8, session('two_factor_recovery_codes'));
+        $codes = session('two_factor_recovery_codes');
+        $this->assertCount(8, $codes);
+
+        $this->get('/auth/two-factor/recovery-codes')
+            ->assertOk()
+            ->assertSee($codes[0])
+            ->assertSee('download="ivote-recovery-codes.txt"', false)
+            ->assertSee(rawurlencode($codes[0]), false);
     }
 
     public function test_challenge_without_pending_login_is_refused(): void

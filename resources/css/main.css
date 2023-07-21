@@ -2606,6 +2606,17 @@ body.page-bg .vertical-align-middle {
     background: rgba(0, 0, 0, 0.25);
 }
 
+/* Download / copy buttons under the recovery codes */
+.auth-box .recovery-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.auth-box .recovery-actions .btn {
+    flex: 1 1 0;
+}
+
 @media screen and (max-width: 1023px) {
     .auth-box {
         width: min(480px, 92%);
