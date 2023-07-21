@@ -225,7 +225,10 @@
                     <br />
                     <div class="row row-cols-auto row-cols-md-3 row-cols-xl-4 box-candidate">
 
-                        <h2 class="text-center">Loading...</h2>
+                        <div class="w-100 py-4 text-center" role="status">
+                            <span class="ui-spinner" aria-hidden="true"></span>
+                            <span class="visually-hidden">Loading</span>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">

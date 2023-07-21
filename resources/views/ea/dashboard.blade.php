@@ -22,11 +22,11 @@
                                 <img src="{{ Vite::image('bitcoin.png') }}" alt="" class="metric-icon">
                                 <div class="d-flex flex-column gap-3 metric-body">
                                     <p class="d-flex flex-column align-items-end justify-content-center">
-                                        <span class="number number-btc">Loading..</span>
+                                        <span class="number number-btc"><span class="skeleton" aria-hidden="true"></span></span>
                                         <span class="title">Balance</span>
                                     </p>
                                     <p>
-                                        <span class="number number-network">Loading..</span>
+                                        <span class="number number-network"><span class="skeleton" aria-hidden="true"></span></span>
                                         <span class="title">Network</span>
                                     </p>
                                 </div>
@@ -39,11 +39,11 @@
                                 <img src="{{ Vite::image('eth.png') }}" alt="" class="metric-icon">
                                 <div class="d-flex flex-column gap-3 metric-body">
                                     <p class="d-flex flex-column align-items-end justify-content-center">
-                                        <span class="number number-eth">Loading..</span>
+                                        <span class="number number-eth text-muted">Unconfigured</span>
                                         <span class="title">Balance</span>
                                     </p>
                                     <p>
-                                        <span class="number number-eth-network">Loading..</span>
+                                        <span class="number number-eth-network text-muted">Unconfigured</span>
                                         <span class="title">Network</span>
                                     </p>
                                 </div>
@@ -56,11 +56,11 @@
                                 <img src="{{ Vite::image('solana.png') }}" alt="" class="metric-icon">
                                 <div class="d-flex flex-column gap-3 metric-body">
                                     <p class="d-flex flex-column align-items-end justify-content-center">
-                                        <span class="number number-solana">Loading..</span>
+                                        <span class="number number-solana text-muted">Unconfigured</span>
                                         <span class="title">Balance</span>
                                     </p>
                                     <p>
-                                        <span class="number number-solana-network">Loading..</span>
+                                        <span class="number number-solana-network text-muted">Unconfigured</span>
                                         <span class="title">Network</span>
                                     </p>
                                 </div>

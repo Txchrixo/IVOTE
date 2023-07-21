@@ -28,8 +28,11 @@
                         </div>
                     </div>
                     <div class="table-striped">
-                        <div class="row box-candidate d-flex justify-content-center align-items-center w-100 text-center h4">
-                            Loading...
+                        <div class="row box-candidate w-100 text-center h4" role="status">
+                            @for ($i = 0; $i < 3; $i++)
+                                <div class="col-md-4 py-2" aria-hidden="true"><div class="skeleton-card"></div></div>
+                            @endfor
+                            <span class="visually-hidden">Loading</span>
                         </div>
                     </div>
                 </div>

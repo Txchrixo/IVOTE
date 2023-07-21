@@ -15,7 +15,7 @@
                             <div class="metric">
                                 <span class="icon"><i class="fa fa-btc"></i></span>
                                 <p>
-                                    <span class="number number-btc">Loading...</span>
+                                    <span class="number number-btc"><span class="skeleton" aria-hidden="true"></span></span>
                                     <span class="title">Balance</span>
                                 </p>
                             </div>
@@ -24,7 +24,7 @@
                             <div class="metric">
                                 <span class="icon"><i class="fa fa-globe"></i></span>
                                 <p>
-                                    <span class="number number-network">Loading..</span>
+                                    <span class="number number-network"><span class="skeleton" aria-hidden="true"></span></span>
                                     <span class="title">Network</span>
                                 </p>
                             </div>
@@ -33,7 +33,7 @@
                             <div class="metric">
                                 <span class="icon"><i class="fa fa-btc"></i></span>
                                 <p>
-                                    <span class="number number-unspent">Loading...</span>
+                                    <span class="number number-unspent"><span class="skeleton" aria-hidden="true"></span></span>
                                     <span class="title">Unspent TX</span>
                                 </p>
                             </div>
@@ -42,7 +42,7 @@
                             <div class="metric">
                                 <span class="icon"><i class="fa fa-globe"></i></span>
                                 <p>
-                                    <span class="number number-addresses">Loading..</span>
+                                    <span class="number number-addresses"><span class="skeleton" aria-hidden="true"></span></span>
                                     <span class="title">Addresses</span>
                                 </p>
                             </div>
