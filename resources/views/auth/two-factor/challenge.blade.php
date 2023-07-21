@@ -30,7 +30,8 @@
             </form>
         </div>
     </div>
-    <div class="right">
-        <div class="overlay"></div>
-    </div>
+    @include('auth.partials.brand-panel', [
+        'heading' => __('One more step.'),
+        'text' => __('This second check keeps election admin accounts out of the wrong hands.'),
+    ])
 @endsection

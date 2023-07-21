@@ -30,12 +30,9 @@
             </form>
         </div>
     </div>
-    <div class="right">
-        <div class="overlay"></div>
-        <div class="content text">
-            <h1 class="heading">@lang('The Web 3.0 Generation of Voting')</h1>
-            <p>@lang('Based on Blockchain')</p>
-        </div>
-    </div>
+    @include('auth.partials.brand-panel', [
+        'heading' => __('Every vote counts. Every vote checks out.'),
+        'text' => __('Anonymous ballots, results anyone can verify.'),
+    ])
 @endsection
 

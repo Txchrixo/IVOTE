@@ -31,9 +31,10 @@
             <a href="{{ route('auth.dashboard') }}" class="btn btn-primary btn-lg btn-block btn-login w-100 mt-3">@lang('Continue')</a>
         </div>
     </div>
-    <div class="right">
-        <div class="overlay"></div>
-    </div>
+    @include('auth.partials.brand-panel', [
+        'heading' => __('Keep these somewhere safe.'),
+        'text' => __('They are your way back in if you lose your phone.'),
+    ])
 @endsection
 
 @push('scripts')

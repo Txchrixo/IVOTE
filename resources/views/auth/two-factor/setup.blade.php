@@ -37,7 +37,8 @@
             </form>
         </div>
     </div>
-    <div class="right">
-        <div class="overlay"></div>
-    </div>
+    @include('auth.partials.brand-panel', [
+        'heading' => __('Lock it down.'),
+        'text' => __('Your phone becomes the key to this account.'),
+    ])
 @endsection

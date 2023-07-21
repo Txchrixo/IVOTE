@@ -2535,6 +2535,8 @@ body.page-bg .vertical-align-middle {
 
 .auth-box .right .text {
     padding: 0 clamp(24px, 8%, 96px);
+    /* Keeps the message readable over the artwork */
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
 }
 
 .auth-box .right .heading {
