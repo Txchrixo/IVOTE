@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
             return $this->app->isProduction() ? $rule->uncompromised() : $rule;
         });
 
-        view()->composer('templates.partials.language_switcher', function ($view) {
+        view()->composer(['templates.partials.language_switcher', 'templates.partials.language_select'], function ($view) {
             $view->with('current_locale', app()->getLocale());
             $view->with('available_locales', config('app.available_locales'));
         });

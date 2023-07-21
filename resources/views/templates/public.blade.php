@@ -19,9 +19,7 @@
 </head>
 
 <body class="page-bg">
-    <div class="d-flex justify-content-center pt-8 justify-content-sm-start bg-light p-1 align-items-center">
-        @include('templates.partials.language_switcher')
-    </div>
+    @include('templates.partials.language_select')
     <div id="wrapper">
         <div class="vertical-align-wrap">
             <div class="vertical-align-middle">
