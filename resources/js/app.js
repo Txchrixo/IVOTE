@@ -14,3 +14,12 @@ import '../vendor/ring-signature/sha1.js';
 import '../js/scripts/common.js';
 import '../js/scripts/main.js';
 
+// Shared UI: designed dropdowns, page motion and loading feedback
+import '../css/ui.css';
+import { initDropdowns } from './ui/dropdown.js';
+import { initMotion } from './ui/motion.js';
+
+initDropdowns();
+// `$` is the jQuery instance shared with the page scripts (see @rollup/plugin-inject)
+initMotion({ jquery: $ });
+

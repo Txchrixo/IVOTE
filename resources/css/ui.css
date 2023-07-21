@@ -1,0 +1,470 @@
+/* ==========================================================================
+   IVote UI layer: motion, loading states, interactive states and the
+   designed dropdown. Loaded on every page (app.js and index.js).
+   Colours and radius follow the existing theme (purple panel, violet
+   button, orange hover, 5px corners).
+   ========================================================================== */
+
+:root {
+    --ui-purple: #7c5aed;
+    --ui-purple-strong: #6a48e0;
+    --ui-violet: #a358ff;
+    --ui-orange: #ff5f0f;
+    --ui-ink: #1f2430;
+    --ui-muted: #6b7280;
+    --ui-radius: 5px;
+    --ui-shadow-pop: 0 12px 32px rgba(17, 12, 46, 0.22), 0 2px 6px rgba(17, 12, 46, 0.12);
+
+    --ui-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --ui-ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --ui-fast: 150ms;
+    --ui-base: 240ms;
+    --ui-slow: 520ms;
+}
+
+/* --------------------------------------------------------------------------
+   Page transitions
+   -------------------------------------------------------------------------- */
+
+/* Cross-document View Transitions (Chromium): fade between pages of the app */
+@view-transition {
+    navigation: auto;
+}
+
+::view-transition-old(root) {
+    animation: ui-fade-out var(--ui-fast) var(--ui-ease-in) both;
+}
+
+::view-transition-new(root) {
+    animation: ui-fade-in var(--ui-base) var(--ui-ease) both;
+}
+
+/* Fallback for other browsers: quick fade-out before leaving (motion.js) */
+body {
+    transition: opacity var(--ui-fast) var(--ui-ease-in);
+}
+
+body.ui-leaving {
+    opacity: 0;
+}
+
+@keyframes ui-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes ui-fade-out {
+    to { opacity: 0; }
+}
+
+@keyframes ui-rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes ui-pop {
+    from { opacity: 0; transform: translateY(10px) scale(0.985); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes ui-spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes ui-shimmer {
+    from { background-position: 100% 50%; }
+    to { background-position: 0 50%; }
+}
+
+/* --------------------------------------------------------------------------
+   Entrances
+   -------------------------------------------------------------------------- */
+
+/* Authentication card: the card pops in, then its content rises line by line */
+.auth-box {
+    animation: ui-pop var(--ui-slow) var(--ui-ease) both;
+}
+
+.auth-box .left .content > * {
+    animation: ui-rise var(--ui-slow) var(--ui-ease) both;
+}
+
+.auth-box .left .content > :nth-child(1) { animation-delay: 80ms; }
+.auth-box .left .content > :nth-child(2) { animation-delay: 140ms; }
+.auth-box .left .content > :nth-child(3) { animation-delay: 200ms; }
+.auth-box .left .content > :nth-child(4) { animation-delay: 260ms; }
+.auth-box .left .content > :nth-child(5) { animation-delay: 320ms; }
+.auth-box .left .content > :nth-child(n + 6) { animation-delay: 380ms; }
+
+.auth-box .right .text {
+    animation: ui-rise 700ms var(--ui-ease) 220ms both;
+}
+
+/* Back-office and voter pages: main blocks rise in sequence (index set by motion.js) */
+.ui-reveal {
+    animation: ui-rise var(--ui-slow) var(--ui-ease) both;
+    animation-delay: calc(var(--ui-i, 0) * 70ms + 40ms);
+}
+
+/* Content injected later by the page scripts */
+.box-candidate > *,
+.table tbody tr {
+    animation: ui-fade-in var(--ui-base) var(--ui-ease) both;
+}
+
+.alert {
+    animation: ui-rise var(--ui-base) var(--ui-ease) both;
+}
+
+.modal.fade .modal-dialog {
+    transition: transform var(--ui-base) var(--ui-ease), opacity var(--ui-base) var(--ui-ease);
+}
+
+/* --------------------------------------------------------------------------
+   Loading
+   -------------------------------------------------------------------------- */
+
+/* Navigation / AJAX progress bar */
+.ui-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2000;
+    width: 100%;
+    height: 3px;
+    pointer-events: none;
+    background: linear-gradient(90deg, var(--ui-purple), var(--ui-violet) 60%, var(--ui-orange));
+    box-shadow: 0 0 10px rgba(163, 88, 255, 0.6);
+    transform: scaleX(0);
+    transform-origin: left center;
+    opacity: 0;
+}
+
+.ui-progress.is-active {
+    opacity: 1;
+    transform: scaleX(0.85);
+    /* Slows down near the end so it never looks finished before the page is */
+    transition: transform 2.5s cubic-bezier(0.1, 0.7, 0.2, 1), opacity var(--ui-fast);
+}
+
+.ui-progress.is-done {
+    transform: scaleX(1);
+    opacity: 0;
+    transition: transform var(--ui-base) var(--ui-ease), opacity 300ms ease 150ms;
+}
+
+/* Submit buttons while their form is being sent */
+.btn.is-loading {
+    position: relative;
+    color: transparent !important;
+    pointer-events: none;
+}
+
+.btn.is-loading > * {
+    visibility: hidden;
+}
+
+.btn.is-loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1.15em;
+    height: 1.15em;
+    margin: -0.575em 0 0 -0.575em;
+    border: 2px solid rgba(255, 255, 255, 0.45);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: ui-spin 0.7s linear infinite;
+}
+
+.btn-light.is-loading::after,
+.btn-outline-primary.is-loading::after,
+.btn-outline-danger.is-loading::after {
+    border-color: rgba(124, 90, 237, 0.25);
+    border-top-color: var(--ui-purple);
+}
+
+/* Inline spinner */
+.ui-spinner {
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 3px solid rgba(124, 90, 237, 0.2);
+    border-top-color: var(--ui-purple);
+    border-radius: 50%;
+    animation: ui-spin 0.7s linear infinite;
+}
+
+/* Skeleton placeholders while values load */
+.skeleton {
+    display: inline-block;
+    width: 7ch;
+    max-width: 100%;
+    height: 0.9em;
+    vertical-align: middle;
+    border-radius: var(--ui-radius);
+    background: linear-gradient(90deg, rgba(31, 36, 48, 0.07) 25%, rgba(31, 36, 48, 0.14) 37%, rgba(31, 36, 48, 0.07) 63%);
+    background-size: 400% 100%;
+    animation: ui-shimmer 1.3s ease-in-out infinite;
+}
+
+.skeleton-card {
+    height: 180px;
+    border-radius: var(--ui-radius);
+    background: linear-gradient(90deg, rgba(31, 36, 48, 0.05) 25%, rgba(31, 36, 48, 0.1) 37%, rgba(31, 36, 48, 0.05) 63%);
+    background-size: 400% 100%;
+    animation: ui-shimmer 1.3s ease-in-out infinite;
+}
+
+/* --------------------------------------------------------------------------
+   Interactive states
+   -------------------------------------------------------------------------- */
+
+.btn {
+    transition: background-color var(--ui-fast) ease, border-color var(--ui-fast) ease,
+        color var(--ui-fast) ease, box-shadow var(--ui-fast) ease, transform var(--ui-fast) var(--ui-ease);
+}
+
+.btn:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.btn:focus-visible,
+.ui-dropdown-trigger:focus-visible,
+a:focus-visible {
+    outline: 2px solid var(--ui-violet);
+    outline-offset: 2px;
+    box-shadow: none;
+}
+
+.btn-login {
+    transition: background-color var(--ui-base) ease, border-color var(--ui-base) ease, transform var(--ui-fast) var(--ui-ease);
+}
+
+.form-control,
+.form-select {
+    transition: border-color var(--ui-fast) ease, box-shadow var(--ui-fast) ease, background-color var(--ui-fast) ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--ui-purple);
+    box-shadow: 0 0 0 4px rgba(124, 90, 237, 0.18);
+}
+
+/* On the purple authentication panel, a light halo reads better */
+.auth-box .login-input:focus {
+    border-color: #000;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.35);
+}
+
+.metric,
+.panel {
+    transition: box-shadow var(--ui-base) var(--ui-ease), transform var(--ui-base) var(--ui-ease);
+}
+
+.metric:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(17, 24, 39, 0.08);
+}
+
+.table tbody tr {
+    transition: background-color var(--ui-fast) ease;
+}
+
+.table tbody tr:hover > * {
+    --bs-table-accent-bg: rgba(124, 90, 237, 0.06);
+}
+
+.sidebar a,
+.navbar a,
+.logout-btn {
+    transition: color var(--ui-fast) ease, background-color var(--ui-fast) ease;
+}
+
+.auth-box details summary {
+    transition: color var(--ui-fast) ease;
+}
+
+.auth-box details summary:hover {
+    color: #fff;
+}
+
+.auth-box details[open] > input {
+    animation: ui-rise var(--ui-base) var(--ui-ease) both;
+}
+
+/* --------------------------------------------------------------------------
+   Dropdown (language picker)
+   -------------------------------------------------------------------------- */
+
+.ui-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.lang-float {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 1030;
+}
+
+/* Voter pages: leave room under the floating picker */
+.lang-float ~ .main-content {
+    padding-top: 72px;
+    padding-bottom: 16px;
+}
+
+.ui-dropdown-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 40px;
+    padding: 8px 14px;
+    font-family: "Helvetica", Arial, sans-serif;
+    font-size: 0.95rem;
+    line-height: 1;
+    color: #fff;
+    cursor: pointer;
+    background: var(--ui-purple);
+    border: 0;
+    border-radius: var(--ui-radius);
+    box-shadow: 1px 2px 10px rgba(0, 0, 0, 0.25);
+    transition: background-color var(--ui-fast) ease, box-shadow var(--ui-fast) ease, transform var(--ui-fast) var(--ui-ease);
+}
+
+.ui-dropdown-trigger:hover {
+    background: var(--ui-purple-strong);
+}
+
+.ui-dropdown-trigger:active {
+    transform: scale(0.98);
+}
+
+.ui-dropdown-chevron {
+    margin-left: 2px;
+    transition: transform var(--ui-base) var(--ui-ease);
+}
+
+.ui-dropdown.is-open .ui-dropdown-chevron {
+    transform: rotate(180deg);
+}
+
+.lang-flag {
+    width: 1.35em;
+    height: 1em;
+    flex: 0 0 auto;
+    background-size: cover;
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
+}
+
+.ui-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    z-index: 1050;
+    min-width: 100%;
+    width: max-content;
+    margin: 0;
+    padding: 6px;
+    list-style: none;
+    background: #fff;
+    border-radius: var(--ui-radius);
+    box-shadow: var(--ui-shadow-pop);
+    transform-origin: top left;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px) scale(0.97);
+    transition: opacity var(--ui-fast) ease, transform var(--ui-base) var(--ui-ease), visibility 0s linear var(--ui-base);
+}
+
+.ui-dropdown[data-align="end"] .ui-dropdown-menu {
+    right: 0;
+    left: auto;
+    transform-origin: top right;
+}
+
+.ui-dropdown.is-open .ui-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition: opacity var(--ui-fast) ease, transform var(--ui-base) var(--ui-ease), visibility 0s;
+}
+
+.ui-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 170px;
+    padding: 10px 12px;
+    font-family: "Helvetica", Arial, sans-serif;
+    font-size: 0.95rem;
+    color: var(--ui-ink);
+    text-decoration: none;
+    border-radius: var(--ui-radius);
+    transition: background-color var(--ui-fast) ease, color var(--ui-fast) ease;
+}
+
+.ui-dropdown-item:hover,
+.ui-dropdown-item:focus-visible {
+    color: var(--ui-ink);
+    background: rgba(124, 90, 237, 0.1);
+    outline: none;
+}
+
+.ui-dropdown-item[aria-current="true"] {
+    font-weight: 600;
+    color: var(--ui-purple);
+}
+
+.ui-dropdown-check {
+    margin-left: auto;
+    color: var(--ui-purple);
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity var(--ui-fast) ease, transform var(--ui-base) var(--ui-ease);
+}
+
+.ui-dropdown-item[aria-current="true"] .ui-dropdown-check {
+    opacity: 1;
+    transform: none;
+}
+
+/* Staggered rows when the menu opens */
+.ui-dropdown.is-open .ui-dropdown-menu li {
+    animation: ui-rise var(--ui-base) var(--ui-ease) both;
+}
+
+.ui-dropdown.is-open .ui-dropdown-menu li:nth-child(2) { animation-delay: 40ms; }
+.ui-dropdown.is-open .ui-dropdown-menu li:nth-child(3) { animation-delay: 80ms; }
+
+/* --------------------------------------------------------------------------
+   Accessibility: respect the "reduce motion" system setting
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+    @view-transition {
+        navigation: none;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-delay: 0ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        transition-delay: 0ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    /* Keep spinners and skeletons moving slowly: they convey progress */
+    .btn.is-loading::after,
+    .ui-spinner {
+        animation-duration: 1.5s !important;
+        animation-iteration-count: infinite !important;
+    }
+}
