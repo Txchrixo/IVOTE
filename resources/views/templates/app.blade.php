@@ -29,6 +29,7 @@
 </head>
 
 <body class="app-body">
+    @include('templates.partials.flash')
     <a class="app-skip-link" href="#app-content">@lang('Skip to content')</a>
     <div class="app-shell">
         @include('templates.partials.header')
@@ -36,7 +37,6 @@
         <main class="app-main" id="app-content" tabindex="-1">
             <div class="main-content">
                 <div class="container-fluid">
-                    @include('templates.partials.flash')
                     @yield('content')
                 </div>
             </div>

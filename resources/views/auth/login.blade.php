@@ -11,7 +11,6 @@
             </div>
             <form class="form-auth-small" action="{{ route('auth.postLogin') }}" method="post">
                 @csrf
-                @include('templates.partials.flash')
                 <div class="form-group mb-2">
                     <input type="input" class="form-control login-input @error('username') mb-0 is-invalid @enderror"
                         name="username" value="{{ old('username') }}" placeholder="@lang('form.input.username')">

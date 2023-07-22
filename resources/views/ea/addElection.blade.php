@@ -47,9 +47,6 @@
                 <div class="panel-body">
                     <form id="uploadForm" action="{{ route('ea.uploadBg') }}" method="post" enctype="multipart/form-data">
                         @csrf
-                        @if ($message = Session::get('success'))
-                            <div class="alert alert-success alert-block">{{ $message }}</div>
-                        @endif
                         <div class="form-group">
                             <img id="bgElection" src="{{ Vite::image('upload.jpg') }}" style="border-radius: 15px;"
                                 width="100%" height="auto">

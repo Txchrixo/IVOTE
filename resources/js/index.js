@@ -11,7 +11,9 @@ import '@fortawesome/fontawesome-free/css/fontawesome.css';
 import '../css/ui.css';
 import { initDropdowns } from './ui/dropdown.js';
 import { initMotion } from './ui/motion.js';
+import { initToasts } from './ui/toast.js';
 
 initDropdowns();
+initToasts();
 initMotion();
 

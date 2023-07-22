@@ -19,9 +19,11 @@ import '../css/ui.css';
 import '../css/layout.css';
 import { initDropdowns } from './ui/dropdown.js';
 import { initMotion } from './ui/motion.js';
+import { initToasts } from './ui/toast.js';
 import { initSidebar } from './ui/sidebar.js';
 
 initDropdowns();
+initToasts();
 initSidebar();
 // `$` is the jQuery instance shared with the page scripts (see @rollup/plugin-inject)
 initMotion({ jquery: $ });

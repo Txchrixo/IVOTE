@@ -24,7 +24,6 @@
             </p>
             <form class="form-auth-small" action="{{ route('auth.two-factor.postSetup') }}" method="post">
                 @csrf
-                @include('templates.partials.flash')
                 <div class="form-group mb-2">
                     <input type="text" class="form-control login-input @error('code') mb-0 is-invalid @enderror"
                         name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="10" autofocus

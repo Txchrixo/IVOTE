@@ -19,6 +19,7 @@
 </head>
 
 <body class="page-bg">
+    @include('templates.partials.flash')
     @include('templates.partials.language_switcher', ['floating' => true])
     <div id="wrapper">
         <div class="vertical-align-wrap">

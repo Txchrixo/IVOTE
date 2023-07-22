@@ -33,9 +33,6 @@
                         <h3 class="panel-title">Candidate Registration</h3>
                     </div>
                     <div class="panel-body">
-                        @if ($message = Session::get('success'))
-                            <div class="alert alert-success alert-block">{{ $message }}</div>
-                        @endif
                         <div class="form-group my-3">
                             <label for="name" class="mb-1">Candidate Full Name</label>
                             <div class="input-group rounded-3 p-1">

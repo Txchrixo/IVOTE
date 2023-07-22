@@ -22,7 +22,7 @@
         <div class="ui-dropdown app-profile" data-dropdown data-align="end">
             <button type="button" class="ui-dropdown-trigger app-profile-trigger" aria-haspopup="menu"
                 aria-expanded="false" aria-label="@lang('Account menu'): {{ $displayName }}">
-                <img src="{{ Vite::image('user.png') }}" alt="" class="app-avatar" width="34" height="34">
+                <img src="{{ Vite::image('user.png') }}" alt="" class="app-avatar" width="38" height="38">
                 <span class="app-profile-name">{{ $user->username }}</span>
                 <svg class="ui-dropdown-chevron" width="12" height="8" viewBox="0 0 12 8" aria-hidden="true">
                     <path d="M1 1l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -30,7 +30,7 @@
             </button>
             <div class="ui-dropdown-menu app-profile-menu" role="menu">
                 <div class="app-profile-card" role="presentation">
-                    <img src="{{ Vite::image('user.png') }}" alt="" class="app-avatar app-avatar-lg" width="44" height="44">
+                    <img src="{{ Vite::image('user.png') }}" alt="" class="app-avatar app-avatar-lg" width="48" height="48">
                     <div class="app-profile-identity">
                         <strong>{{ $displayName }}</strong>
                         <span class="app-profile-username">{{ '@' . $user->username }}</span>

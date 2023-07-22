@@ -38,6 +38,7 @@
 </style>
 @stack('css')
 <body class="page-bg voter-body">
+    @include('templates.partials.flash')
     {{-- Top bar: brand and language, in the page flow so it never covers the content --}}
     <header class="voter-bar">
         <span class="voter-brand">

@@ -6,9 +6,6 @@
             <div class="panel panel-headline" style="border-radius: 15px;">
                 <h2 class="panel-heading">Change Password</h2>
                 <div class="panel-body">
-                    @if ($message = Session::get('info'))
-                        <div class="alert alert-success">{{ $message }}</div>
-                    @endif
                     <form action="{{ route('auth.password.postChange') }}" method="post">
                         @csrf
                         <div class="form-group mb-2">

@@ -12,7 +12,6 @@
             <p class="auth-help">@lang('The password needs at least 12 characters with upper and lower case letters, a number and a symbol.')</p>
             <form class="form-auth-small" action="{{ route('auth.postRegister') }}" method="post">
                 @csrf
-                @include('templates.partials.flash')
                 <div class="form-group mb-2">
                     <input type="input" class="form-control login-input  @error('username') mb-0 is-invalid @enderror"
                         name="username" value="{{ old('username') }}" placeholder="@lang('form.input.username')">
