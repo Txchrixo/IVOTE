@@ -44,11 +44,11 @@ class AuthController extends Controller
         $role = Auth::user()->role;
 
         if ($role === Role::RA) {
-            return to_route('ra.dashboard')->with('success', 'You are logged in as a RA');
+            return to_route('ra.dashboard');
         }
 
         if ($role === Role::EA) {
-            return to_route('ea.dashboard')->with('success', 'You are logged in as an EA');
+            return to_route('ea.dashboard');
         }
 
         return back()->with('error', 'You are not logged in');
