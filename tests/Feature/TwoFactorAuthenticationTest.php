@@ -114,4 +114,18 @@ class TwoFactorAuthenticationTest extends TestCase
         $this->assertNotSame($user->two_factor_secret, $user->getRawOriginal('two_factor_secret'));
         $this->assertArrayNotHasKey('two_factor_secret', $user->toArray());
     }
+
+    public function test_pending_login_can_be_cancelled(): void
+    {
+        User::factory()->ea()->create(['username' => 'authority']);
+
+        $this->post('/auth/login', ['username' => 'authority', 'password' => 'password'])
+            ->assertRedirect(route('auth.two-factor.challenge'));
+        $this->get('/auth/two-factor/challenge')->assertOk()->assertSee(route('auth.two-factor.cancel'), false);
+
+        $this->post('/auth/two-factor/cancel')->assertRedirect(route('auth.login'));
+        $this->assertNull(session('login.id'));
+        $this->get('/auth/two-factor/challenge')->assertRedirect(route('auth.login'));
+        $this->assertGuest();
+    }
 }

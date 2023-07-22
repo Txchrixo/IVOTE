@@ -114,6 +114,15 @@ class TwoFactorController extends Controller
         return view('auth.two-factor.recovery-codes', ['codes' => $codes]);
     }
 
+    /** Abandons the pending login and goes back to the sign-in form. */
+    public function cancel(Request $request): RedirectResponse
+    {
+        $request->session()->forget(['login.id', 'login.expires_at', 'login.two_factor_secret']);
+        $request->session()->regenerateToken();
+
+        return to_route('auth.login');
+    }
+
     private function pendingUser(Request $request): ?User
     {
         $id = $request->session()->get('login.id');

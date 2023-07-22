@@ -74,6 +74,7 @@ Route::prefix('/auth/two-factor')->name('auth.two-factor.')->controller(TwoFacto
     Route::get('/setup', 'showSetup')->name('setup');
     Route::post('/setup', 'postSetup')->name('postSetup')->middleware('throttle:two-factor');
     Route::get('/recovery-codes', 'showRecoveryCodes')->name('recovery-codes')->middleware('auth');
+    Route::post('/cancel', 'cancel')->name('cancel');
 });
 
 Route::prefix('/auth')->name('auth.')->middleware(['auth', 'two-factor'])->controller(PasswordController::class)->group(function () {
