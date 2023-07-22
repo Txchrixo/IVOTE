@@ -311,12 +311,6 @@ a:focus-visible {
     z-index: 1030;
 }
 
-/* Voter pages: leave room under the floating picker */
-.lang-float ~ .main-content {
-    padding-top: 72px;
-    padding-bottom: 16px;
-}
-
 .ui-dropdown-trigger {
     display: inline-flex;
     align-items: center;
@@ -409,6 +403,7 @@ a:focus-visible {
 }
 
 .ui-dropdown-item:hover,
+.ui-dropdown-item:focus,
 .ui-dropdown-item:focus-visible {
     color: var(--ui-ink);
     background: rgba(124, 90, 237, 0.1);
@@ -468,3 +463,35 @@ a:focus-visible {
         animation-iteration-count: infinite !important;
     }
 }
+
+/* --------------------------------------------------------------------------
+   Voter pages: top bar with the brand and the language picker
+   -------------------------------------------------------------------------- */
+
+.voter-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px;
+}
+
+.voter-brand img {
+    width: auto;
+    height: 24px;
+}
+
+.voter-main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px 24px;
+}
+
+@media (max-width: 575.98px) {
+    .voter-bar .lang-name {
+        display: none;
+    }
+}
+

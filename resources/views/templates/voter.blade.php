@@ -37,15 +37,19 @@
     }
 </style>
 @stack('css')
-<body class="page-bg">
-    <div class="container-fluid min-vh-100">
-        @include('templates.partials.language_switcher', ['floating' => true])
-        <div class="row main-content">
-            <div class="container-fluid bg-white rounded-4 p-3 d-flex flex-column">
-                @yield('content')
-            </div>
+<body class="page-bg voter-body">
+    {{-- Top bar: brand and language, in the page flow so it never covers the content --}}
+    <header class="voter-bar">
+        <span class="voter-brand">
+            <img src="{{ Vite::image('ivote-red.png') }}" alt="IVote" width="101" height="24">
+        </span>
+        @include('templates.partials.language_switcher')
+    </header>
+    <main class="voter-main">
+        <div class="container-fluid bg-white rounded-4 p-3 d-flex flex-column">
+            @yield('content')
         </div>
-    </div>
+    </main>
 
 
     @if (Route::currentRouteName() == \App\Enums\RouteApp::$veriff)
