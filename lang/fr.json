@@ -79,5 +79,12 @@
     "IVote will be back in a few minutes.": "IVote sera de retour dans quelques minutes.",
     "Registration authority": "Autorité d'enregistrement",
     "Election authority": "Autorité électorale",
-    "Voter": "Électeur"
+    "Voter": "Électeur",
+    "Close": "Fermer",
+    "Election added successfully!": "Élection ajoutée.",
+    "Background uploaded successfully.": "Image de fond enregistrée.",
+    "Candidate registered successfully.": "Candidat enregistré.",
+    "RA account created.": "Compte RA créé.",
+    "Your password was changed.": "Votre mot de passe a été modifié.",
+    "You are not logged in": "Vous n'êtes pas connecté"
 }

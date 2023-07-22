@@ -79,5 +79,12 @@
     "IVote will be back in a few minutes.": "IVote will be back in a few minutes.",
     "Registration authority": "Registration authority",
     "Election authority": "Election authority",
-    "Voter": "Voter"
+    "Voter": "Voter",
+    "Close": "Close",
+    "Election added successfully!": "Election added successfully!",
+    "Background uploaded successfully.": "Background uploaded successfully.",
+    "Candidate registered successfully.": "Candidate registered successfully.",
+    "RA account created.": "RA account created.",
+    "Your password was changed.": "Your password was changed.",
+    "You are not logged in": "You are not logged in"
 }
