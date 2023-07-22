@@ -5,16 +5,14 @@
         data-address="{{ $data['bitcoin_address'] }}">
     <input type="hidden" class="blockchain" value="bitcoin" data-network="testnet"
         data-address="{{ $data['bitcoin_address'] }}">
-    <div class="panel panel-headline"
-        style="background-image: url('{{ Vite::image('bg.jpg') }}'); border-radius: 15px; background-repeat: no-repeat; background-size: 100%;">
+    <div class="panel panel-headline" style="border-radius: 15px;">
         <div class="panel-heading">
             <h3 class="panel-title">Overview</h3>
             <p class="panel-subtitle">Welcome back, </p>
         </div>
         <div class="panel-body">
             <div class="col">
-                <div class="row py-3 mb-3"
-                    style="background-color: rgba(217, 217, 217, 0.14); border-radius: 15px; border:1px solid #DBE5EA;">
+                <div class="row py-3 mb-3 glass-section">
                     <h3 class="card-title p-3">Blockchains</h3>
                     <div class="col-md-6 col-xl-4 pt-2">
                         <div class="metric" style="border-radius: 15px;">
@@ -68,8 +66,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row py-3 mb-3"
-                    style="background-color: rgba(217, 217, 217, 0.14); border-radius: 15px; border:1px solid #DBE5EA;">
+                <div class="row py-3 mb-3 glass-section">
                     <h3 class="card-title p-3">System Information</h3>
                     <div class="col-md-6 pt-2">
                         <div class="metric" style="border-radius: 15px;">
@@ -104,12 +101,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="col py-3 mb-3"
-                    style="background-color: rgba(217, 217, 217, 0.14); border-radius: 15px; border:1px solid #DBE5EA;">
+                <div class="col py-3 mb-3 glass-section">
                     <h3 class="card-title p-3">Ongoing Elections</h3>
                     @foreach ($election as $item)
-                        <div class="row py-3 m-3"
-                            style="background-color: rgba(217, 217, 217, 0.14); border-radius: 15px; border:1px solid #DBE5EA;">
+                        <div class="row py-3 m-3 glass-section">
                             <div class="col-md-8">
                                 <div class="profile-header">
                                     <div class="overlay"></div>
