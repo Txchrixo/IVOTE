@@ -17,22 +17,30 @@
 
     <link rel="apple-touch-icon" sizes="76x76" href="{{ Vite::image('apple-icon.png') }}">
     <link rel="icon" type="image/png" sizes="96x96" href="{{ Vite::image('favicon.png') }}">
+
+    {{-- Restore the sidebar state before the first paint, to avoid a jump --}}
+    <script nonce="{{ Vite::cspNonce() }}">
+        try {
+            if (localStorage.getItem('ivote.sidebar') === 'collapsed') {
+                document.documentElement.classList.add('sidebar-collapsed');
+            }
+        } catch (e) {}
+    </script>
 </head>
 
-<body>
-    <div id="wrapper">
+<body class="app-body">
+    <a class="app-skip-link" href="#app-content">@lang('Skip to content')</a>
+    <div class="app-shell">
         @include('templates.partials.header')
         @include('templates.partials.navigation')
-        <div class="main">
-            <!-- MAIN CONTENT -->
+        <main class="app-main" id="app-content" tabindex="-1">
             <div class="main-content">
                 <div class="container-fluid">
                     @include('templates.partials.flash')
                     @yield('content')
                 </div>
             </div>
-            <!-- END MAIN CONTENT -->
-        </div>
+        </main>
     </div>
 
 

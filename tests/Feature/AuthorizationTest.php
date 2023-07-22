@@ -52,4 +52,25 @@ class AuthorizationTest extends TestCase
 
         $this->assertFalse($user->fresh()->isEA());
     }
+
+    public function test_forbidden_page_offers_a_way_back(): void
+    {
+        $this->actingAs(User::factory()->ra()->create())
+            ->get('/ea/election')
+            ->assertForbidden()
+            ->assertSee('Access denied')
+            ->assertSee(route('auth.dashboard'), false);
+    }
+
+    public function test_back_office_layout_has_profile_menu_with_role(): void
+    {
+        $user = User::factory()->ea()->create(['username' => 'authority', 'nickname' => 'Jane Doe']);
+
+        $this->actingAs($user)->get('/ea/election')
+            ->assertOk()
+            ->assertSeeInOrder(['data-sidebar-toggle', 'data-dropdown', 'app-profile'], false)
+            ->assertSee('Jane Doe')
+            ->assertSee('Election authority')
+            ->assertSee('aria-current="page"', false);
+    }
 }

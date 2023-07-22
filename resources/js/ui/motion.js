@@ -40,7 +40,7 @@ export function endProgress() {
 /** Staggered entrance of the main blocks of back-office and voter pages. */
 function revealContent() {
     const blocks = document.querySelectorAll(
-        '.main .main-content > .container-fluid > .row > [class*="col"], .main .main-content > .container-fluid > .panel, .main .main-content > .container-fluid > form, .main-content > .container-fluid.bg-white'
+        '.app-main .main-content > .container-fluid > .row > [class*="col"], .app-main .main-content > .container-fluid > .panel, .app-main .main-content > .container-fluid > form, .voter-main > .container-fluid'
     );
     [...blocks].slice(0, 12).forEach((block, index) => {
         block.style.setProperty('--ui-i', index);
