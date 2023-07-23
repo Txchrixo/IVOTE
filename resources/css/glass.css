@@ -417,3 +417,201 @@
         backdrop-filter: none;
     }
 }
+
+/* ==========================================================================
+   Controls: one height and one radius for every button and field of the
+   back-office (the radius of the segmented tabs). The !important overrides
+   the bootstrap utilities (rounded-*, p-*) spread across the old views.
+   ========================================================================== */
+
+.app-main,
+.modal {
+    --ctl-h: 40px;
+    --ctl-radius: 11px;
+}
+
+.app-main .btn,
+.modal .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: var(--ctl-h);
+    padding: 0 18px !important;
+    font-size: 0.95rem;
+    line-height: 1;
+    white-space: nowrap;
+    border-radius: var(--ctl-radius) !important;
+}
+
+.app-main .btn-block,
+.app-main .btn.w-100 {
+    display: flex;
+    width: 100%;
+}
+
+/* Bootstrap 3 leftovers */
+.app-main .btn-default,
+.modal .btn-default {
+    color: var(--ui-ink);
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow: var(--glass-highlight);
+}
+
+.app-main .btn-default:hover {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+/* Fields */
+.app-main .form-control,
+.app-main .form-select,
+.modal .form-control,
+.modal .form-select {
+    height: var(--ctl-h);
+    padding: 0 14px !important;
+    font-size: 0.95rem;
+    border-radius: var(--ctl-radius) !important;
+}
+
+.app-main textarea.form-control,
+.modal textarea.form-control {
+    height: auto;
+    min-height: 104px;
+    padding: 10px 14px !important;
+    line-height: 1.5;
+}
+
+.app-main .form-control[type="file"],
+.modal .form-control[type="file"] {
+    padding: 0 14px 0 0 !important;
+    line-height: calc(var(--ctl-h) - 2px);
+}
+
+.app-main .form-control[type="file"]::file-selector-button {
+    height: 100%;
+    margin: 0 12px 0 0;
+    padding: 0 14px;
+    border: 0;
+    border-right: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+/* Input groups: only the outer corners are rounded */
+.app-main .input-group > :not(:first-child) {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+
+.app-main .input-group > :not(:last-child) {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+.app-main .input-group-text,
+.app-main .input-group-addon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--ctl-h);
+    padding: 0 14px !important;
+    color: var(--ui-muted);
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: var(--ctl-radius);
+}
+
+/* Segmented tabs: same height as the other controls */
+.app-main .nav-tabs .nav-link {
+    display: inline-flex;
+    align-items: center;
+    height: calc(var(--ctl-h) - 2px);
+    padding: 0 18px;
+    border-radius: var(--ctl-radius);
+}
+
+/* ==========================================================================
+   Lists (tables): one row rhythm, contained in a light glass frame
+   ========================================================================== */
+
+.app-main .table-responsive {
+    background: rgba(255, 255, 255, 0.28);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    border-radius: var(--ctl-radius);
+}
+
+.app-main .table > :not(caption) > * > * {
+    padding: 12px 16px;
+    vertical-align: middle;
+}
+
+.app-main .table > thead th {
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+.app-main .table > tbody > tr:last-child > * {
+    border-bottom: 0;
+}
+
+.app-main .table .btn {
+    min-width: 120px;
+}
+
+/* ==========================================================================
+   Metric icons (fees and balances): theme purple instead of the old blue
+   ========================================================================== */
+
+.app-main .metric .icon {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    line-height: 1;
+    color: var(--ui-purple);
+    background: rgba(124, 90, 237, 0.12);
+    border: 1px solid rgba(124, 90, 237, 0.18);
+    border-radius: 50%;
+}
+
+.app-main .metric .icon .lnr,
+.app-main .metric .icon i {
+    font-size: 20px;
+    color: var(--ui-purple);
+}
+
+/* ==========================================================================
+   Dashboard header: the language picker blends into the dark header
+   (the purple version stays on the sign-in and voter pages)
+   ========================================================================== */
+
+.app-header .lang-trigger {
+    height: 40px;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 11px;
+    box-shadow: none;
+}
+
+.app-header .lang-trigger:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.app-header .app-profile-trigger {
+    height: 40px;
+    border-radius: 11px;
+}
+
+.app-header .app-icon-btn {
+    border-radius: 11px;
+}
+
+.app-header .ui-dropdown-menu {
+    padding: 6px;
+    border-radius: 15px;
+}
+
+.app-header .ui-dropdown-item {
+    border-radius: 11px;
+}
