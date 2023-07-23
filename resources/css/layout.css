@@ -10,6 +10,9 @@
     --app-rail-w: 76px;
     --app-dark: #2d2d2d;
     --app-nav-text: #ced5e1;
+    /* Header and sidebar share one artwork pinned to the viewport,
+       so together they read as a single L-shaped surface */
+    --app-shell-bg: var(--app-dark) url("../img/background.jpg") left bottom / cover no-repeat fixed;
 }
 
 .app-body {
@@ -48,7 +51,7 @@
     gap: 12px;
     height: var(--app-header-h);
     padding: 0 16px;
-    background: var(--app-dark);
+    background: var(--app-shell-bg);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -220,7 +223,7 @@ button.ui-dropdown-item {
     width: var(--app-sidebar-w);
     overflow-x: hidden;
     overflow-y: auto;
-    background: var(--app-dark) url("../img/background.jpg") center bottom / cover no-repeat;
+    background: var(--app-shell-bg);
     transition: width var(--ui-base) var(--ui-ease), transform var(--ui-base) var(--ui-ease),
         box-shadow var(--ui-base) ease;
 }
