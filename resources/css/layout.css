@@ -10,9 +10,6 @@
     --app-rail-w: 76px;
     --app-dark: #2d2d2d;
     --app-nav-text: #ced5e1;
-    /* Header and sidebar share one artwork pinned to the viewport,
-       so together they read as a single L-shaped surface */
-    --app-shell-bg: var(--app-dark) url("../img/background.jpg") left bottom / cover no-repeat fixed;
 }
 
 .app-body {
@@ -51,8 +48,25 @@
     gap: 12px;
     height: var(--app-header-h);
     padding: 0 16px;
-    background: var(--app-shell-bg);
+    overflow: hidden;
+    background: var(--app-dark);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* The sidebar artwork turned a quarter turn: its dark part meets the top of the
+   sidebar in the corner and its glow ends the header on the right */
+.app-header::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: var(--app-header-h);
+    height: 100vw;
+    background: url("../img/background.jpg") center bottom / cover no-repeat;
+    transform: translateY(var(--app-header-h)) rotate(-90deg);
+    transform-origin: top left;
+    pointer-events: none;
 }
 
 .app-header-start,
@@ -223,7 +237,7 @@ button.ui-dropdown-item {
     width: var(--app-sidebar-w);
     overflow-x: hidden;
     overflow-y: auto;
-    background: var(--app-shell-bg);
+    background: var(--app-dark) url("../img/background.jpg") center bottom / cover no-repeat;
     transition: width var(--ui-base) var(--ui-ease), transform var(--ui-base) var(--ui-ease),
         box-shadow var(--ui-base) ease;
 }
