@@ -518,3 +518,150 @@ button.ui-dropdown-item {
         height: 22px;
     }
 }
+
+/* ==========================================================================
+   Page grid: one spacing scale for every back-office page
+   24px around and between blocks, 16px between cards, 20px inside cards.
+   ========================================================================== */
+
+.app-main {
+    --space-xs: 8px;
+    --space-sm: 16px;
+    --space-md: 24px;
+    --space-card: 20px;
+}
+
+@media (max-width: 575.98px) {
+    .app-main {
+        --space-md: 16px;
+        --space-card: 16px;
+    }
+}
+
+.app-main > .main-content {
+    padding: var(--space-md);
+}
+
+/* The page padding already provides the outer margin */
+.app-main .main-content > .container-fluid {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+.app-main .main-content .row {
+    --bs-gutter-x: var(--space-md);
+}
+
+.app-main .panel {
+    margin-bottom: var(--space-md);
+}
+
+.app-main .panel .panel-heading {
+    padding: var(--space-md) var(--space-md) 0;
+}
+
+.app-main .panel .panel-heading .panel-title {
+    margin: 0;
+}
+
+.app-main .panel .panel-body {
+    padding: var(--space-md);
+}
+
+.app-main .panel .panel-heading + .panel-body {
+    padding-top: var(--space-sm);
+}
+
+.app-main .panel .panel-footer {
+    padding: 0 var(--space-md) var(--space-md);
+}
+
+.app-main .metric {
+    padding: var(--space-card);
+}
+
+/* --------------------------------------------------------------------------
+   Dashboard
+   -------------------------------------------------------------------------- */
+
+.dash-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.dash-section {
+    display: grid;
+    gap: var(--space-sm);
+    margin: 0;
+    padding: var(--space-md);
+}
+
+.dash-section-title {
+    grid-column: 1 / -1;
+    margin: 0;
+    font-size: 1.35rem;
+}
+
+.dash-section-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.dash-section-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 1199.98px) {
+    .dash-section-3 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767.98px) {
+    .dash-section-2,
+    .dash-section-3 {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.dash-cell > .metric {
+    height: 100%;
+}
+
+.dash-election {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: var(--space-sm);
+    align-items: center;
+    margin: 0;
+    padding: var(--space-sm);
+}
+
+.app-main .dash-election-stats .metric {
+    padding: 0 var(--space-xs);
+}
+
+@media (max-width: 991.98px) {
+    .dash-election {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* Footer band at the end of some pages, on the same spacing grid */
+.app-main .app-footer {
+    /* The old theme positions every <footer> absolutely */
+    position: static;
+    display: flex;
+    justify-content: center;
+    margin: var(--space-md) 0 0;
+    padding: var(--space-md);
+    color: #b8b8b8;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-radius: 15px;
+}
+
+/* Tab panels: the old theme pads them, the grid already spaces them */
+.app-main .tab-content > .tab-pane {
+    padding: 0;
+}

@@ -24,7 +24,7 @@
                 </li>
             </ul>
             <div class="tab-content" id="myTabContent">
-                <div class="row tab-pane fade show active p-2 pt-3" id="bitcoin" role="tabpanel"
+                <div class="row tab-pane fade show active" id="bitcoin" role="tabpanel"
                     aria-labelledby="bitcoin-tab">
                     <div class="col-md-5">
                         <div class="panel panel-headline" style="border-radius: 15px;">
@@ -95,7 +95,7 @@
                         <!-- END PANEL NO PADDING -->
                     </div>
                 </div>
-                <div class="row tab-pane fade show p-2 pt-3" id="eth" role="tabpanel" aria-labelledby="eth-tab">
+                <div class="row tab-pane fade show" id="eth" role="tabpanel" aria-labelledby="eth-tab">
                     <div class="col-md-5">
                         <div class="panel panel-headline" style="border-radius: 15px;">
                             <div class="panel-heading">
@@ -164,7 +164,7 @@
                         <!-- END PANEL NO PADDING -->
                     </div>
                 </div>
-                <div class="row tab-pane fade show p-2 pt-3" id="solana" role="tabpanel"
+                <div class="row tab-pane fade show" id="solana" role="tabpanel"
                     aria-labelledby="solana-tab">
                     <div class="col-md-5">
                         <div class="panel panel-headline" style="border-radius: 15px;">
