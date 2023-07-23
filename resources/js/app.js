@@ -17,6 +17,7 @@ import '../js/scripts/main.js';
 // Shared UI: designed dropdowns, page motion and loading feedback
 import '../css/ui.css';
 import '../css/layout.css';
+import '../css/glass.css';
 import { initDropdowns } from './ui/dropdown.js';
 import { initMotion } from './ui/motion.js';
 import { initToasts } from './ui/toast.js';

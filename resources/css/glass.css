@@ -1,0 +1,337 @@
+/* ==========================================================================
+   Frosted glass theme of the back-office (iOS-like).
+   Translucent surfaces blur a soft, still background tinted with the theme
+   colours. Only top-level surfaces use backdrop-filter; nested ones are just
+   translucent, which keeps scrolling smooth.
+   ========================================================================== */
+
+:root {
+    --glass-bg: rgba(255, 255, 255, 0.58);
+    --glass-bg-soft: rgba(255, 255, 255, 0.38);
+    --glass-bg-strong: rgba(255, 255, 255, 0.82);
+    --glass-border: rgba(255, 255, 255, 0.7);
+    --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+    --glass-shadow: 0 10px 30px rgba(44, 32, 110, 0.1), 0 1px 2px rgba(44, 32, 110, 0.06);
+    --glass-blur: blur(22px) saturate(170%);
+}
+
+/* --------------------------------------------------------------------------
+   Background: still, soft colour fields the glass can blur
+   -------------------------------------------------------------------------- */
+
+.app-body {
+    background: #eceef6;
+}
+
+.app-body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+        radial-gradient(55vw 55vw at 88% -12%, rgba(124, 90, 237, 0.3), transparent 62%),
+        radial-gradient(45vw 45vw at 4% 105%, rgba(32, 178, 170, 0.22), transparent 62%),
+        radial-gradient(38vw 38vw at 55% 55%, rgba(163, 88, 255, 0.12), transparent 66%),
+        #eceef6;
+}
+
+/* --------------------------------------------------------------------------
+   Header: dark glass, the page scrolls blurred underneath
+   -------------------------------------------------------------------------- */
+
+.app-header {
+    background: rgba(32, 32, 36, 0.74);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+}
+
+/* --------------------------------------------------------------------------
+   Surfaces
+   -------------------------------------------------------------------------- */
+
+.app-main .panel,
+.app-main .card,
+.app-main .glass-section,
+.app-main .table-striped:not(table),
+.modal-content {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-highlight), var(--glass-shadow);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+}
+
+/* Glass inside glass: translucent only */
+.app-main .panel .glass-section,
+.app-main .panel .metric,
+.app-main .glass-section .glass-section,
+.app-main .panel .panel {
+    background: var(--glass-bg-soft);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: var(--glass-highlight);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+}
+
+.app-main .metric {
+    background: var(--glass-bg-soft);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 15px;
+    box-shadow: var(--glass-highlight);
+}
+
+.app-main .metric.bg-transparent {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+.app-main .metric:hover {
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow: var(--glass-highlight), 0 6px 18px rgba(44, 32, 110, 0.08);
+}
+
+.modal-content {
+    background: var(--glass-bg-strong);
+    border-radius: 15px;
+}
+
+.modal-header,
+.modal-footer {
+    border-color: rgba(31, 36, 48, 0.08);
+}
+
+.modal-backdrop.show {
+    opacity: 0.35;
+}
+
+/* --------------------------------------------------------------------------
+   Election cards of the dashboard: photo widget with a glass action bar
+   -------------------------------------------------------------------------- */
+
+.app-main .profile-header {
+    overflow: hidden;
+    border: 1px solid var(--glass-border);
+    border-radius: 15px;
+    box-shadow: var(--glass-shadow);
+}
+
+.app-main .profile-header .profile-main {
+    background-color: #3b2f86;
+    background-image: linear-gradient(135deg, #4b3aa8, #2b2563);
+}
+
+.app-main .profile-header .overlay {
+    background: linear-gradient(180deg, rgba(14, 12, 32, 0.25), rgba(14, 12, 32, 0.55));
+}
+
+.app-main .profile-header .profile-stat {
+    position: relative;
+    z-index: 300;
+    background: rgba(255, 255, 255, 0.72);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+}
+
+.app-main .profile-header .stat-item {
+    color: var(--ui-ink);
+    text-decoration: none;
+    cursor: pointer;
+    background: transparent;
+    border-right: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 0 !important;
+    transition: background-color var(--ui-fast) ease;
+}
+
+.app-main .profile-header .stat-item:last-child {
+    border-right: 0;
+}
+
+.app-main .profile-header .stat-item:hover {
+    color: var(--ui-ink);
+    background: rgba(255, 255, 255, 0.85);
+}
+
+/* --------------------------------------------------------------------------
+   Tabs: segmented control
+   -------------------------------------------------------------------------- */
+
+.app-main .nav-tabs {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 4px;
+    margin-bottom: 20px;
+    background: var(--glass-bg-soft);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    box-shadow: var(--glass-highlight);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+}
+
+.app-main .nav-tabs .nav-link {
+    margin: 0;
+    padding: 8px 18px;
+    color: var(--ui-muted);
+    background: transparent;
+    border: 0;
+    border-radius: 9px;
+    transition: background-color var(--ui-fast) ease, color var(--ui-fast) ease, box-shadow var(--ui-fast) ease;
+}
+
+.app-main .nav-tabs .nav-link:hover {
+    color: var(--ui-ink);
+    background: rgba(255, 255, 255, 0.45);
+}
+
+.app-main .nav-tabs .nav-link.active {
+    color: var(--ui-ink);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 2px 8px rgba(44, 32, 110, 0.12);
+}
+
+/* --------------------------------------------------------------------------
+   Form fields
+   -------------------------------------------------------------------------- */
+
+.app-main .form-control,
+.app-main .form-select,
+.app-main .input-group-text {
+    background-color: rgba(255, 255, 255, 0.62);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: inset 0 1px 2px rgba(44, 32, 110, 0.06);
+}
+
+.app-main .form-control:focus,
+.app-main .form-select:focus {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-color: var(--ui-purple);
+    box-shadow: 0 0 0 4px rgba(124, 90, 237, 0.16);
+}
+
+.app-main .form-control::placeholder {
+    color: rgba(31, 36, 48, 0.42);
+}
+
+/* --------------------------------------------------------------------------
+   Buttons: tinted glass in the theme colours
+   -------------------------------------------------------------------------- */
+
+.app-main .btn-primary,
+.modal .btn-primary {
+    color: #fff;
+    background-color: rgba(124, 90, 237, 0.9);
+    border-color: rgba(255, 255, 255, 0.35);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 4px 14px rgba(124, 90, 237, 0.22);
+}
+
+.app-main .btn-primary:hover,
+.app-main .btn-primary:focus,
+.modal .btn-primary:hover {
+    color: #fff;
+    background-color: rgba(106, 72, 224, 0.96);
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
+.app-main .btn-success,
+.app-main .btn-danger,
+.app-main .btn-warning,
+.app-main .btn-secondary,
+.app-main .btn-info {
+    border-color: rgba(255, 255, 255, 0.35);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.app-main .btn-light,
+.app-main .btn-outline-primary,
+.app-main .btn-outline-danger {
+    background-color: rgba(255, 255, 255, 0.55);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+.app-main .btn-outline-primary {
+    color: var(--ui-purple);
+    border-color: rgba(124, 90, 237, 0.45);
+}
+
+.app-main .btn-outline-primary:hover {
+    color: #fff;
+    background-color: rgba(124, 90, 237, 0.9);
+}
+
+/* --------------------------------------------------------------------------
+   Tables
+   -------------------------------------------------------------------------- */
+
+.app-main .table {
+    --bs-table-bg: transparent;
+    --bs-table-striped-bg: rgba(255, 255, 255, 0.4);
+    --bs-table-hover-bg: rgba(255, 255, 255, 0.6);
+    margin-bottom: 0;
+}
+
+.app-main .table > thead th {
+    color: var(--ui-muted);
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.35);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+.app-main .table > :not(caption) > * > * {
+    border-bottom-color: rgba(255, 255, 255, 0.55);
+}
+
+/* --------------------------------------------------------------------------
+   Menus and toasts share the same glass
+   -------------------------------------------------------------------------- */
+
+.ui-dropdown-menu,
+.ui-toast {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid var(--glass-border);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
+}
+
+/* --------------------------------------------------------------------------
+   Fallbacks
+   -------------------------------------------------------------------------- */
+
+/* Browsers without backdrop-filter: more opaque surfaces stay readable */
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+    :root {
+        --glass-bg: rgba(255, 255, 255, 0.9);
+        --glass-bg-soft: rgba(255, 255, 255, 0.7);
+        --glass-bg-strong: rgba(255, 255, 255, 0.97);
+    }
+
+    .app-header {
+        background: rgba(32, 32, 36, 0.97);
+    }
+}
+
+/* System setting "reduce transparency" */
+@media (prefers-reduced-transparency: reduce) {
+    :root {
+        --glass-bg: #fff;
+        --glass-bg-soft: #f6f6fa;
+        --glass-bg-strong: #fff;
+    }
+
+    .app-header {
+        background: #202024;
+    }
+
+    .app-main .panel,
+    .app-main .card,
+    .app-main .glass-section,
+    .modal-content,
+    .ui-dropdown-menu,
+    .ui-toast {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+}
