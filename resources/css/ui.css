@@ -400,15 +400,23 @@ a:focus-visible {
     transition: background-color var(--ui-fast) ease, color var(--ui-fast) ease;
 }
 
+/* Programmatic focus (menu opened with the mouse) gets no background:
+   only hover and keyboard focus are highlighted, the active item shows its check */
+.ui-dropdown-item:focus {
+    color: var(--ui-ink);
+    outline: none;
+}
+
 .ui-dropdown-item:hover,
-.ui-dropdown-item:focus,
 .ui-dropdown-item:focus-visible {
     color: var(--ui-ink);
     background: rgba(124, 90, 237, 0.1);
     outline: none;
 }
 
-.ui-dropdown-item[aria-current="true"] {
+.ui-dropdown-item[aria-current="true"],
+.ui-dropdown-item[aria-current="true"]:focus,
+.ui-dropdown-item[aria-current="true"]:hover {
     font-weight: 600;
     color: var(--ui-purple);
 }
