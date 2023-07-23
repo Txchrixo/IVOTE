@@ -107,50 +107,146 @@
 }
 
 /* --------------------------------------------------------------------------
-   Election cards of the dashboard: photo widget with a glass action bar
+   Election cards of the dashboard
+   The photo (or the theme gradient when there is none) covers the whole card;
+   the status and the action bar are glass over it.
    -------------------------------------------------------------------------- */
 
-.app-main .profile-header {
+.app-main .election-card {
+    position: relative;
     overflow: hidden;
-    border: 1px solid var(--glass-border);
+    color: #fff;
+    background-color: #7c5aed;
+    background-image:
+        radial-gradient(120% 140% at 0% 0%, rgba(255, 255, 255, 0.16), transparent 55%),
+        linear-gradient(135deg, #7c5aed 0%, #8f5cf2 45%, #a358ff 100%);
+    background-position: center;
+    background-size: cover;
+    border: 1px solid rgba(255, 255, 255, 0.35);
     border-radius: 15px;
+    box-shadow: 0 12px 30px rgba(124, 90, 237, 0.22);
+}
+
+.app-main .election-card.has-image {
     box-shadow: var(--glass-shadow);
 }
 
-.app-main .profile-header .profile-main {
-    background-color: #3b2f86;
-    background-image: linear-gradient(135deg, #4b3aa8, #2b2563);
+/* No darkening on the theme gradient */
+.app-main .election-card .overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: none;
 }
 
-.app-main .profile-header .overlay {
-    background: linear-gradient(180deg, rgba(14, 12, 32, 0.25), rgba(14, 12, 32, 0.55));
+/* With a photo: light at the top, darker where the text sits, tinted with the theme */
+.app-main .election-card.has-image .overlay {
+    /* A theme-tinted veil, denser in the middle where the title and note sit,
+       so light photos stay readable and dark ones are barely changed */
+    background:
+        radial-gradient(85% 70% at 50% 50%, rgba(24, 16, 60, 0.6), rgba(24, 16, 60, 0.28) 100%),
+        linear-gradient(180deg, rgba(24, 16, 60, 0.2), rgba(24, 16, 60, 0.45));
 }
 
-.app-main .profile-header .profile-stat {
+/* A slight blur of the photo behind the text tames busy images */
+.app-main .election-card.has-image .profile-main {
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+}
+
+.app-main .election-card.has-image .name,
+.app-main .election-card.has-image .election-note {
+    text-shadow: 0 1px 10px rgba(10, 6, 30, 0.55), 0 1px 2px rgba(10, 6, 30, 0.4);
+}
+
+.app-main .election-card .profile-main {
     position: relative;
-    z-index: 300;
-    background: rgba(255, 255, 255, 0.72);
-    -webkit-backdrop-filter: var(--glass-blur);
-    backdrop-filter: var(--glass-blur);
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 200px;
+    padding: 28px 24px;
+    background: transparent;
+    border-radius: 0;
 }
 
-.app-main .profile-header .stat-item {
-    color: var(--ui-ink);
+.app-main .election-card .name {
+    margin: 0;
+    font-size: 1.45rem;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.app-main .election-card .election-note {
+    max-width: 52ch;
+    margin: 6px 0 0;
+    font-size: 1rem;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.92);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+/* Status as a small glass pill */
+.app-main .election-card .online-status,
+.app-main .election-card .offline-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    top: 0;
+    padding: 3px 10px;
+    font-size: 0.8rem;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 999px;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+}
+
+.app-main .election-card .online-status::before,
+.app-main .election-card .offline-status::before {
+    margin: 0;
+}
+
+/* Action bar: frosted glass over the bottom of the photo or gradient */
+.app-main .election-card .profile-stat {
+    position: relative;
+    z-index: 1;
+    /* Dark glass: white labels keep their contrast over any photo */
+    background: rgba(24, 16, 60, 0.32);
+    border-top: 1px solid rgba(255, 255, 255, 0.22);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    backdrop-filter: blur(18px) saturate(160%);
+}
+
+.app-main .election-card .profile-stat .stat-item {
+    padding: 14px 8px;
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
     text-decoration: none;
     cursor: pointer;
     background: transparent;
-    border-right: 1px solid rgba(255, 255, 255, 0.6);
+    border-right: 1px solid rgba(255, 255, 255, 0.22);
     border-radius: 0 !important;
     transition: background-color var(--ui-fast) ease;
 }
 
-.app-main .profile-header .stat-item:last-child {
+.app-main .election-card .profile-stat .stat-item:last-child {
     border-right: 0;
 }
 
-.app-main .profile-header .stat-item:hover {
-    color: var(--ui-ink);
-    background: rgba(255, 255, 255, 0.85);
+/* The old theme draws its own separators */
+.app-main .election-card .profile-stat .stat-item::after {
+    content: none;
+}
+
+.app-main .election-card .profile-stat .stat-item:hover,
+.app-main .election-card .profile-stat .stat-item:focus-visible {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.14);
 }
 
 /* --------------------------------------------------------------------------
