@@ -11,12 +11,12 @@
             <p class="panel-subtitle">Welcome back, </p>
         </div>
         <div class="panel-body">
-            <div class="col">
-                <div class="row py-3 mb-3 glass-section">
-                    <h3 class="card-title p-3">Blockchains</h3>
-                    <div class="col-md-6 col-xl-4 pt-2">
-                        <div class="metric" style="border-radius: 15px;">
-                            <div class="d-flex justify-content-between align-items-center gap-3 p-2">
+            <div class="dash-stack">
+                <div class="glass-section dash-section dash-section-3">
+                    <h3 class="dash-section-title">Blockchains</h3>
+                    <div class="dash-cell">
+                        <div class="metric">
+                            <div class="d-flex justify-content-between align-items-center gap-3">
                                 <img src="{{ Vite::image('bitcoin.png') }}" alt="" class="metric-icon">
                                 <div class="d-flex flex-column gap-3 metric-body">
                                     <p class="d-flex flex-column align-items-end justify-content-center">
@@ -31,9 +31,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 col-xl-4 pt-2">
-                        <div class="metric" style="border-radius: 15px;">
-                            <div class="d-flex justify-content-between align-items-center gap-3 p-2">
+                    <div class="dash-cell">
+                        <div class="metric">
+                            <div class="d-flex justify-content-between align-items-center gap-3">
                                 <img src="{{ Vite::image('eth.png') }}" alt="" class="metric-icon">
                                 <div class="d-flex flex-column gap-3 metric-body">
                                     <p class="d-flex flex-column align-items-end justify-content-center">
@@ -48,9 +48,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 col-xl-4 pt-2">
-                        <div class="metric" style="border-radius: 15px;">
-                            <div class="d-flex justify-content-between align-items-center gap-3 p-2">
+                    <div class="dash-cell">
+                        <div class="metric">
+                            <div class="d-flex justify-content-between align-items-center gap-3">
                                 <img src="{{ Vite::image('solana.png') }}" alt="" class="metric-icon">
                                 <div class="d-flex flex-column gap-3 metric-body">
                                     <p class="d-flex flex-column align-items-end justify-content-center">
@@ -66,11 +66,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="row py-3 mb-3 glass-section">
-                    <h3 class="card-title p-3">System Information</h3>
-                    <div class="col-md-6 pt-2">
-                        <div class="metric" style="border-radius: 15px;">
-                            <div class="d-flex justify-content-between align-items-center gap-3 p-2">
+                <div class="glass-section dash-section dash-section-2">
+                    <h3 class="dash-section-title">System Information</h3>
+                    <div class="dash-cell">
+                        <div class="metric">
+                            <div class="d-flex justify-content-between align-items-center gap-3">
                                 <div>
                                     <img src="{{ Vite::image('elections.png') }}" alt="toggle bouton" width="20%"
                                         height="auto">
@@ -84,9 +84,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 pt-2">
-                        <div class="metric" style="border-radius: 15px;">
-                            <div class="d-flex justify-content-between align-items-center gap-3 p-2">
+                    <div class="dash-cell">
+                        <div class="metric">
+                            <div class="d-flex justify-content-between align-items-center gap-3">
                                 <div>
                                     <img src="{{ Vite::image('vote.png') }}" alt="toggle bouton" width="20%"
                                         height="auto">
@@ -101,11 +101,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="col py-3 mb-3 glass-section">
-                    <h3 class="card-title p-3">Ongoing Elections</h3>
+                <div class="glass-section dash-section dash-section-1">
+                    <h3 class="dash-section-title">Ongoing Elections</h3>
                     @foreach ($election as $item)
-                        <div class="row py-3 m-3 glass-section">
-                            <div class="col-md-8">
+                        <div class="glass-section dash-election">
+                            <div class="dash-election-card">
                                 {{-- The background (photo or theme gradient) covers the whole card, the action bar is glass over it --}}
                                 <div class="profile-header election-card {{ $item->bg ? 'has-image' : '' }}"
                                     @if ($item->bg) style="background-image: url('{{ $item->backgroundUrl() }}');" @endif>
@@ -174,9 +174,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4 px-3 ps-0">
-                                <div class="metric bg-transparent border-0 p-4" style="border-radius: 15px;">
-                                    <div class="d-flex justify-content-end align-items-center p-2">
+                            <div class="dash-election-stats">
+                                <div class="metric bg-transparent border-0">
+                                    <div class="d-flex justify-content-end align-items-center">
                                         <div class="d-flex flex-column gap-4">
                                             <p class="d-flex flex-column align-items-end justify-content-center">
                                                 <span class="number">{{ $data['voters'] }}</span>
