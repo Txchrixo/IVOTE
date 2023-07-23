@@ -46,6 +46,8 @@
 .app-main .glass-section,
 .app-main .table-striped:not(table),
 .modal-content {
+    /* Every glass surface shares the same 15px corners */
+    border-radius: 15px;
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-highlight), var(--glass-shadow);
@@ -252,7 +254,7 @@
     margin-bottom: 20px;
     background: var(--glass-bg-soft);
     border: 1px solid var(--glass-border);
-    border-radius: 12px;
+    border-radius: 15px;
     box-shadow: var(--glass-highlight);
     -webkit-backdrop-filter: var(--glass-blur);
     backdrop-filter: var(--glass-blur);
@@ -264,7 +266,8 @@
     color: var(--ui-muted);
     background: transparent;
     border: 0;
-    border-radius: 9px;
+    /* 15px container minus its 4px padding, so the corners stay concentric */
+    border-radius: 11px;
     transition: background-color var(--ui-fast) ease, color var(--ui-fast) ease, box-shadow var(--ui-fast) ease;
 }
 
