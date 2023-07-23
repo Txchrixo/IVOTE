@@ -106,40 +106,37 @@
                     @foreach ($election as $item)
                         <div class="row py-3 m-3 glass-section">
                             <div class="col-md-8">
-                                <div class="profile-header">
+                                {{-- The background (photo or theme gradient) covers the whole card, the action bar is glass over it --}}
+                                <div class="profile-header election-card {{ $item->bg ? 'has-image' : '' }}"
+                                    @if ($item->bg) style="background-image: url('{{ $item->backgroundUrl() }}');" @endif>
                                     <div class="overlay"></div>
-                                    <div class="profile-main"
-                                        style='background-image: url('{{ $item->backgroundUrl() }}'); height:220px;'>
+                                    <div class="profile-main">
                                         <h3 class="name">{{ $item['title'] }}</h3>
                                         @if ($item['stage'] == 0)
                                             <span class="offline-status status-available">Unbegun</span>
                                         @elseif($item['stage'] == 1)
                                             <span class="online-status status-available">Veriff</span>
                                             @if ($item['start_vote'])
-                                                <h2 class="mt-5 position-relative h5"
-                                                    style="z-index: 999; color:#DBE5EA;">La vérification se terminera le
+                                                <h2 class="election-note h5">La vérification se terminera le
                                                     {{ $item['start_veriff'] }}</h2>
                                             @endif
                                         @elseif ($item['stage'] == 2)
                                             <span class="offline-status status-available">Waiting</span>
                                             @if ($item['start_vote'])
-                                                <h2 class="mt-5 position-relative h5"
-                                                    style="z-index: 999; color:#DBE5EA;">La vérification des électeurs a
+                                                <h2 class="election-note h5">La vérification des électeurs a
                                                     pri fin le {{ $item['end_veriff'] }}. Cette election débutera le
                                                     {{ $item['start_vote'] }}</h2>
                                             @endif
                                         @elseif($item['stage'] == 3)
                                             <span class="online-status status-available">Voting Ongoing</span>
                                             @if ($item['end_vote'])
-                                                <h2 class="mt-5 position-relative h5"
-                                                    style="z-index: 999; color:#DBE5EA;">L'élection s'achèvera le
+                                                <h2 class="election-note h5">L'élection s'achèvera le
                                                     {{ $item['end_vote'] }}</h2>
                                             @endif
                                         @elseif($item['stage'] == 4)
                                             <span class="online-status status-available">Done</span>
                                             @if ($item['start_vote'])
-                                                <h2 class="mt-5 position-relative h5"
-                                                    style="z-index: 999; color:#DBE5EA;">Cette élection a débuté le
+                                                <h2 class="election-note h5">Cette élection a débuté le
                                                     {{ $item['start_vote'] }} et s'est achevé le {{ $item['end_vote'] }},
                                                     vous pouvez voir les résultats</h2>
                                             @endif

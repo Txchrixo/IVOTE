@@ -154,14 +154,15 @@ class ElectionManagementTest extends TestCase
         Storage::disk('public')->assertExists('uploads/bg/' . $stored);
     }
 
-    public function test_dashboard_links_uploaded_backgrounds_from_storage(): void
+    public function test_dashboard_cards_use_the_uploaded_background_or_the_theme_gradient(): void
     {
         $this->election(['bg' => 'bg-1-abc.png']);
         $this->election(['title' => 'No background']);
 
         $this->actingAs($this->ea)->get('/ea/dashboard')
             ->assertOk()
-            ->assertSee('/storage/uploads/bg/bg-1-abc.png', false)
-            ->assertSee('/storage/uploads/bg/voting-bg.jpg', false);
+            ->assertSee("style=\"background-image: url('" . url('storage/uploads/bg/bg-1-abc.png') . "');\"", false)
+            ->assertSee('election-card has-image', false)
+            ->assertSee('election-card "', false);
     }
 }
