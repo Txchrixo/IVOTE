@@ -57,15 +57,17 @@ $(function () {
                     .data('id', item.id)
                     .prop('disabled', Number(item.is_paid) === 1)
                     .text(Number(item.is_paid) === 1 ? 'Paid' : 'Pay');
+                // ID | Bitcoin address | Transaction ID | Operation
                 const tr = $('<tr>')
                     .append($('<td>').text(item.id))
                     .append($('<td>').text(item.bitcoin_address))
-                    .append($('<td>').append(btn).append($('<span>').addClass('ms-2 status-' + Number(item.id))));
+                    .append($('<td>').append($('<span>').addClass('text-break status-' + Number(item.id))))
+                    .append($('<td>').append(btn));
                 tbody.append(tr);
             });
 
             if (result.data.length === 0) {
-                tbody.append($('<tr>').append($('<td>').addClass('p-3 w-100 text-center').attr('colspan', 3).text('No data available.')));
+                tbody.append($('<tr>').append($('<td>').addClass('p-3 w-100 text-center').attr('colspan', 4).text('No data available.')));
             }
         }).fail(function (error) {
             Swal.fire({ title: 'Error', text: 'Unable to load addresses (' + error.status + ')', icon: 'error' });

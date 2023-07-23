@@ -13,7 +13,7 @@
                     <div class="row">
                         <div class="col-md-3">
                             <div class="metric">
-                                <span class="icon"><i class="fa fa-btc"></i></span>
+                                <span class="icon" aria-hidden="true"><i class="lnr lnr-chart-bars"></i></span>
                                 <p>
                                     <span class="number number-btc"><span class="skeleton" aria-hidden="true"></span></span>
                                     <span class="title">Balance</span>
@@ -22,7 +22,7 @@
                         </div>
                         <div class="col-md-3">
                             <div class="metric">
-                                <span class="icon"><i class="fa fa-globe"></i></span>
+                                <span class="icon" aria-hidden="true"><i class="lnr lnr-earth"></i></span>
                                 <p>
                                     <span class="number number-network"><span class="skeleton" aria-hidden="true"></span></span>
                                     <span class="title">Network</span>
@@ -31,7 +31,7 @@
                         </div>
                         <div class="col-md-3">
                             <div class="metric">
-                                <span class="icon"><i class="fa fa-btc"></i></span>
+                                <span class="icon" aria-hidden="true"><i class="lnr lnr-layers"></i></span>
                                 <p>
                                     <span class="number number-unspent"><span class="skeleton" aria-hidden="true"></span></span>
                                     <span class="title">Unspent TX</span>
@@ -40,7 +40,7 @@
                         </div>
                         <div class="col-md-3">
                             <div class="metric">
-                                <span class="icon"><i class="fa fa-globe"></i></span>
+                                <span class="icon" aria-hidden="true"><i class="lnr lnr-database"></i></span>
                                 <p>
                                     <span class="number number-addresses"><span class="skeleton" aria-hidden="true"></span></span>
                                     <span class="title">Addresses</span>

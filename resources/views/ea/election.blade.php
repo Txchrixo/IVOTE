@@ -17,9 +17,7 @@
                                 <th>Title</th>
                                 <th>Voters Numbers</th>
                                 <th>Created Time</th>
-                                <th>Operation</th>
-                                <th></th>
-                                <th></th>
+                                <th colspan="3">Operation</th>
                             </tr>
                         </thead>
                         <tbody>
