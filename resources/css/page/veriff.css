@@ -5,7 +5,15 @@
 div>h1 {
     font-family: 'Helvetica Rounded', sans-serif;
     width: 50% !important;
+    /* keep long election names clear of the centred form */
+    max-width: calc(50% - 200px);
     transition: ease 0.5s;
+}
+
+@media screen and (max-width: 688px) {
+    div>h1 {
+        max-width: none;
+    }
 }
 
 @media screen and (max-width: 688px) {
