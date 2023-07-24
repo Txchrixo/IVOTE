@@ -86,5 +86,7 @@
     "Candidate registered successfully.": "Candidat enregistré.",
     "RA account created.": "Compte RA créé.",
     "Your password was changed.": "Votre mot de passe a été modifié.",
-    "You are not logged in": "Vous n'êtes pas connecté"
+    "You are not logged in": "Vous n'êtes pas connecté",
+    "Key configured (encrypted). Leave empty to keep it.": "Clé configurée (chiffrée). Laisser vide pour la conserver.",
+    "No key configured": "Aucune clé configurée"
 }

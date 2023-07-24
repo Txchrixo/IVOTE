@@ -81,7 +81,7 @@
                                     <div class="form-group mt-2">
                                         <label for="bitcoin_priv_key">Private Key</label>
                                         <textarea name="bitcoin_priv_key" class="form-control mt-1 rounded-2 @error('bitcoin_priv_key') is-invalid @enderror"
-                                            id="bitcoin_priv_key" rows="5" autocomplete="off" spellcheck="false" placeholder="{{ $user->getRawOriginal('bitcoin_priv_key') ? __('Clé configurée (chiffrée). Laisser vide pour la conserver.') : __('Aucune clé configurée') }}"></textarea>
+                                            id="bitcoin_priv_key" rows="5" autocomplete="off" spellcheck="false" placeholder="{{ $user->getRawOriginal('bitcoin_priv_key') ? __('Key configured (encrypted). Leave empty to keep it.') : __('No key configured') }}"></textarea>
                                     </div>
                                     @error('bitcoin_priv_key')
                                         <span class="text-danger">{{ $message }}</span>
@@ -150,7 +150,7 @@
                                     <div class="form-group mt-2">
                                         <label for="eth_priv_key">Private Key</label>
                                         <textarea name="eth_priv_key" class="form-control mt-1 rounded-2 @error('eth_priv_key') is-invalid @enderror"
-                                            id="eth_priv_key" rows="5" autocomplete="off" spellcheck="false" placeholder="{{ $user->getRawOriginal('eth_priv_key') ? __('Clé configurée (chiffrée). Laisser vide pour la conserver.') : __('Aucune clé configurée') }}"></textarea>
+                                            id="eth_priv_key" rows="5" autocomplete="off" spellcheck="false" placeholder="{{ $user->getRawOriginal('eth_priv_key') ? __('Key configured (encrypted). Leave empty to keep it.') : __('No key configured') }}"></textarea>
                                     </div>
                                     @error('eth_priv_key')
                                         <span class="text-danger">{{ $message }}</span>
@@ -221,7 +221,7 @@
                                     <div class="form-group mt-2">
                                         <label for="solana_priv_key">Private Key</label>
                                         <textarea name="solana_priv_key" class="form-control mt-1 rounded-2 @error('solana_priv_key') is-invalid @enderror"
-                                            id="pubkey" rows="5" autocomplete="off" spellcheck="false" placeholder="{{ $user->getRawOriginal('solana_priv_key') ? __('Clé configurée (chiffrée). Laisser vide pour la conserver.') : __('Aucune clé configurée') }}"></textarea>
+                                            id="pubkey" rows="5" autocomplete="off" spellcheck="false" placeholder="{{ $user->getRawOriginal('solana_priv_key') ? __('Key configured (encrypted). Leave empty to keep it.') : __('No key configured') }}"></textarea>
                                     </div>
                                     @error('solana_priv_key')
                                         <span class="text-danger">{{ $message }}</span>
