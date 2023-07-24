@@ -70,7 +70,7 @@
                 <img class="logo" width="150" height="auto" src="{{ Vite::image('logo.svg') }}" alt="logo ivote">
                 <img class="icon-satisfaction" width="100" height="auto" src="{{ Vite::image('satisfaction.png') }}"
                     alt="icon satisfaction">
-                <h2 class="text-white align-self-center text-center">@lang('page.ready.electionName', ['election' => 'election'])</h1>
+                <h2 class="text-white align-self-center text-center">@lang('page.ready.electionName', ['election' => $election])</h2>
             </div>
             <div class="d-flex m-1 align-self-end mt-3">
                 <a href="{{ route('voter.generateKeys') }}"><input class="btn btn-primary" type="button"

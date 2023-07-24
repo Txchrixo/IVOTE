@@ -45,7 +45,10 @@ class VoterController extends Controller
 
     public function getReady(Request $request)
     {
-        return view('voter.ready', ['election' => 'Presidentielle 2023']);
+        $election = VoteList::where('title', VoteList::slug((string) $request->query('election', '')))->first()
+            ?? VoteList::where('stage', ElectionStage::Veriff->value)->orderBy('id')->first();
+
+        return view('voter.ready', ['election' => $election?->title ?? '']);
     }
 
     public function getGenerateKeys(Request $request)
