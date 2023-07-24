@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use BitcoinPHP\BitcoinECDSA\BitcoinECDSA;
 use Illuminate\Database\Eloquent\Model;
 
 class Key extends Model
