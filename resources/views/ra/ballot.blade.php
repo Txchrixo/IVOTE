@@ -27,8 +27,8 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Code</th>
-                                <th>isUsed</th>
-                                <th>UseFor</th>
+                                <th>Used</th>
+                                <th>Election</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -37,7 +37,7 @@
                                     <td>{{ $item['id'] }}</td>
                                     <td>{{ $item['code'] }}</td>
                                     <td>
-                                        @if ($item['used'] == 0)
+                                        @if (!$item['is_used'])
                                             no
                                         @else
                                             yes
