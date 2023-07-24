@@ -5,7 +5,7 @@
         <div class="col-md-12">
             <div class="panel panel-headline rounded-4">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Candidates For</h3>
+                    <h3 class="panel-title">Candidates</h3>
                 </div>
                 <div class="panel-body">
                     <div class="row my-2">

@@ -7,7 +7,7 @@
             <div class="panel panel-headline rounded-4">
                 <div class="panel-heading">
                     <h3 class="panel-title">Overview</h3>
-                    <p class="panel-subtitle">Welcome back, Registration Authority</p>
+                    <p class="panel-subtitle">Welcome back, {{ $data->nickname ?: $data->username }}</p>
                 </div>
                 <div class="panel-body">
                     <div class="row">

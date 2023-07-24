@@ -8,7 +8,7 @@
     <div class="panel panel-headline" style="border-radius: 15px;">
         <div class="panel-heading">
             <h3 class="panel-title">Overview</h3>
-            <p class="panel-subtitle">Welcome back, </p>
+            <p class="panel-subtitle">Welcome back, {{ $data->nickname ?: $data->username }}</p>
         </div>
         <div class="panel-body">
             <div class="dash-stack">
