@@ -9,16 +9,15 @@
                 </div>
                 <div class="panel-body">
                     <input type="hidden" class="vote-item" value="NaN">
-                    <form action="{{ url('verify.now') }}" method="get">
+                    <form action="{{ route('tally.now') }}" method="get">
                         <div class="row p-2">
                             @foreach ($data as $item)
                                 <div class="col-md-12 my-2 p-3 rounded-4">
                                     <div class="panel-vote-item" data-id="{{ $item['id'] }}">
                                         <div class="profile-header rounded-4">
                                             <div class="overlay"></div>
-                                            <div class="profile-main text-body-emphasis rounded-4 p-4"
-                                                id="profile-main-bg"
-                                                style="background-image: url('{{ $item->backgroundUrl() }}'); height: 150px;">
+                                            <div class="profile-main text-white rounded-4 p-4"
+                                                style="background: linear-gradient(rgba(24, 16, 60, .55), rgba(24, 16, 60, .35)), url('{{ $item->backgroundUrl() }}') center / cover; height: 150px;">
                                                 <h3 class="name">{{ $item['title'] }}</h3>
                                                 <span class="online-status status-available">Done</span>
                                             </div>
@@ -29,9 +28,9 @@
                                     </div>
                                 </div>
                             @endforeach
-                            @empty($data)
+                            @if ($data->isEmpty())
                                 <h3>No Election Ended yet</h3>
-                            @endempty
+                            @endif
 
                         </div>
                         <div class="button-right d-flex justify-content-end px-3">

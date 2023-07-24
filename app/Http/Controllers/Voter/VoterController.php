@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Voter;
 
 use App\Enums\ElectionStage;
+use App\Enums\Role;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Models\VoteList;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -63,42 +65,43 @@ class VoterController extends Controller
 
     public function getTallyHome(Request $request)
     {
-        $vote_list = VoteList::where('stage', 4)->get();
+        $vote_list = VoteList::where('stage', ElectionStage::Done->value)->get();
         return  view('tally.home', ['data' => $vote_list]);
     }
 
-    public function getTally($request, $response)
+    /** Results of an election (the tally script reads the EA bitcoin address). */
+    public function getTally(Request $request): View|RedirectResponse
     {
-        $vote_item = (int) $request->getParam('vote_item');
-        $eaddress = User::select('bitcoin_address')->where('id', '2')->first();
-        if (!$vote_item)
-            return $response->withRedirect($this->router->pathFor('tally.home'));
-        $result = VoteList::all()->where('id', $vote_item)->first();
-        if (!$result)
-            return $response->withRedirect($this->router->pathFor('tally.home'));
-
-        return $this->view->render($response, 'tally/tally.twig', ['item_id' => $vote_item, 'title' => $result->title, 'eaaddress' => $eaddress->bitcoin_address]);
+        return $this->electionPage($request, 'tally.tally', 'tally.home');
     }
 
-
-    public function getVerify($request, $response)
+    /** Vote verification for an election. */
+    public function getVerify(Request $request): View|RedirectResponse
     {
-        $vote_item = (int) $request->getParam('vote_item');
-        $eaddress = User::select('bitcoin_address')->where('id', '2')->first();
-        if (!$vote_item)
-            return $response->withRedirect($this->router->pathFor('verify.home'));
-        $result = VoteList::all()->where('id', $vote_item)->first();
-        if (!$result)
-            return $response->withRedirect($this->router->pathFor('verify.home'));
-
-        return $this->view->render($response, 'verify/verify.twig', ['item_id' => $vote_item, 'title' => $result->title, 'eaaddress' => $eaddress->bitcoin_address]);
+        return $this->electionPage($request, 'verify.verify', 'verify.home');
     }
 
-    public function getVerifyHome($request, $response)
+    public function getVerifyHome(): View
     {
-        $vote_list = VoteList::all();
-        return $this->view->render($response, 'verify/home.twig', ['data' => $vote_list]);
+        return view('verify.home', ['data' => VoteList::where('stage', ElectionStage::Done->value)->get()]);
     }
+
+    private function electionPage(Request $request, string $view, string $fallbackRoute): View|RedirectResponse
+    {
+        $election = VoteList::find((int) $request->query('vote_item'));
+        if (!$election) {
+            return to_route($fallbackRoute);
+        }
+
+        $authority = User::where('role', Role::EA->value)->first();
+
+        return view($view, [
+            'item_id' => $election->id,
+            'title' => $election->title,
+            'eaaddress' => $authority?->bitcoin_address,
+        ]);
+    }
+
     //    public function getVoteList($request, $response)
     //    {
     //        $data = UserVote::all()->where('user_id',$this->auth->user()->id)->first();
