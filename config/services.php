@@ -39,6 +39,10 @@ return [
         'fee_amount' => env('BLOCKIO_FEE_AMOUNT', '0.0001'),
     ],
 
+    'solana' => [
+        'rpc_url' => env('SOLANA_RPC_URL', 'https://api.devnet.solana.com'),
+    ],
+
     'cryptoapis' => [
         'api_key' => env('CRYPTOAPIS_API_KEY'),
         'base_url' => env('CRYPTOAPIS_BASE_URL', 'https://rest.cryptoapis.io'),

@@ -41,51 +41,78 @@ class BlockChainController extends Controller
         return view('ea.fee', ['data' => $result, 'user' => $user]);
     }
 
+    /** Test network used for each chain, and the EA account column holding its address. */
+    private const CHAINS = [
+        'bitcoin' => ['network' => 'testnet', 'address' => 'bitcoin_address', 'unit' => 'tBTC'],
+        'ethereum' => ['network' => 'goerli', 'address' => 'eth_address', 'unit' => 'gETH'],
+        'solana' => ['network' => 'devnet', 'address' => 'solana_address', 'unit' => 'SOL'],
+    ];
+
     /**
-     * Solde de l'adresse de l'EA via CryptoAPIs.
-     * L'adresse vient du compte de l'EA connecté, jamais du client.
+     * Balance of the signed-in EA on one chain. The address always comes from the EA
+     * account, never from the client: CryptoAPIs for Bitcoin and Ethereum, the public
+     * Solana JSON-RPC for Solana.
      */
     public function getEABalance(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'blockchain' => ['required', 'in:bitcoin'],
-            'network' => ['required', 'in:testnet,mainnet'],
+            'blockchain' => ['required', 'in:' . implode(',', array_keys(self::CHAINS))],
         ]);
 
-        $address = Auth::user()->bitcoin_address;
-        $apiKey = config('services.cryptoapis.api_key');
-
-        if (!$address || !$apiKey) {
+        $chain = self::CHAINS[$validated['blockchain']];
+        $address = Auth::user()->{$chain['address']};
+        if (!$address) {
             return response()->json(['success' => false, 'message' => 'Unconfigured'], 422);
+        }
+
+        try {
+            $amount = $validated['blockchain'] === 'solana'
+                ? $this->solanaBalance($address)
+                : $this->cryptoApisBalance($validated['blockchain'], $chain['network'], $address);
+        } catch (Throwable $e) {
+            Log::warning('Balance request failed', ['chain' => $validated['blockchain'], 'error' => $e->getMessage()]);
+            return response()->json(['success' => false, 'message' => 'Service unavailable'], 502);
+        }
+
+        if ($amount === null) {
+            return response()->json(['success' => false, 'message' => 'Unconfigured'], 422);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => ['amount' => $amount, 'unit' => $chain['unit'], 'network' => $chain['network']],
+        ]);
+    }
+
+    private function cryptoApisBalance(string $blockchain, string $network, string $address): ?string
+    {
+        $apiKey = config('services.cryptoapis.api_key');
+        if (!$apiKey) {
+            return null;
         }
 
         $url = sprintf(
             '%s/blockchain-data/%s/%s/addresses/%s/balance',
             rtrim(config('services.cryptoapis.base_url'), '/'),
-            $validated['blockchain'],
-            $validated['network'],
+            $blockchain,
+            $network,
             rawurlencode($address)
         );
 
-        try {
-            $response = Http::timeout(10)->withHeaders(['x-api-key' => $apiKey])->acceptJson()->get($url);
-        } catch (Throwable $e) {
-            Log::warning('CryptoAPIs request failed', ['error' => $e->getMessage()]);
-            return response()->json(['success' => false, 'message' => 'Service unavailable'], 502);
-        }
+        $response = Http::timeout(10)->withHeaders(['x-api-key' => $apiKey])->acceptJson()->get($url)->throw();
 
-        if (!$response->successful()) {
-            return response()->json(['success' => false, 'message' => 'Service error'], 502);
-        }
+        return data_get($response->json(), 'data.item.confirmedBalance.amount');
+    }
 
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'amount' => data_get($response->json(), 'data.item.confirmedBalance.amount'),
-                'unit' => data_get($response->json(), 'data.item.confirmedBalance.unit'),
-                'network' => $validated['network'],
-            ],
-        ]);
+    private function solanaBalance(string $address): ?string
+    {
+        $response = Http::timeout(10)->acceptJson()->post(config('services.solana.rpc_url'), [
+            'jsonrpc' => '2.0', 'id' => 1, 'method' => 'getBalance', 'params' => [$address],
+        ])->throw();
+
+        $lamports = data_get($response->json(), 'result.value');
+
+        return $lamports === null ? null : number_format($lamports / 1_000_000_000, 9, '.', '');
     }
 
     public function getBlockIoBalance(): JsonResponse
