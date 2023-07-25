@@ -122,7 +122,59 @@ Three actors take part: the **Election Authority** (EA), the **Registration Auth
   </tr>
 </table>
 
-Screens show the demo data set (`DemoSeeder`); the wallet balance is mocked since the demo has no funded wallet.
+Screens show the demo data set (`DemoSeeder`); wallet balances are mocked since the demo has no funded wallets.
+
+### Identity verification with Veriff
+
+The voter enters an email, Veriff checks an official ID and a selfie (on the phone or the
+computer), then IVote emails a personal link that opens the key generation step.
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/2023/veriff-start.jpg" alt="Veriff session start"></td>
+    <td width="50%"><img src="docs/screenshots/2023/veriff-mobile-document.jpg" alt="Veriff document selection"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>3.</b> Starting a Veriff session</td>
+    <td align="center"><b>3.</b> Choosing the ID document</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/2023/veriff-mobile-capture.jpg" alt="Document photo and selfie"></td>
+    <td><img src="docs/screenshots/2023/voter-email.jpg" alt="Approval email"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>3.</b> Document photo, selfie, done</td>
+    <td align="center"><b>3.</b> Approval email with the voter link</td>
+  </tr>
+</table>
+
+### Voting, tally and verification (2023 prototype)
+
+Captured on the 2023 prototype (French UI) during the municipal election demo.
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/2023/wait-and-vote.jpg" alt="Waiting page and ballot"></td>
+    <td width="50%"><img src="docs/screenshots/2023/sign-verify-results.jpg" alt="Signing, verification and results"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>6.</b> Ballot and voter identity</td>
+    <td align="center"><b>6–8.</b> Ring signature, verification, results</td>
+  </tr>
+</table>
+
+## Design
+
+<table>
+  <tr>
+    <td width="45%"><img src="docs/diagrams/deployment.jpg" alt="Deployment diagram"></td>
+    <td width="55%"><img src="docs/diagrams/class-diagram.jpg" alt="Class diagram"></td>
+  </tr>
+  <tr>
+    <td align="center">Deployment</td>
+    <td align="center">Class diagram</td>
+  </tr>
+</table>
 
 ## Architecture
 
@@ -133,14 +185,15 @@ Screens show the demo data set (`DemoSeeder`); the wallet balance is mocked sinc
      │
      ├── Veriff ............ identity verification
      ├── Block.io .......... funding voter addresses (OP_RETURN on Bitcoin testnet)
-     └── CryptoAPIs ........ EA wallet balance
+     ├── CryptoAPIs ........ EA balance on Bitcoin testnet and Ethereum Goerli
+     └── Solana RPC ........ EA balance on Solana devnet
 ```
 
 | Layer | Choice |
 |---|---|
 | Back end | PHP 8.1, Laravel 10, MySQL 8 |
 | Front end | Blade, Bootstrap 5, jQuery, Vite |
-| Blockchain | Bitcoin testnet (`OP_RETURN`), Block.io, CryptoAPIs |
+| Blockchain | Bitcoin testnet (`OP_RETURN`), Ethereum and Solana balances, Block.io, CryptoAPIs |
 | Cryptography | Ring signatures, secp256k1 keys, AES-256 encrypted keys at rest |
 | Security | TOTP 2FA, role gates, CSP with nonces, rate limits, audit log |
 | Method | 2TUP, UML |
@@ -193,8 +246,8 @@ docs/         screenshots
 
 - One voter could still receive several funded addresses; the address pool needs a binding
   to the registered public key.
-- Ballot casting, the live tally and signature verification screens are still being wired
-  to the ring signature library.
+- Ballot casting, the live tally and signature verification run in the 2023 prototype and
+  are being ported to the current Laravel version.
 - The voter needs some technical comfort (keys, wallets); accessibility is limited.
 - Transaction timing and amounts may allow linkability; mixing or batching would reduce it.
 - Bitcoin fees and confirmation times do not scale to national elections.
