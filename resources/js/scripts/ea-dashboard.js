@@ -5,22 +5,20 @@ import Swal from 'sweetalert2/dist/sweetalert2'
  * @author TxChrixo
  */
 $(function () {
+    // One balance card per chain; the address is read server-side from the EA account
     $('.blockchain').each((index, input) => {
-        let blockchain = input.value;
-        let network = input.getAttribute('data-network');
-        // L'adresse est celle de l'EA connecté, lue côté serveur
-        $.getJSON('/ea/api/balance', { blockchain: blockchain, network: network }, function (result) {
+        const slot = input.dataset.slot;
+        const unconfigured = () => {
+            $(".number-" + slot + ", .number-" + slot + "-network").text("Unconfigured").addClass("text-muted");
+        };
+        $.getJSON('/ea/api/balance', { blockchain: input.value }, function (result) {
             if (result.success && result.data) {
-                $(".number-btc").text(result.data.amount + " " + result.data.unit);
-                $(".number-network").html(input.getAttribute('data-network').toUpperCase());
+                $(".number-" + slot).text(result.data.amount + " " + result.data.unit);
+                $(".number-" + slot + "-network").text(result.data.network.toUpperCase());
             } else {
-                $(".number-btc").html("Unconfigured");
-                $(".number-network").html("Unconfigured");
+                unconfigured();
             }
-        }).fail(function () {
-            $(".number-btc").text("Unconfigured");
-            $(".number-network").text("Unconfigured");
-        });
+        }).fail(unconfigured);
     });
     $('.btn-toggleStage').on('click', function loadCandidate() {
         let id = $(this).data('id');

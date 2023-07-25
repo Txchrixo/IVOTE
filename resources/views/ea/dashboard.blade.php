@@ -1,10 +1,9 @@
 @extends('templates.app')
 
 @section('content')
-    <input type="hidden" class="blockchain" value="bitcoin" data-network="testnet"
-        data-address="{{ $data['bitcoin_address'] }}">
-    <input type="hidden" class="blockchain" value="bitcoin" data-network="testnet"
-        data-address="{{ $data['bitcoin_address'] }}">
+    @foreach (['bitcoin' => 'btc', 'ethereum' => 'eth', 'solana' => 'solana'] as $chain => $slot)
+        <input type="hidden" class="blockchain" value="{{ $chain }}" data-slot="{{ $slot }}">
+    @endforeach
     <div class="panel panel-headline" style="border-radius: 15px;">
         <div class="panel-heading">
             <h3 class="panel-title">Overview</h3>
@@ -24,7 +23,7 @@
                                         <span class="title">Balance</span>
                                     </p>
                                     <p>
-                                        <span class="number number-network"><span class="skeleton" aria-hidden="true"></span></span>
+                                        <span class="number number-btc-network"><span class="skeleton" aria-hidden="true"></span></span>
                                         <span class="title">Network</span>
                                     </p>
                                 </div>
@@ -37,11 +36,11 @@
                                 <img src="{{ Vite::image('eth.png') }}" alt="" class="metric-icon">
                                 <div class="d-flex flex-column gap-3 metric-body">
                                     <p class="d-flex flex-column align-items-end justify-content-center">
-                                        <span class="number number-eth text-muted">Unconfigured</span>
+                                        <span class="number number-eth"><span class="skeleton" aria-hidden="true"></span></span>
                                         <span class="title">Balance</span>
                                     </p>
                                     <p>
-                                        <span class="number number-eth-network text-muted">Unconfigured</span>
+                                        <span class="number number-eth-network"><span class="skeleton" aria-hidden="true"></span></span>
                                         <span class="title">Network</span>
                                     </p>
                                 </div>
@@ -54,11 +53,11 @@
                                 <img src="{{ Vite::image('solana.png') }}" alt="" class="metric-icon">
                                 <div class="d-flex flex-column gap-3 metric-body">
                                     <p class="d-flex flex-column align-items-end justify-content-center">
-                                        <span class="number number-solana text-muted">Unconfigured</span>
+                                        <span class="number number-solana"><span class="skeleton" aria-hidden="true"></span></span>
                                         <span class="title">Balance</span>
                                     </p>
                                     <p>
-                                        <span class="number number-solana-network text-muted">Unconfigured</span>
+                                        <span class="number number-solana-network"><span class="skeleton" aria-hidden="true"></span></span>
                                         <span class="title">Network</span>
                                     </p>
                                 </div>
