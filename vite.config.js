@@ -29,6 +29,7 @@ export default defineConfig({
                 'resources/js/scripts/ra-addCandidate.js',
                 'resources/js/scripts/veriff.js',
                 'resources/js/scripts/vote.js',
+                'resources/js/scripts/voter-keys.js',
                 'resources/js/scripts/tally-home.js',
             ],
             refresh: true,

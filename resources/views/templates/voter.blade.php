@@ -58,6 +58,9 @@
         <script src='https://cdn.veriff.me/incontext/js/v1/veriff.js'></script>
         <script type="module" src="{{ Vite::asset('resources/js/scripts/veriff.js') }}"></script>
     @endif
+    @if (in_array(Route::currentRouteName(), [\App\Enums\RouteApp::$generateKeys, \App\Enums\RouteApp::$wait]))
+        <script type="module" src="{{ Vite::asset('resources/js/scripts/voter-keys.js') }}"></script>
+    @endif
     @if (Route::currentRouteName() == \App\Enums\RouteApp::$vote)
         <script type="module" src="{{ Vite::asset('resources/js/scripts/vote.js') }}"></script>
     @endif

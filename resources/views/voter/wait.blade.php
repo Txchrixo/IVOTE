@@ -35,7 +35,7 @@
                         </div>
                         <div class="d-flex justify-content-end align-items-center gap-3 mt-3"
                             style="font-family: 'Helvetica';">
-                            <button type="button" class="btn btn-primary btn-updatekey"
+                            <button type="button" class="btn btn-primary btn-updatekey" data-href="{{ route('voter.generateKeys') }}"
                                 style="padding: 0.5em 2em; border-radius: 12px;">@lang('page.wait.renewingKeys-btn')</button>
                         </div>
                     </div>
