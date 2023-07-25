@@ -118,6 +118,8 @@ class DemoSeeder extends Seeder
         if ($wallet) {
             $user->bitcoin_address = $wallet['address'];
             $user->bitcoin_priv_key = $wallet['wif'];
+            $user->eth_address = '0x' . bin2hex(random_bytes(20));
+            $user->solana_address = self::base58(random_bytes(32));
         }
         $user->forceFill([
             'two_factor_secret' => $secret,
@@ -170,6 +172,20 @@ class DemoSeeder extends Seeder
                 'is_used' => $data['stage'] === ElectionStage::Done && $i < $data['registered'] - 9,
             ])->save();
         }
+    }
+
+    /** Base58 (Bitcoin alphabet), the encoding of Solana addresses. */
+    private static function base58(string $bytes): string
+    {
+        $alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+        $number = gmp_import($bytes);
+        $encoded = '';
+        while (gmp_cmp($number, 0) > 0) {
+            [$number, $remainder] = gmp_div_qr($number, 58);
+            $encoded = $alphabet[gmp_intval($remainder)] . $encoded;
+        }
+
+        return str_repeat('1', strlen($bytes) - strlen(ltrim($bytes, "\0"))) . $encoded;
     }
 
     /** @return array{wif: string, public: string, address: string} a testnet key pair */
