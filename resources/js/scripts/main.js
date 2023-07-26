@@ -55,7 +55,7 @@ function loadmenu() {
             now.parent().parent().addClass("in").prev().addClass("active").removeClass("collapsed").addClass("collapse");
         }
         // set title
-        $(document).attr("title",now.children("a").children("span").text() + ' | BlockVotes');
+        $(document).attr("title",now.children("a").children("span").text() + ' | IVote');
 
     }
 
