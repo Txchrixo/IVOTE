@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "If you use this software or build on this work, please cite the thesis below."
+title: "IVote: an electronic voting proof of concept based on the Bitcoin blockchain and ring signatures"
+type: software
+authors:
+  - family-names: "Nana Tchounkeu"
+    given-names: "Thierry Christian"
+repository-code: "https://github.com/Txchrixo/iVote"
+license: GPL-3.0-or-later
+date-released: "2023-07-27"
+keywords:
+  - e-voting
+  - blockchain
+  - bitcoin
+  - ring signature
+  - verifiability
+  - proof of concept
+preferred-citation:
+  type: thesis
+  title: "Design and Implementation of an Electronic Voting System Based on Blockchain and Cryptographic Techniques"
+  authors:
+    - family-names: "Nana Tchounkeu"
+      given-names: "Thierry Christian"
+  thesis-type: "Bachelor's thesis (Licence de Technologie)"
+  institution:
+    name: "Institut Universitaire de Technologie, University of Douala"
+    city: "Douala"
+    country: "CM"
+  year: 2023
+  # Add the Zenodo DOI here once the thesis is published, e.g.
+  # doi: "10.5281/zenodo.XXXXXXX"
