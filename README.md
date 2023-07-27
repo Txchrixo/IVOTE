@@ -5,7 +5,7 @@
 <h3 align="center">Design and Implementation of an Electronic Voting System<br>Based on Blockchain and Cryptographic Techniques</h3>
 
 <p align="center">
-  🇨🇲 Bachelor's thesis · IUT de Douala, University of Douala, Cameroon · 2023<br>
+  <img src="docs/assets/cameroon.svg" alt="Flag of Cameroon" width="21" height="14">&nbsp; Bachelor's thesis · IUT de Douala, University of Douala, Cameroon · 2023<br>
   <sub>Proof of concept: Bitcoin testnet only, not meant for binding elections.</sub>
 </p>
 
@@ -36,7 +36,7 @@
 |---|---|
 | **Author** | NANA TCHOUNKEU Thierry Christian |
 | **Academic supervisor** | [Dr. Jean de Dieu NKAPKOP](https://orcid.org/0000-0001-7736-5145), University of Douala |
-| **Professional supervisor** | Mr. DJIMELI Christian (CODEC) |
+| **Professional supervisor** | Mr. DJIMELI Christian |
 | **Degree** | Licence de Technologie, Software Engineering |
 | **Institution** | Institut Universitaire de Technologie (IUT), University of Douala |
 | **Host company** | CODEC group, Douala |
@@ -64,6 +64,8 @@ adapts it to the Cameroonian electoral context.
 </p>
 
 ## Adapting the design to Cameroon
+
+<img src="docs/assets/cameroon.svg" alt="Flag of Cameroon" width="60" align="right">
 
 BlockVotes [8] was designed for a university setting with pre-issued ballot codes. IVote keeps its
 cryptographic core and reshapes the surrounding process around how elections are organised
