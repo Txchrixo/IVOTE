@@ -230,12 +230,10 @@ The analysis follows the 2TUP process with UML. Click a diagram to open it full 
     <td align="center">Sequence: authority sign-in</td>
   </tr>
   <tr>
-    <td><img src="docs/diagrams/deployment.jpg" alt="Deployment diagram"></td>
-    <td><img src="docs/diagrams/deployment-veriff.jpg" alt="Deployment with the voter's phone"></td>
+    <td colspan="2" align="center"><img src="docs/diagrams/deployment.jpg" alt="Deployment diagram" width="528"></td>
   </tr>
   <tr>
-    <td align="center">Deployment</td>
-    <td align="center">Deployment with the voter's phone</td>
+    <td colspan="2" align="center">Deployment (2023): WampServer, the IVote app, the voter's phone for Veriff, SoChain and Bitcoin testnet</td>
   </tr>
 </table>
 
@@ -272,14 +270,18 @@ The analysis follows the 2TUP process with UML. Click a diagram to open it full 
         └── Solana RPC ........ EA balance on Solana devnet
 ```
 
+### Stack
+
+The thesis version runs on WampServer (Apache and MySQL).
+
 | Layer | Choice |
 |---|---|
-| Back end | PHP 8.1, Laravel 10, MySQL 8 |
-| Front end | Blade, Bootstrap 5, jQuery, Vite, Chart.js |
-| Blockchain | Bitcoin testnet (`OP_RETURN`), BitcoinECDSA, Block.io, CryptoAPIs, Solana RPC |
-| Cryptography | ring signatures, secp256k1 keys, RSA voter keys (WebCrypto), AES-256 keys at rest |
-| Security | TOTP 2FA, role gates, CSP with nonces, rate limits, audit log |
-| Method | 2TUP, UML (Visual Paradigm), Figma mock-ups |
+| Back end | PHP 8.1, Laravel 10, MySQL 8 on WampServer (Apache) |
+| Front end | Blade, Bootstrap 5.3, jQuery 3.7, Vite 4, Chartist |
+| Blockchain | Bitcoin testnet (`OP_RETURN`), BitcoinECDSA, Block.io, CryptoAPIs, Ethereum and Solana balances |
+| Cryptography | ring signatures, secp256k1 keys, RSA voter keys generated with WebCrypto, authority keys encrypted at rest (AES-256) |
+| Identity and access | Veriff, TOTP 2FA, role gates, CSP with nonces, rate limits, audit log |
+| Method | 2TUP, UML (Visual Paradigm), Figma mock-ups, automated feature tests |
 
 <p align="center"><img src="docs/diagrams/tools.jpg" alt="Tools used" width="640"></p>
 
