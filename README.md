@@ -23,6 +23,8 @@
   <a href="#abstract">Abstract</a> ·
   <a href="#adapting-the-design-to-cameroon">Cameroon</a> ·
   <a href="#protocol">Protocol</a> ·
+  <a href="#cryptography">Cryptography</a> ·
+  <a href="#evaluation">Evaluation</a> ·
   <a href="#election-walkthrough">Walkthrough</a> ·
   <a href="#design">Design</a> ·
   <a href="#related-work">Related work</a> ·
@@ -48,11 +50,11 @@
 
 Electronic voting speeds up tabulation and widens access, but only earns trust if ballots stay
 secret and anyone can check the result. IVote combines the **Bitcoin blockchain** with
-**ring signatures** [2]: each vote is a testnet transaction whose `OP_RETURN` carries a ring
-signature over the chosen candidate. The signature proves the voter belongs to the registered
-electorate without revealing who they are, and the public ledger lets every voter confirm their
-ballot was counted unchanged, while organisers can neither alter results nor see voters'
-identities.
+**linkable ring signatures** [3]: each vote is a testnet transaction whose `OP_RETURN` commits
+to a ring signature over the chosen candidate. The signature proves the voter belongs to the
+registered electorate without revealing who they are, its key image exposes a second ballot from
+the same voter, and the public ledger lets every voter confirm their ballot was counted
+unchanged, while organisers can neither alter results nor see voters' identities.
 
 The system was modelled with UML following the 2TUP process and built with PHP, Laravel
 and MySQL. It extends the BlockVotes design [8] with remote identity verification (Veriff),
@@ -85,33 +87,115 @@ not claim compliance with the Cameroonian electoral code and was not endorsed by
 ## Protocol
 
 Three actors take part: the **Election Authority** (EA), the **Registration Authority** (RA)
-and the **voter** (V<sub>i</sub>). Authorities are assumed not to collude.
+and the **voter** V<sub>i</sub>.
 
 | Notation | Meaning |
 |---|---|
-| SK<sub>i</sub>, PK<sub>i</sub> | voter key pair, generated in the browser; SK<sub>i</sub> never leaves it |
-| PK = {PK<sub>1</sub> … PK<sub>n</sub>} | ring of registered public keys for an election |
-| A<sub>i</sub> | one-time Bitcoin testnet address funded by the EA |
-| C<sub>j</sub> | candidate identifier |
-| σ = Sign<sub>ring</sub>(C<sub>j</sub>, SK<sub>i</sub>, PK) | ring signature over the ballot |
+| G, q | generator and order of secp256k1 |
+| x<sub>i</sub>, P<sub>i</sub> = x<sub>i</sub>G | voter key pair, generated in the browser; x<sub>i</sub> never leaves it |
+| R = (P<sub>1</sub>, …, P<sub>n</sub>) | ring: every registered public key of the election, frozen when registration closes |
+| H<sub>p</sub> | hash to curve (RFC 9380 [16]) |
+| I<sub>i</sub> = x<sub>i</sub>H<sub>p</sub>(P<sub>i</sub>) | key image: identical in every signature made with x<sub>i</sub>, unlinkable to P<sub>i</sub> |
+| m = (L, C) | ballot: election identifier L and candidate C |
+| σ = (c<sub>0</sub>, s<sub>1</sub>…s<sub>n</sub>, I) | LSAG signature of m by some member of R |
+| A | one-time Bitcoin testnet address taken from the EA's funded pool |
 
-1. **Setup.** The EA creates the election and its Bitcoin address; the RA registers candidates.
+1. **Setup.** The EA creates the election and its Bitcoin address; the RA registers the candidates.
 2. **Identification.** V<sub>i</sub> proves their identity with Veriff and receives a one-time link by email.
-3. **Key registration.** V<sub>i</sub> generates (SK<sub>i</sub>, PK<sub>i</sub>) and registers PK<sub>i</sub> only.
-4. **Funding.** The EA funds a fresh address A<sub>i</sub> per voter, tagged with `OP_RETURN hash(PK_i)`.
-5. **Vote.** V<sub>i</sub> signs C<sub>j</sub> with SK<sub>i</sub> and the ring PK, then spends A<sub>i</sub> to the EA address with `OP_RETURN (hash(σ), C_j)`.
-6. **Tally.** Anyone decodes the `OP_RETURN` outputs, verifies σ against PK and counts the first transaction per address.
-7. **Verification.** V<sub>i</sub> finds their own transaction (individual verifiability); anyone can recount (universal verifiability).
+3. **Key registration.** V<sub>i</sub> generates (x<sub>i</sub>, P<sub>i</sub>) and registers P<sub>i</sub>. When registration closes, R is published.
+4. **Funding.** The EA funds a pool of n + δ addresses in batched transactions, with no tag that could tie an address to a voter.
+5. **Vote.** V<sub>i</sub> computes σ = Sign(m, R, x<sub>i</sub>) in the browser, takes any address A from the pool without identifying, publishes σ on the bulletin board and sends A's balance to the EA address with `OP_RETURN = H(σ) ‖ I ‖ C ‖ L` (68 bytes).
+6. **Tally.** Anyone reads the transactions to the EA address, fetches each σ, checks H(σ) and Verify(m, R, σ), and counts, for each key image I, only the first valid ballot in block order.
+7. **Verification.** V<sub>i</sub> finds their own transaction (individual verifiability); anyone can redo step 6 (universal verifiability).
 
-| Property | How the PoC addresses it | Status |
+| Property | Mechanism | Status |
 |---|---|---|
-| Eligibility | Veriff identity check, one registered key per voter | implemented |
-| Ballot privacy | ring signature hides the signer among PK | 2023 prototype |
+| Eligibility | Veriff identity check; only keys in R can produce a valid σ | implemented |
+| Unforgeability | LSAG, secure under the discrete logarithm assumption in the random oracle model [3] | implemented, tested |
+| One voter, one vote | key image I; repeated I are discarded at the tally | implemented, tested |
+| Ballot privacy | signer ambiguity among all n keys of R [3]; pool addresses are not tied to voters | implemented, tested |
 | Integrity | ballots are Bitcoin transactions, immutable once confirmed | 2023 prototype |
-| Individual verifiability | voter looks up their transaction and signature | 2023 prototype |
-| Universal verifiability | public tally from on-chain data | 2023 prototype |
+| Individual and universal verifiability | public ballots, public ring, deterministic tally rule | 2023 prototype |
 | Authority accountability | TOTP 2FA, role gates, audit log, staged life cycle | implemented |
-| Coercion resistance | not addressed | out of scope |
+| Coercion resistance | not addressed: a voter can prove their vote by revealing x<sub>i</sub> | out of scope |
+
+"Implemented, tested" refers to [`resources/js/crypto/lsag.js`](resources/js/crypto/lsag.js) and its test suite;
+wiring it into the ballot page in place of the 2023 code is the next step.
+
+## Cryptography
+
+### From the 2023 prototype to LSAG
+
+Reviewing the prototype for this repository showed that its ring signature, inherited from
+BlockVotes, **could be forged with public keys only**. It used the Rivest–Shamir–Tauman
+construction [2] with RSA-1024 keys but a common domain of `L = 1024` bits. RST require
+`L ≥ |n| + 160`, because their extended trapdoor `g` is the identity on
+`[⌊(2^L−1)/n⌋·n, 2^L)`; with `L = |n|` that zone is large, and a forger closes the ring there
+without inverting RSA. The attack succeeded in 20 out of 20 runs
+([`research/forge-2023-ring-signature.mjs`](research/forge-2023-ring-signature.mjs)).
+
+| | 2023 prototype | Current scheme |
+|---|---|---|
+| Scheme | RST ring signature [2] | LSAG linkable ring signature [3] |
+| Keys | RSA-1024, generated with JSEncrypt | secp256k1, the curve of Bitcoin |
+| Hash | SHA-1 | SHA-256, domain-separated; RFC 9380 hash to curve |
+| Randomness | RC4-based PRNG seeded once | platform CSPRNG for every scalar |
+| Ring bound to the signature | no, keys travel inside σ | yes, the ring digest enters every challenge |
+| Double vote | detected only by counting one ballot per address | detected by the key image, whatever the address |
+| Forgery without a private key | **possible** (20/20) | none known; off-curve points and out-of-range scalars are rejected |
+| Signature size | ≈ 640 B per ring member | 32 B per ring member + 65 B |
+
+The implementation relies on the audited `@noble/curves` and `@noble/hashes` libraries and is
+covered by tests for correctness, binding to the ballot and to the ring, tampering, invalid
+encodings, linkability and randomisation ([`tests/js/lsag.test.mjs`](tests/js/lsag.test.mjs)).
+
+### Threat model
+
+| Adversary | Can | Cannot |
+|---|---|---|
+| Public observer | read every ballot and recount | tell which registered voter cast a ballot |
+| Curious EA | see ballots, refuse to fund or serve addresses (visibly) | forge or alter ballots, link a ballot to a voter |
+| Curious RA, Veriff | link a person to P<sub>i</sub> | link P<sub>i</sub> to a ballot (the key image hides it) |
+| Dishonest voter | vote once, abstain, reveal their own vote | vote twice, vote outside the ring |
+| Network observer | link the IP that fetched an address or published σ | anything more, if voters use an anonymity network such as Tor |
+
+Assumptions: the EA and the RA do not collude; voters' browsers are not compromised; the
+discrete logarithm problem on secp256k1 is hard; the Bitcoin network keeps a single honest
+history. The bulletin board must keep every σ available; since each H(σ) is on-chain, a
+withheld or altered σ is detected, not hidden.
+
+## Evaluation
+
+Timings are medians of 5 runs on an Intel Core i7-10610U laptop with Node.js, produced by the
+scripts in [`research/`](research/). Transaction sizes follow the Bitcoin serialisation format.
+
+### Ring signatures
+
+| Ring size n | 2023 sign | 2023 verify | 2023 size | LSAG sign | LSAG verify | LSAG size |
+|---:|---:|---:|---:|---:|---:|---:|
+| 2 | 118 ms | 21 ms | 1.3 KB | 50 ms | 42 ms | 129 B |
+| 8 | 199 ms | 53 ms | 5.2 KB | 133 ms | 137 ms | 321 B |
+| 32 | 742 ms | 279 ms | 20.6 KB | 539 ms | 516 ms | 1.1 KB |
+| 64 | 1.22 s | 437 ms | 41.1 KB | 1.03 s | 1.04 s | 2.1 KB |
+| 128 | 1.68 s | 740 ms | 82.0 KB | 2.71 s | 2.94 s | 4.2 KB |
+
+LSAG costs about 22 ms per ring member to sign or verify, linear in n, and its signatures are
+20 times smaller. The 2023 scheme verifies faster (RSA with e = 65537) but is forgeable. A
+tally checks every ballot against the same ring, so n ballots cost O(n²) operations, about
+6 minutes for a ring of 128; rings of a few hundred voters, for example one per polling
+station, are the practical size.
+
+### On-chain cost
+
+| Transaction | Size | Fee at 2 sat/vB | at 10 sat/vB | at 50 sat/vB |
+|---|---:|---:|---:|---:|
+| Ballot: 1 P2PKH input, `OP_RETURN` of 68 B, 1 P2PKH output | 271 B | 542 sat | 2,710 sat | 13,550 sat |
+| Funding: each pool address in a batched transaction | 34 B | 68 sat | 340 sat | 1,700 sat |
+
+The 2023 code paid a fixed fee of 0.01 BTC per ballot, about 4,000 sat/vB for its 249-byte
+transaction. A ballot is recorded once its transaction is mined, about 10 minutes on average,
+and is commonly treated as final after 6 confirmations, about one hour; these are properties
+of Bitcoin, not measurements of IVote.
 
 ## Election walkthrough
 
@@ -300,7 +384,7 @@ The thesis version runs on WampServer (Apache and MySQL).
 | Back end | PHP 8.1, Laravel 10, MySQL 8 on WampServer (Apache) |
 | Front end | Blade, Bootstrap 5.3, jQuery 3.7, Vite 4, Chartist |
 | Blockchain | Bitcoin testnet (`OP_RETURN`), BitcoinECDSA, Block.io, CryptoAPIs, Ethereum and Solana balances |
-| Cryptography | ring signatures, secp256k1 keys, RSA voter keys generated with WebCrypto, authority keys encrypted at rest (AES-256) |
+| Cryptography | LSAG on secp256k1 (`@noble/curves`), authority keys encrypted at rest (AES-256) |
 | Identity and access | Veriff, TOTP 2FA, role gates, CSP with nonces, rate limits, audit log |
 | Method | 2TUP, UML (Visual Paradigm), Figma mock-ups, automated feature tests |
 
@@ -319,7 +403,7 @@ public blockchain as the bulletin board.
 | Hjálmarsson et al. [9] | 2018 | permissioned chain | trusted authority | smart contract | trusted authority |
 | Yu et al. [10] | 2018 | Hyperledger Fabric | linkable ring signatures | homomorphic | registered voters |
 | Chirotonia [11] | 2021 | Ethereum | linkable ring signatures | smart contract | registered voters |
-| **IVote** | 2023 | Bitcoin testnet | ring signatures | public, off-chain | Veriff on Cameroonian ID + email link |
+| **IVote** | 2023 | Bitcoin testnet | linkable ring signatures | public, off-chain | Veriff on Cameroonian ID + email link |
 
 Surveys [12–15] cover the wider landscape and its open problems (scalability, coercion, usability).
 
@@ -350,7 +434,8 @@ Accounts `ea` and `ra` share a password and TOTP secret, both printed once
 ## Tests
 
 ```bash
-php artisan test
+php artisan test     # back end
+npm run test:js      # linkable ring signature
 ```
 
 Feature tests cover authorization, two-factor sign-in, election stages, candidates, blockchain
@@ -361,9 +446,10 @@ balances, security headers, the audit log and the public results pages.
 ```
 app/          controllers, models, election stages, security middleware
 database/     migrations and seeders (including DemoSeeder)
-resources/    Blade views, styles and page scripts
+resources/    Blade views, styles, page scripts, LSAG module (js/crypto)
 routes/       web routes (back office, voter flow, results)
-tests/        feature and unit tests
+tests/        feature tests (PHP) and ring signature tests (JS)
+research/     forgery of the 2023 scheme, benchmarks
 docs/         screenshots, UML diagrams, defense slides
 ```
 
@@ -371,7 +457,7 @@ docs/         screenshots, UML diagrams, defense slides
 
 - This is a proof of concept on Bitcoin testnet; it has not been audited and must not run a binding election.
 - One voter could still receive several funded addresses; the address pool needs a binding to the registered public key.
-- Plain ring signatures do not link two ballots from the same key; linkable ring signatures [3] would enforce one vote per voter cryptographically.
+- Tally cost grows with n² for one ring; large elections need one ring per polling station, which shrinks each anonymity set.
 - No coercion resistance: a voter can prove how they voted.
 - Transaction timing and amounts may allow linkability; batching or mixing would reduce it.
 - Bitcoin fees and confirmation times do not scale to national elections.
@@ -409,6 +495,7 @@ If you build on this work, please cite the thesis. GitHub also offers a citation
 13. M. Benabdallah, A. Audras, L. Coudert, N. El Madhoun, M. Badra. *Analysis of Blockchain Solutions for E-Voting: A Systematic Literature Review*. IEEE Access 10, 2022. [doi:10.1109/ACCESS.2022.3187688](https://doi.org/10.1109/ACCESS.2022.3187688)
 14. U. Jafar, M. J. Ab Aziz, Z. Shukur, H. A. Hussain. *A Systematic Literature Review and Meta-Analysis on Scalable Blockchain-Based Electronic Voting Systems*. Sensors 22(19), 2022. [doi:10.3390/s22197585](https://doi.org/10.3390/s22197585)
 15. V. Vladucu, Z. Dong, J. Medina, R. Rojas-Cessa. *E-Voting Meets Blockchain: A Survey*. IEEE Access 11, pp. 23293–23308, 2023. [doi:10.1109/ACCESS.2023.3253682](https://doi.org/10.1109/ACCESS.2023.3253682)
+16. A. Faz-Hernández, S. Scott, N. Sullivan, R. S. Wahby, C. A. Wood. *Hashing to Elliptic Curves*. RFC 9380, IETF, 2023. [doi:10.17487/RFC9380](https://doi.org/10.17487/RFC9380)
 
 ## Acknowledgments
 
