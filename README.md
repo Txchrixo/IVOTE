@@ -5,7 +5,7 @@
 <h3 align="center">Design and Implementation of an Electronic Voting System<br>Based on Blockchain and Cryptographic Techniques</h3>
 
 <p align="center">
-  Bachelor's thesis · IUT de Douala, University of Douala · 2023<br>
+  🇨🇲 Bachelor's thesis · IUT de Douala, University of Douala, Cameroon · 2023<br>
   <sub>Proof of concept: Bitcoin testnet only, not meant for binding elections.</sub>
 </p>
 
@@ -21,6 +21,7 @@
 
 <p align="center">
   <a href="#abstract">Abstract</a> ·
+  <a href="#adapting-the-design-to-cameroon">Cameroon</a> ·
   <a href="#protocol">Protocol</a> ·
   <a href="#election-walkthrough">Walkthrough</a> ·
   <a href="#design">Design</a> ·
@@ -55,11 +56,29 @@ identities.
 
 The system was modelled with UML following the 2TUP process and built with PHP, Laravel
 and MySQL. It extends the BlockVotes design [8] with remote identity verification (Veriff),
-two-factor authentication for the authorities and an auditable election life cycle.
+two-factor authentication for the authorities and an auditable election life cycle, and
+adapts it to the Cameroonian electoral context.
 
 <p align="center">
   <img src="docs/slides/02-idea.jpg" alt="E-voting + Blockchain + Ring signature = IVote" width="720">
 </p>
+
+## Adapting the design to Cameroon
+
+BlockVotes [8] was designed for a university setting with pre-issued ballot codes. IVote keeps its
+cryptographic core and reshapes the surrounding process around how elections are organised
+in Cameroon:
+
+| Cameroonian reality | What IVote does |
+|---|---|
+| Elections are organised by an independent body, Elections Cameroon (ELECAM) | The Election Authority plays that role; registration is handed to a separate Registration Authority so that no single party holds both voters' identities and their ballots |
+| Identity rests on the national identity card (CNI), passport or residence permit | Remote identity check with Veriff on these Cameroonian documents, and a CNI field for candidates |
+| Most citizens are online through a smartphone rather than a computer | Veriff hands the check over to the voter's phone by QR code or SMS |
+| English and French are both official languages | The whole interface is bilingual, with a language switch on every page |
+| Disputed results erode trust in the outcome | Every ballot is a public Bitcoin transaction that any citizen, observer or party can recount |
+
+The 2023 demonstration simulated a municipal election. This remains a proof of concept: it does
+not claim compliance with the Cameroonian electoral code and was not endorsed by ELECAM.
 
 ## Protocol
 
@@ -298,7 +317,7 @@ public blockchain as the bulletin board.
 | Hjálmarsson et al. [9] | 2018 | permissioned chain | trusted authority | smart contract | trusted authority |
 | Yu et al. [10] | 2018 | Hyperledger Fabric | linkable ring signatures | homomorphic | registered voters |
 | Chirotonia [11] | 2021 | Ethereum | linkable ring signatures | smart contract | registered voters |
-| **IVote** | 2023 | Bitcoin testnet | ring signatures | public, off-chain | Veriff KYC + email link |
+| **IVote** | 2023 | Bitcoin testnet | ring signatures | public, off-chain | Veriff on Cameroonian ID + email link |
 
 Surveys [12–15] cover the wider landscape and its open problems (scalability, coercion, usability).
 
