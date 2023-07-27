@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\API\BallotAPIController;
 use App\Http\Controllers\API\CandidateAPIController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordController;
@@ -13,6 +12,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\PublicAPIController;
 use App\Http\Controllers\RA\BallotController;
 use App\Http\Controllers\RA\CandidateController;
+use App\Http\Controllers\Voter\BallotController as VoterBallotController;
+use App\Http\Controllers\Voter\RegistrationController;
 use App\Http\Controllers\Voter\VoterController;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Response;
@@ -90,6 +91,14 @@ Route::prefix('/voter')->name('voter.')->group(function () {
     Route::get('/generateKeys', [VoterController::class, 'getGenerateKeys'])->name('generateKeys');
     Route::get('/wait', [VoterController::class, 'getWait'])->name('wait');
     Route::get('/vote', [VoterController::class, 'getVote'])->name('vote');
+    Route::post('/{election}/identity', [RegistrationController::class, 'startIdentity'])->name('identity')
+        ->middleware('throttle:12,1');
+    Route::post('/{election}/register', [RegistrationController::class, 'register'])->name('register')
+        ->middleware('throttle:12,1');
+    Route::get('/{election}/ballots', [VoterBallotController::class, 'ledger'])->name('ballots.ledger')
+        ->middleware('throttle:30,1');
+    Route::get('/{election}/ballots/{receipt}', [VoterBallotController::class, 'receipt'])->name('ballots.receipt')
+        ->where('receipt', '[a-f0-9]{64}')->middleware('throttle:60,1');
 });
 
 Route::get('/api/getAllPubKeys', [PublicAPIController::class, 'getAllPubKeys'])->middleware('throttle:60,1');
@@ -137,7 +146,7 @@ Route::middleware(['auth', 'two-factor', 'can:ra'])->group(function () {
 
     Route::get('/ra/candidates', [CandidateController::class, 'getCandidatesList'])->name('ra.candidates');
 
-    Route::post('/api/addvoter', [BallotAPIController::class, 'postAddVoter']);
+    Route::post('/api/addvoter', [BallotController::class, 'postVoter'])->name('ra.addVoter.post');
     Route::put('/api/updatecandidate', [CandidateAPIController::class, 'postUpdateCandidate']);
     Route::delete('/api/delcandidate', [CandidateAPIController::class, 'postDelCandidate']);
 

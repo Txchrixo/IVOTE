@@ -1,19 +1,10 @@
 /**
  * Linkable ring signatures (LSAG, Liu, Wei and Wong, ACISP 2004) on secp256k1.
  *
- * A voter signs their ballot with their secret key x and the ring of every registered public
- * key. Anyone can check the signature came from *some* member of the ring, without learning
- * which one. Each signature also carries a key image I = x * Hp(P): it is the same for every
- * signature made with the same key, so two ballots from one voter are detected and only the
- * first is counted, while I reveals nothing about which key produced it.
+ * The key image I = x * Hp(P) repeats when the same key signs again. The ballot box
+ * uses it to reject duplicates. Each challenge commits to the ordered ring and the message.
  *
- * Signature: (c0, s_0 .. s_{n-1}, I), 32 * (n + 1) + 33 bytes.
- *
- * Fixes over the 2023 prototype (RST ring signature on RSA-1024, see the README):
- *  - no extended-domain trapdoor, so the keyless forgery against that scheme does not apply;
- *  - the ring and the message are both bound into every challenge (domain-separated SHA-256);
- *  - randomness comes from the platform CSPRNG only;
- *  - signatures are linkable, so double voting is caught by cryptography, not by bookkeeping.
+ * Wire format: (c0, s_0 .. s_{n-1}, I), 32 * (n + 1) + 33 bytes.
  */
 import { secp256k1, hashToCurve } from '@noble/curves/secp256k1';
 import { sha256 } from '@noble/hashes/sha256';
@@ -41,8 +32,7 @@ function asBytes(message) {
 }
 
 /**
- * Hp: hash a public key to a curve point (RFC 9380 hash-to-curve), nobody knows its log.
- * Memoised: a tally verifies every ballot against the same ring, so each key is hashed once.
+ * Hp uses RFC 9380 hash-to-curve. Cache each point because the tally reuses the ring.
  */
 const hpCache = new Map();
 function hashToPoint(P) {
@@ -86,15 +76,13 @@ export function publicKeyOf(secretKeyHex) {
     return bytesToHex(secp256k1.getPublicKey(hexToBytes(secretKeyHex), true));
 }
 
-/** Key image of a secret key: what links two signatures made with it. */
 export function keyImageOf(secretKeyHex) {
     const x = toBigInt(hexToBytes(secretKeyHex));
     return hashToPoint(G.multiply(x)).multiply(x).toHex(true);
 }
 
 /**
- * Signs `message` for the ring `ring` (compressed public keys, hex, in the published order).
- * The signer's own public key must be in the ring.
+ * Keep the published ring order. Keys are compressed points encoded as hex.
  */
 export function sign(message, ring, secretKeyHex) {
     const points = parseRing(ring);

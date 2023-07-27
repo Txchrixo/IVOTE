@@ -6,12 +6,9 @@ use App\Models\AuditLog;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
-/**
- * Records sensitive actions in the audit_logs table.
- * Never pass secrets (passwords, private keys, tokens) in $properties.
- */
 class Audit
 {
+    // Keep passwords, private keys and tokens out of $properties.
     public static function record(string $action, ?Model $subject = null, array $properties = [], ?int $userId = null): AuditLog
     {
         $request = request();

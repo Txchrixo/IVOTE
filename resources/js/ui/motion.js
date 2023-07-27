@@ -1,12 +1,3 @@
-/**
- * Page motion and loading feedback shared by every layout.
- *
- * - Page enter: content is revealed with a short staggered rise (CSS classes below).
- * - Page leave: browsers with cross-document View Transitions use the CSS
- *   @view-transition rule; others get a quick fade-out before navigating.
- * - Loading: a thin progress bar during navigations and AJAX calls, and a spinner
- *   on the submit button of classic forms (which also blocks double submissions).
- */
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const supportsCrossDocumentTransitions = 'PageRevealEvent' in window;
 
@@ -25,7 +16,7 @@ function progress() {
 export function startProgress() {
     const bar = progress();
     bar.classList.remove('is-done');
-    // Restart the transition from zero
+    // Force a reflow so the progress bar can animate again.
     bar.classList.remove('is-active');
     void bar.offsetWidth;
     bar.classList.add('is-active');
@@ -91,7 +82,7 @@ function onSubmit(event) {
     if (button) {
         button.classList.add('is-loading');
         button.setAttribute('aria-busy', 'true');
-        // Disable after the submission started so the button value is still sent
+        // Keep the submit button enabled until the browser reads its value.
         setTimeout(() => {
             button.disabled = true;
         }, 0);

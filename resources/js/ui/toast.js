@@ -1,13 +1,8 @@
-/**
- * Toasts for session messages ([data-toast]).
- * They leave by themselves after data-timeout ms (paused while hovered or focused)
- * and can be closed with their button or the Escape key.
- */
 function dismiss(toast) {
     if (toast.classList.contains('is-leaving')) return;
     toast.classList.add('is-leaving');
     toast.addEventListener('animationend', () => toast.remove(), { once: true });
-    // Fallback when animations are disabled
+    // Reduced motion can skip the animation end event.
     setTimeout(() => toast.remove(), 400);
 }
 

@@ -12,9 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 /**
- * Second step of the login for back-office accounts: TOTP challenge, or enrollment
- * when the account has no second factor yet. The user is only authenticated once
- * this step succeeds.
+ * Authenticate the account only after TOTP succeeds, including on first setup.
  */
 class TwoFactorController extends Controller
 {

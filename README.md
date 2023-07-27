@@ -48,18 +48,16 @@
 
 ## Abstract
 
-Electronic voting speeds up tabulation and widens access, but only earns trust if ballots stay
-secret and anyone can check the result. IVote combines the **Bitcoin blockchain** with
-**linkable ring signatures** [3]: each vote is a testnet transaction whose `OP_RETURN` commits
-to a ring signature over the chosen candidate. The signature proves the voter belongs to the
-registered electorate without revealing who they are, its key image exposes a second ballot from
-the same voter, and the public ledger lets every voter confirm their ballot was counted
-unchanged, while organisers can neither alter results nor see voters' identities.
+IVote is an electronic voting prototype. It uses **linkable ring signatures** [3] to
+verify that a ballot came from a registered key without identifying the signer. The ballot
+box accepts one ballot per key image and returns a receipt. In Bitcoin mode, a transaction
+on testnet or regtest commits the receipt in an `OP_RETURN` output. Local mode runs the vote,
+tally and receipt checks without a Bitcoin node.
 
-The system was modelled with UML following the 2TUP process and built with PHP, Laravel
-and MySQL. It extends the BlockVotes design [8] with remote identity verification (Veriff),
-two-factor authentication for the authorities and an auditable election life cycle, and
-adapts it to the Cameroonian electoral context.
+The project was designed for the Cameroonian electoral context using UML and 2TUP, and
+built with PHP, Laravel and MySQL. It draws on Wu’s ring-signature voting work [8] and adds
+remote identity checks, linkable ring signatures, two-factor login for authorities and an
+audit log.
 
 <p align="center">
   <img src="docs/slides/02-idea.jpg" alt="E-voting + Blockchain + Ring signature = IVote" width="720">
@@ -79,7 +77,7 @@ in Cameroon:
 | Identity rests on the national identity card (CNI), passport or residence permit | Remote identity check with Veriff on these Cameroonian documents, and a CNI field for candidates |
 | Most citizens are online through a smartphone rather than a computer | Veriff hands the check over to the voter's phone by QR code or SMS |
 | English and French are both official languages | The whole interface is bilingual, with a language switch on every page |
-| Disputed results erode trust in the outcome | Every ballot is a public Bitcoin transaction that any citizen, observer or party can recount |
+| Disputed results erode trust in the outcome | After the election closes, anyone can download and verify the signed ballots |
 
 The 2023 demonstration simulated a municipal election. This remains a proof of concept: it does
 not claim compliance with the Cameroonian electoral code and was not endorsed by ELECAM.
@@ -98,29 +96,27 @@ and the **voter** V<sub>i</sub>.
 | I<sub>i</sub> = x<sub>i</sub>H<sub>p</sub>(P<sub>i</sub>) | key image: identical in every signature made with x<sub>i</sub>, unlinkable to P<sub>i</sub> |
 | m = (L, C) | ballot: election identifier L and candidate C |
 | σ = (c<sub>0</sub>, s<sub>1</sub>…s<sub>n</sub>, I) | LSAG signature of m by some member of R |
-| A | one-time Bitcoin testnet address taken from the EA's funded pool |
 
-1. **Setup.** The EA creates the election and its Bitcoin address; the RA registers the candidates.
-2. **Identification.** V<sub>i</sub> proves their identity with Veriff and receives a one-time link by email.
-3. **Key registration.** V<sub>i</sub> generates (x<sub>i</sub>, P<sub>i</sub>) and registers P<sub>i</sub>. When registration closes, R is published.
-4. **Funding.** The EA funds a pool of n + δ addresses in batched transactions, with no tag that could tie an address to a voter.
-5. **Vote.** V<sub>i</sub> computes σ = Sign(m, R, x<sub>i</sub>) in the browser, takes any address A from the pool without identifying, publishes σ on the bulletin board and sends A's balance to the EA address with `OP_RETURN = H(σ) ‖ I ‖ C ‖ L` (68 bytes).
-6. **Tally.** Anyone reads the transactions to the EA address, fetches each σ, checks H(σ) and Verify(m, R, σ), and counts, for each key image I, only the first valid ballot in block order.
-7. **Verification.** V<sub>i</sub> finds their own transaction (individual verifiability); anyone can redo step 6 (universal verifiability).
+1. **Setup.** The EA creates the election and the RA registers candidates and issues one-time codes.
+2. **Identification.** The RA hands codes to eligible voters. With Veriff configured, a signed approval for the code's session is also required.
+3. **Key registration.** V<sub>i</sub> proves possession of a fresh key and registers P<sub>i</sub> with the code. Opening voting freezes R and the candidate list.
+4. **Vote.** The browser signs (L, C) with LSAG. The server verifies the signature and accepts at most one ballot per key image. The voter saves H(σ) as a receipt.
+5. **Bitcoin anchoring.** In Bitcoin mode, the authority wallet commits H(σ) in an `OP_RETURN` output. The tally waits for a confirmation.
+6. **Tally and verification.** After closing, the voter can check their receipt in the browser. Anyone can download the public ring and ballots, verify each signature and recompute the tally. Bitcoin transaction IDs are included when available.
 
 | Property | Mechanism | Status |
 |---|---|---|
-| Eligibility | Veriff identity check; only keys in R can produce a valid σ | implemented |
+| Eligibility | RA-issued codes and optional Veriff approval. Only keys in R can produce a valid σ | implemented |
 | Unforgeability | LSAG, secure under the discrete logarithm assumption in the random oracle model [3] | implemented, tested |
-| One voter, one vote | key image I; repeated I are discarded at the tally | implemented, tested |
-| Ballot privacy | signer ambiguity among all n keys of R [3]; pool addresses are not tied to voters | implemented, tested |
-| Integrity | ballots are Bitcoin transactions, immutable once confirmed | 2023 prototype |
-| Individual and universal verifiability | public ballots, public ring, deterministic tally rule | 2023 prototype |
+| One registered key, one vote | the ballot box rejects a second ballot with the same key image | implemented, tested |
+| Ballot privacy | signer ambiguity among all n keys of R [3] | signature tested |
+| Integrity | the receipt binds the signature; Bitcoin mode commits it on-chain | implemented |
+| Individual and universal verifiability | receipt verification, public ballots and a deterministic tally after closing | implemented, tested |
 | Authority accountability | TOTP 2FA, role gates, audit log, staged life cycle | implemented |
 | Coercion resistance | not addressed: a voter can prove their vote by revealing x<sub>i</sub> | out of scope |
 
-"Implemented, tested" refers to [`resources/js/crypto/lsag.js`](resources/js/crypto/lsag.js) and its test suite;
-wiring it into the ballot page in place of the 2023 code is the next step.
+The [`LSAG tests`](tests/js/lsag.test.mjs) cover the signature scheme.
+The [`voting flow tests`](tests/Feature/VotingFlowTest.php) cover code issuance, registration, ballot validation and the closed-election tally.
 
 ## Cryptography
 
@@ -303,7 +299,7 @@ Screens below come from the demo data set (`DemoSeeder`); wallet balances are mo
   </tr>
 </table>
 
-The last two captures come from the 2023 prototype (French UI); these steps are being ported to the current Laravel version.
+The last two captures show the French UI of the 2023 prototype. The current workflow uses the ballot receipt described above.
 
 ## Design
 
@@ -392,8 +388,8 @@ The thesis version runs on WampServer (Apache and MySQL).
 
 ## Related work
 
-IVote sits in the line of work that keeps ballots anonymous with ring signatures while using a
-public blockchain as the bulletin board.
+IVote uses ring signatures to hide the signer and can publish ballot receipts to Bitcoin.
+The signed ballots themselves are published by the application after the election closes.
 
 | Work | Year | Ledger | Anonymity | Tally | Identity |
 |---|---|---|---|---|---|
@@ -413,16 +409,13 @@ Requirements: PHP 8.1+ with `gmp`, Composer, Node 18+, MySQL 8.
 
 ```bash
 git clone https://github.com/Txchrixo/iVote.git && cd iVote
-composer install && npm install
+composer install && npm ci
 cp .env.example .env && php artisan key:generate
 php artisan migrate --seed    # creates the EA and RA accounts, prints their passwords
 npm run build && php artisan serve
 ```
 
-Set `BLOCKIO_*`, `CRYPTOAPIS_API_KEY` and `VERIFF_*` in `.env` to reach the external services.
-
-**Demo data.** To explore a full election season (five elections, candidates, ballot codes and
-testnet addresses) on an empty database:
+**Demo data.** To load five sample elections and sign in as `ea` or `ra`, run this on a disposable database:
 
 ```bash
 php artisan migrate:fresh --seed --seeder=DemoSeeder
@@ -430,6 +423,15 @@ php artisan migrate:fresh --seed --seeder=DemoSeeder
 
 Accounts `ea` and `ra` share a password and TOTP secret, both printed once
 (or set through `DEMO_PASSWORD` and `DEMO_2FA_SECRET`). The seeder refuses to run in production.
+
+**Run a new election locally.**
+
+1. As EA, create an election and set the verification and voting dates. As RA, add two candidates and generate two codes under **Ballot codes**.
+2. As EA, advance to **Veriff**. Open `/voter/generateKeys` in two voter sessions, generate and save a separate private key in each, then register each public key with its code.
+3. As EA, advance through **Waiting** to **Ongoing**. Open `/voter/vote`, choose the election and sign with one registered private key. Save the receipt. A second submission signed by that key for another candidate is rejected.
+4. As EA, close the election. Open `/tally/home` to see the count and `/verify/home` to check the receipt. The sample elections illustrate stages. Use a new election for a complete run.
+
+**External services.** To require Veriff approval set `VERIFF_API_KEY` and `VERIFF_SECRET_KEY`, and register the HTTPS decision webhook at `/api/veriff/decision`. For Bitcoin mode set `BITCOIN_RPC_URL` to a funded Bitcoin Core testnet or regtest wallet endpoint and configure its RPC username and password before opening the election. Run `php artisan ivote:anchor ELECTION_ID` to publish receipts and rerun it after a block confirms the transactions. `BLOCKIO_*` and `CRYPTOAPIS_API_KEY` are used by the existing back-office tools.
 
 ## Tests
 
@@ -456,12 +458,12 @@ docs/         screenshots, UML diagrams, defense slides
 ## Limitations and future work
 
 - This is a proof of concept on Bitcoin testnet; it has not been audited and must not run a binding election.
-- One voter could still receive several funded addresses; the address pool needs a binding to the registered public key.
+- Eligibility relies on the registration authority issuing one code per person. An operator with access to network logs can correlate request timing.
 - Tally cost grows with n² for one ring; large elections need one ring per polling station, which shrinks each anonymity set.
 - No coercion resistance: a voter can prove how they voted.
 - Transaction timing and amounts may allow linkability; batching or mixing would reduce it.
 - Bitcoin fees and confirmation times do not scale to national elections.
-- Voting, tally and verification run in the 2023 prototype and are being ported to the current Laravel version.
+- The ballot box supports 2 to 128 registered keys per election. Historical sample elections have no signed ballots in the current format.
 
 ## Citation
 

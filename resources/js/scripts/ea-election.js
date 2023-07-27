@@ -103,7 +103,6 @@ $(function () {
                     });
                     console.error('Erreur 422 :', error.responseJSON.message);
                 } else {
-                    // Gérez d'autres erreurs de manière générale
                     console.error('Error ' + error.status + ': ' + textStatus + ' - ' + errorThrown);
                 }
             });

@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\API\CandidateAPIController;
+use App\Http\Controllers\Voter\RegistrationController;
+use App\Http\Controllers\Voter\BallotController as VoterBallotController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,6 +23,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // Public API
 Route::get('candidates', [CandidateAPIController::class, 'getCandidates']);
+Route::post('veriff/decision', [RegistrationController::class, 'decision']);
+Route::post('elections/{election}/ballots', [VoterBallotController::class, 'submit'])
+    ->name('voter.ballots.submit')->middleware('throttle:12,1,ballot-submissions');
 
 // Les routes EA (election/details, election/update, election/toggleStage, allbitcoinaddress)
 // sont dans routes/web.php : elles ont besoin de la session et de la protection CSRF.

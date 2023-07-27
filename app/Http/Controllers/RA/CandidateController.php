@@ -38,9 +38,6 @@ class CandidateController extends Controller
 
         return view('ra.candidates', ['data' => $data]);
     }
-    /**
-     * Registers a candidate; the photo is stored under a generated name.
-     */
     public function postAddCandidate(StoreCandidateRequest $request): RedirectResponse
     {
         $data = $request->safe()->only(['name', 'cni', 'des', 'vote_id']);

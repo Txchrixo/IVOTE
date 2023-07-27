@@ -8,12 +8,13 @@
                 <div class="panel-body">
                     <form action="{{ route('ra.ballot') }}" method="post">
                         <div class="form-group my-3">
-                            <label for="number" class="mb-1">Numbers of Ballots</label>
-                            <input type="text" name="number" id="ballots" class="form-control p-2 rounded-3">
+                            <label for="ballots" class="mb-1">Number of registration codes</label>
+                            <input type="number" name="number" id="ballots" class="form-control p-2 rounded-3"
+                                min="1" max="128" value="{{ old('number', 1) }}" required>
+                            @error('number') <p class="text-danger">{{ $message }}</p> @enderror
                         </div>
                         <div class="form-group my-3">
-                            <label for="election_id" class="mb-1">Vote ID</label>
-                            <input type="text" name="election_id" id="election_id" class="form-control p-2 rounded-3">
+                            @include('ra.electionSelect')
                         </div>
                         <button type="submit" class="btn btn-primary p-2 px-3 rounded-3">Generate</button>
                         @csrf
@@ -27,7 +28,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Code</th>
-                                <th>Used</th>
+                                <th>Redeemed</th>
                                 <th>Election</th>
                             </tr>
                         </thead>
@@ -55,6 +56,7 @@
                             @endforelse
                         </tbody>
                     </table>
+                    {{ $data->links() }}
                     </div>
                 </div>
             </div>

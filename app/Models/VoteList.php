@@ -13,6 +13,8 @@ class VoteList extends Model
 {
 
 	protected $table = 'vote';
+    protected $casts = ['ballot_definition' => 'array'];
+    protected $hidden = ['ballot_definition'];
 
     protected $fillable = [
         'id',
@@ -60,6 +62,11 @@ class VoteList extends Model
     public function candidates(): HasMany
     {
         return $this->hasMany(Candidate::class, 'vote_id');
+    }
+
+    public function ballots(): HasMany
+    {
+        return $this->hasMany(Ballot::class, 'election_id');
     }
 
     /**

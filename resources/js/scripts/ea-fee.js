@@ -3,8 +3,7 @@ import Swal from 'sweetalert2/dist/sweetalert2'
  * EA Fee
  * @author  TxChrixo
  *
- * Le paiement des adresses d'électeurs passe par le serveur (/ea/api/blockio/pay) :
- * aucune clé privée, clé API ou PIN n'est présent dans le navigateur.
+ * Le serveur paie les frais avec les identifiants Block.io.
  */
 $(function () {
     const csrf = $('meta[name="csrf-token"]').attr('content');
@@ -25,7 +24,7 @@ $(function () {
         $(".number-network").text("Unconfigured");
     }
 
-    // TODO Phase 1 : l'API chain.so v2 est arrêtée, nombre d'UTXO non disponible
+    // Le nombre d’UTXO reste indisponible depuis l’arrêt de chain.so v2.
     $(".number-unspent").text("N/A");
 
     let unpaid = [];
@@ -50,7 +49,7 @@ $(function () {
                 if (Number(item.is_paid) === 0) {
                     unpaid.push(item.id);
                 }
-                // Construction via .text() : aucune donnée n'est interprétée comme du HTML
+                // Afficher les valeurs de l’API en texte brut.
                 const btn = $('<button>')
                     .addClass('btn btn-primary rounded-3 btn-single-pay')
                     .attr('type', 'button')

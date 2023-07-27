@@ -32,14 +32,11 @@ $(function () {
     }
 
     document.querySelectorAll('.profile-main').forEach(function (profileMain) {
-        // Get the background image URL
         var backgroundImageUrl = profileMain.style.backgroundImage.replace(/url\(['"]?(.*?)['"]?\)/i, '$1');
 
-        // Call the getAverageRGB function and set the text color based on brightness
+        // Keep the text readable over election photos.
         getAverageRGB(backgroundImageUrl, function (rgb) {
-            // Calculate brightness using luminance formula
             var brightness = (0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b);
-            // Set text color based on brightness (adjust the threshold as needed)
             var textColor = brightness > 128 ? 'black' : 'white';
             profileMain.style.setProperty('color', textColor, 'important');
         });

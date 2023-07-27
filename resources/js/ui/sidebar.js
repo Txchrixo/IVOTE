@@ -1,12 +1,3 @@
-/**
- * Back-office sidebar.
- * - Desktop (>= 992px): the header button and the "Collapse" button switch between the
- *   full sidebar and an icons-only rail (remembered across pages). The rail expands
- *   while hovered or focused so groups stay reachable.
- * - Mobile: the sidebar is a drawer opened from the header button, closed by the
- *   backdrop, the Escape key or a navigation.
- * - Groups open and close with an animated height.
- */
 const STORAGE_KEY = 'ivote.sidebar';
 const desktop = window.matchMedia('(min-width: 992px)');
 
@@ -14,7 +5,7 @@ function store(value) {
     try {
         localStorage.setItem(STORAGE_KEY, value);
     } catch (e) {
-        // Storage can be blocked (private mode): the state simply is not remembered
+        // The sidebar still works if storage is blocked.
     }
 }
 
@@ -73,7 +64,6 @@ export function initSidebar() {
         }
     });
 
-    // Leaving the mobile layout closes the drawer
     desktop.addEventListener('change', () => {
         setDrawer(false);
         syncLabels();
@@ -88,9 +78,8 @@ export function initSidebar() {
         });
     });
 
-    // Keyboard users focusing the collapsed rail get the full sidebar
     sidebar.addEventListener('focusin', (event) => {
-        // Only for keyboard focus: a mouse click must not keep the rail open
+        // Keep mouse clicks from pinning the sidebar open.
         if (event.target.matches(':focus-visible')) sidebar.classList.add('is-peeking');
     });
     sidebar.addEventListener('focusout', (event) => {

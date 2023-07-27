@@ -1,61 +1,102 @@
-/**
- * Vote page
- * @author  TxChrixo
- */
-$(function() {
-    /*
-    // If in the vote page, load the bitcoin address
-    getBitcoinAddress();
-    getCandidates();
+import { ballotMessage } from '../crypto/ballot.mjs';
+import { sign, signatureHash, verify } from '../crypto/lsag.js';
 
-    $(".btn-start-vote").on('click', function () {
-        var voteid = $(".vote-candidate").val();
+const ballot = document.querySelector('[data-ballot-form]');
+const receiptForm = document.querySelector('[data-verify-ballot]');
 
-        if (voteid) {
-            swal({
-                title: "Are you sure?",
-                text: "Vote for " + voteid + ", is that right?",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonText: "Yes, vote now!",
-                closeOnConfirm: false
-            },
-                function () {
-                    swal({
-                        title: "Processing",
-                        text: '<div class="row"><div class="col-md-12"><textarea class="form-control cmd-box" placeholder="" rows="20"></textarea></div></div>',
-                        html: true,
-                        customClass: 'swal-wide',
-                        showConfirmButton: false
-                    });
-                    startVote();
-                });
-        } else {
-            sweetAlert("Oops...", "Please choose your candidate! ", "error");
+if (ballot) {
+    const status = ballot.querySelector('[data-ballot-status]');
+    const receipt = ballot.querySelector('[data-ballot-receipt]');
+    const submit = ballot.querySelector('button[type=submit]');
+    const secret = ballot.querySelector('#voting-key');
+    const ring = JSON.parse(ballot.dataset.ring);
+    let pending;
+
+    submit.disabled = false;
+    ballot.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const candidate = Number(ballot.elements.candidate.value);
+        submit.disabled = true;
+
+        try {
+            if (!pending || pending.candidate !== candidate) {
+                const signature = sign(ballotMessage(ballot.dataset.reference, candidate), ring, secret.value);
+                pending = { candidate, signature };
+            }
+        } catch {
+            status.textContent = 'Use the private key you registered for this election.';
+            submit.disabled = false;
+            return;
         }
 
-
-    });
-});
-
-function getBitcoinAddress() {
-    $.getJSON("/api/bitcoinaddress", { "item_id": $(".item_id").val() }, function (result) {
-        if (result.success == 1) {
-            var arr = [];
-            var str = '';
-            $.each(result.content, function (i, value) {
-                arr[i] = '<option value="' + value.id + ' ">' + value.bitcoin_address + '</option>';
+        try {
+            const response = await fetch(ballot.dataset.submitUrl, {
+                method: 'POST',
+                credentials: 'omit',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(pending),
             });
-            // shuffle it
-            str = arr.sort(randomsort).join("");
-            $(".bitcoin-address-box").html(str);
-            $(".bitcoin-address-numbers").html(result.param);
+            const data = await response.json();
+            if (!response.ok) {
+                status.textContent = data.errors?.signature?.[0] || data.message || 'The ballot could not be accepted.';
+                pending = undefined;
+                submit.disabled = false;
+                return;
+            }
+            secret.value = '';
+            pending = undefined;
+            receipt.querySelector('input').value = data.receipt;
+            receipt.hidden = false;
+            status.textContent = 'Ballot recorded.';
+        } catch {
+            status.textContent = 'No response from the server. Retry to submit the same signed ballot.';
+            submit.disabled = false;
         }
     });
-    */
-});
+}
 
+if (receiptForm) {
+    const status = receiptForm.querySelector('[data-verify-status]');
+    const submit = receiptForm.querySelector('button[type=submit]');
+    submit.disabled = false;
 
+    receiptForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const receipt = receiptForm.querySelector('input').value.toLowerCase();
+        submit.disabled = true;
 
+        try {
+            const response = await fetch(receiptForm.dataset.receiptUrl.replace('RECEIPT', receipt), {
+                headers: { 'Accept': 'application/json' },
+            });
+            if (response.status === 404) {
+                status.textContent = 'No ballot with that receipt exists in this election.';
+                return;
+            }
+            if (!response.ok) {
+                status.textContent = 'Unable to retrieve the ballot.';
+                return;
+            }
 
-
+            const data = await response.json();
+            const valid = verify(ballotMessage(data.reference, data.candidate), data.ring, data.signature)
+                && signatureHash(data.signature) === receipt;
+            if (!valid) {
+                status.textContent = 'The ballot signature or receipt is invalid.';
+            } else if (data.bitcoin_confirmed) {
+                status.textContent = 'Ballot verified. Bitcoin transaction ' + data.bitcoin_txid;
+            } else if (data.bitcoin) {
+                status.textContent = 'Ballot signature verified. Awaiting Bitcoin confirmation.';
+            } else {
+                status.textContent = 'Ballot signature verified against the local election record.';
+            }
+        } catch {
+            status.textContent = 'Unable to verify the ballot.';
+        } finally {
+            submit.disabled = false;
+        }
+    });
+}

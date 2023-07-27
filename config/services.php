@@ -31,6 +31,12 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'bitcoin' => [
+        'rpc_url' => env('BITCOIN_RPC_URL'),
+        'rpc_user' => env('BITCOIN_RPC_USER'),
+        'rpc_password' => env('BITCOIN_RPC_PASSWORD'),
+    ],
+
     'blockio' => [
         'api_key' => env('BLOCKIO_API_KEY'),
         'pin' => env('BLOCKIO_PIN'),

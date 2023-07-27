@@ -5,28 +5,32 @@ namespace App\Actions;
 use App\Enums\ElectionStage;
 use App\Exceptions\InvalidStageTransition;
 use App\Models\VoteList;
+use App\Services\BallotBox;
 use App\Support\Audit;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Moves an election to its next stage.
- * The row is locked so two concurrent requests cannot skip a stage, and each
- * transition has preconditions.
- */
 class AdvanceElectionStage
 {
+    public function __construct(private readonly BallotBox $box)
+    {
+    }
+
     /**
      * @throws InvalidStageTransition
      */
     public function __invoke(VoteList $election): ElectionStage
     {
         return DB::transaction(function () use ($election) {
+            // Read the stage under lock so concurrent updates use the latest state.
             $locked = VoteList::whereKey($election->getKey())->lockForUpdate()->firstOrFail();
             $current = $locked->currentStage();
             $next = $current->next() ?? throw new InvalidStageTransition('The election is already closed.');
 
             $this->guard($locked, $next);
 
+            if ($next === ElectionStage::Ongoing) {
+                $locked->ballot_definition = $this->box->definition($locked);
+            }
             $locked->stage = $next->value;
             $locked->save();
 

@@ -1,7 +1,4 @@
-{{--
-    Language picker: a designed dropdown with a flag on each row (behaviour in resources/js/ui/dropdown.js).
-    $floating = true pins it to the top left corner (authentication and voter pages).
---}}
+{{-- Auth and voter pages use $floating to pin the picker to the top left. --}}
 @php
     $flags = ['en' => 'gb', 'fr' => 'fr'];
     $currentName = array_search($current_locale, $available_locales, true) ?: strtoupper($current_locale);

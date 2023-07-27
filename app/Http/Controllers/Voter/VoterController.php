@@ -3,34 +3,27 @@
 namespace App\Http\Controllers\Voter;
 
 use App\Enums\ElectionStage;
-use App\Enums\Role;
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Models\VoteList;
+use App\Services\BallotBox;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
 
 class VoterController extends Controller
 {
-    /**
-     * Veriff Page
-     * @param Request $request
-     * @return View | \Illuminate\Http\RedirectResponse
-     */
-    public function getVeriff(Request $request, string $election): View|RedirectResponse|\Illuminate\Http\Response
+    public function getVeriff(string $election): View|RedirectResponse|Response
     {
         $slug = VoteList::slug($election);
         $open = VoteList::where('stage', ElectionStage::Veriff->value);
-
         $exact = (clone $open)->where('title', $slug)->first();
         if ($exact) {
-            return view('voter.veriff', ['election' => $exact->title]);
+            return view('voter.veriff', ['election' => $exact]);
         }
 
-        // Close match among elections in the verification stage: redirect to the canonical URL
         $like = '%' . addcslashes($slug, '%_\\') . '%';
-        $close = (clone $open)->where('title', 'like', $like)->orderBy('id')->first();
+        $close = $open->where('title', 'like', $like)->orderBy('id')->first();
         if ($close) {
             return to_route('voter.veriff', ['election' => VoteList::slug($close->title)]);
         }
@@ -38,99 +31,95 @@ class VoterController extends Controller
         return response()->view('voter.veriff-fail', ['election' => $election], 404);
     }
 
-    public function getVeriffSubmitted(Request $request)
+    public function getVeriffSubmitted(): View
     {
         return view('voter.veriff-submitted');
     }
 
-    public function getReady(Request $request)
+    public function getReady(Request $request): View
     {
         $election = VoteList::where('title', VoteList::slug((string) $request->query('election', '')))->first()
             ?? VoteList::where('stage', ElectionStage::Veriff->value)->orderBy('id')->first();
 
-        return view('voter.ready', ['election' => $election?->title ?? '']);
+        return view('voter.ready', ['election' => $election?->title ?? '', 'electionId' => $election?->id]);
     }
 
-    public function getGenerateKeys(Request $request)
+    public function getGenerateKeys(Request $request): View
     {
-        return view('voter.generate-keys');
+        $open = VoteList::where('stage', ElectionStage::Veriff->value)->orderBy('id');
+        $election = $request->filled('election') ? (clone $open)->findOrFail((int) $request->query('election')) : null;
+
+        return view('voter.generate-keys', ['election' => $election, 'elections' => $election ? [] : $open->get()]);
     }
 
-    public function getWait(Request $request)
+    public function getWait(Request $request): View
     {
-        return view('voter.wait');
+        return view('voter.wait', ['election' => VoteList::find((int) $request->query('election'))]);
     }
 
-    public function getVote(Request $request)
+    public function getVote(Request $request, BallotBox $box): View
     {
-        return view('voter.vote');
+        $open = VoteList::where('stage', ElectionStage::Ongoing->value)->orderBy('id');
+        $election = $request->filled('election') ? (clone $open)->findOrFail((int) $request->query('election')) : null;
+
+        return view('voter.vote', [
+            'election' => $election,
+            'elections' => $election ? [] : $open->get(),
+            'definition' => $election ? $box->definition($election) : null,
+        ]);
     }
 
-    public function getTallyHome(Request $request)
+    public function getFailed(): View
     {
-        $vote_list = VoteList::where('stage', ElectionStage::Done->value)->get();
-        return  view('tally.home', ['data' => $vote_list]);
+        return view('voter.fail');
     }
 
-    /** Results of an election (the tally script reads the EA bitcoin address). */
-    public function getTally(Request $request): View|RedirectResponse
+    public function getTallyHome(): View
     {
-        return $this->electionPage($request, 'tally.tally', 'tally.home');
-    }
-
-    /** Vote verification for an election. */
-    public function getVerify(Request $request): View|RedirectResponse
-    {
-        return $this->electionPage($request, 'verify.verify', 'verify.home');
+        return $this->closedElections('tally.home');
     }
 
     public function getVerifyHome(): View
     {
-        return view('verify.home', ['data' => VoteList::where('stage', ElectionStage::Done->value)->get()]);
+        return $this->closedElections('verify.home');
     }
 
-    private function electionPage(Request $request, string $view, string $fallbackRoute): View|RedirectResponse
+    private function closedElections(string $view): View
     {
-        $election = VoteList::find((int) $request->query('vote_item'));
+        return view($view, ['data' => VoteList::where('stage', ElectionStage::Done->value)->get()]);
+    }
+
+    public function getTally(Request $request): View|RedirectResponse
+    {
+        $election = $this->closedElection($request);
         if (!$election) {
-            return to_route($fallbackRoute);
+            return to_route('tally.home');
         }
 
-        $authority = User::where('role', Role::EA->value)->first();
+        $definition = $election->ballot_definition;
+        $counted = $election->ballots();
+        if ($definition['bitcoin'] ?? false) {
+            $counted->whereNotNull('bitcoin_confirmed_at');
+        }
+        $counts = $counted->selectRaw('candidate_id, COUNT(*) AS total')->groupBy('candidate_id')->pluck('total', 'candidate_id');
 
-        return view($view, [
-            'item_id' => $election->id,
-            'title' => $election->title,
-            'eaaddress' => $authority?->bitcoin_address,
+        return view('tally.tally', [
+            'election' => $election,
+            'candidates' => $definition['candidates'] ?? [],
+            'counts' => $counts,
+            'pending' => $election->ballots()->count() - $counts->sum(),
         ]);
     }
 
-    //    public function getVoteList($request, $response)
-    //    {
-    //        $data = UserVote::all()->where('user_id',$this->auth->user()->id)->first();
-    //        $result = VoteList::all()->where('id',$data['id']);
-    //
-    //        return $this->view->render($response,'voter/vote.twig',['data'=>$result]);
-    //    }
-    //
-    //    public function postVote($request,$response)
-    //    {
-    //
-    //        $validation = $this->validator->validate($request,[
-    //            'code' => v::noWhitespace()->notEmpty()->codeAvailable()
-    //        ]);
-    //
-    //        if ($validation->failed()) {
-    //            return $response->withRedirect($this->router->pathFor('voter.vote'));
-    //        }
-    //        $code = Code::useCode($request->getParam('code'));
-    //
-    //        UserVote::create([
-    //            'user_id' => $this->auth->user()->id,
-    //            'vote_id' => $code->item_id
-    //        ]);
-    //
-    //        return $response->withRedirect($this->router->pathFor('voter.vote'));
-    //    }
+    public function getVerify(Request $request): View|RedirectResponse
+    {
+        $election = $this->closedElection($request);
 
+        return $election ? view('verify.verify', ['election' => $election]) : to_route('verify.home');
+    }
+
+    private function closedElection(Request $request): ?VoteList
+    {
+        return VoteList::where('stage', ElectionStage::Done->value)->find((int) $request->query('vote_item'));
+    }
 }

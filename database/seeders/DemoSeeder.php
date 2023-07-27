@@ -17,12 +17,8 @@ use PragmaRX\Google2FA\Google2FA;
 use RuntimeException;
 
 /**
- * Fills an empty database with a realistic election season, for demos and screenshots.
- *
- *   php artisan migrate:fresh --seed --seeder=DemoSeeder
- *
- * Passwords and 2FA secrets come from DEMO_PASSWORD / DEMO_2FA_SECRET, or are generated
- * and printed once. Refuses to run in production.
+ * Seeds demo elections and authority accounts. Generated credentials are printed once.
+ * Set DEMO_PASSWORD and DEMO_2FA_SECRET to use fixed values locally.
  */
 class DemoSeeder extends Seeder
 {
@@ -148,12 +144,11 @@ class DemoSeeder extends Seeder
             Candidate::create(['name' => $name, 'des' => $program, 'vote_id' => $election->id]);
         }
 
-        // Ballot codes; voters who generated their keys have a registered public key
+        // Only some demo codes already have a registered key.
         for ($i = 0; $i < $data['registered']; $i++) {
             Code::create([
                 'code' => strtoupper(Str::random(16)),
                 'is_used' => $data['stage'] === ElectionStage::Done && $i < $data['registered'] - 9,
-                // Compressed secp256k1 public key, the ring member used by the linkable ring signature
                 'public_key' => $data['stage']->value >= ElectionStage::Waiting->value ? $this->wallet()['public'] : '0',
                 'item_id' => $election->id,
             ]);

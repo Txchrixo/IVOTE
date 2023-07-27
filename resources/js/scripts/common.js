@@ -4,21 +4,13 @@
  */
 $(function () {
 
-    /**
-     * Handles the click event of navigation links with "collapse" behavior.
-     * Updates the submenu icon based on the state of the submenu.
-     */
     $('.nav-link[data-bs-toggle="collapse"]').on('click', function () {
-        // Select the submenu icon within the clicked element
         var submenuIcon = $(this).find('.icon-submenu');
 
-        // Check if the submenu is expanded
         if ($(this).attr('aria-expanded') === 'false') {
-            // Submenu is not expanded, change the icon to indicate expansion
             submenuIcon.removeClass('lnr-chevron-down');
             submenuIcon.addClass('lnr-chevron-right');
         } else {
-            // Submenu is expanded, change the icon to indicate collapse
             submenuIcon.removeClass('lnr-chevron-right');
             submenuIcon.addClass('lnr-chevron-down');
         }

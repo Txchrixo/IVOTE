@@ -1,9 +1,3 @@
-/**
- * Accessible dropdown menu ([data-dropdown]).
- * Mouse: click the trigger to open, click outside to close.
- * Keyboard: Enter / Space / ArrowDown open it, ArrowUp / ArrowDown / Home / End move,
- * Escape closes and gives the focus back to the trigger, Tab closes.
- */
 const OPEN = 'is-open';
 
 function items(dropdown) {
@@ -26,7 +20,7 @@ function open(dropdown, { focus = 'current' } = {}) {
     const list = items(dropdown);
     const current = list.find((item) => item.getAttribute('aria-current') === 'true');
     const target = focus === 'last' ? list[list.length - 1] : focus === 'first' ? list[0] : current || list[0];
-    // Wait for the menu to become visible before moving the focus
+    // Hidden menu items cannot receive focus.
     requestAnimationFrame(() => target?.focus());
 }
 

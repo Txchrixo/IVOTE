@@ -18,7 +18,6 @@
     <div class="app-header-end">
         @include('templates.partials.language_switcher')
 
-        {{-- Profile: identity and role live in the menu, the trigger stays compact --}}
         <div class="ui-dropdown app-profile" data-dropdown data-align="end">
             <button type="button" class="ui-dropdown-trigger app-profile-trigger" aria-haspopup="menu"
                 aria-expanded="false" aria-label="@lang('Account menu'): {{ $displayName }}">

@@ -105,7 +105,6 @@
                     @foreach ($election as $item)
                         <div class="glass-section dash-election">
                             <div class="dash-election-card">
-                                {{-- The background (photo or theme gradient) covers the whole card, the action bar is glass over it --}}
                                 <div class="profile-header election-card {{ $item->bg ? 'has-image' : '' }}"
                                     @if ($item->bg) style="background-image: url('{{ $item->backgroundUrl() }}');" @endif>
                                     <div class="overlay"></div>

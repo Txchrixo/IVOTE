@@ -24,7 +24,7 @@ $(function () {
     });
 
     $(".table-balance").on('click', '#btn-load-balance', function () {
-        // The click event will be triggered for dynamically added elements with the class btn-load-balance
+        // Delegate the click because balance buttons can be added later.
         let id = $(this).data('id');
         let address = $(this).data('bitcoinAddress');
         console.log(id, address);

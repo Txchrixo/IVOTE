@@ -73,7 +73,7 @@
                 <h2 class="text-white align-self-center text-center">@lang('page.ready.electionName', ['election' => $election])</h2>
             </div>
             <div class="d-flex m-1 align-self-end mt-3">
-                <a href="{{ route('voter.generateKeys') }}"><input class="btn btn-primary" type="button"
+                <a href="{{ route('voter.generateKeys', ['election' => $electionId]) }}"><input class="btn btn-primary" type="button"
                         value="@lang('page.ready.text-btn')" style="background-color: #1E98DD; padding : 0.7em;"></a>
             </div>
         </div>

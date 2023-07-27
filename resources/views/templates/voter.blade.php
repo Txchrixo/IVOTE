@@ -39,7 +39,6 @@
 @stack('css')
 <body class="page-bg voter-body">
     @include('templates.partials.flash')
-    {{-- Top bar: brand and language, in the page flow so it never covers the content --}}
     <header class="voter-bar">
         <span class="voter-brand">
             <img src="{{ Vite::image('ivote-red.png') }}" alt="IVote" width="101" height="24">
@@ -53,15 +52,10 @@
     </main>
 
 
-    @if (Route::currentRouteName() == \App\Enums\RouteApp::$veriff)
-        <script src='https://cdn.veriff.me/sdk/js/1.5/veriff.min.js'></script>
-        <script src='https://cdn.veriff.me/incontext/js/v1/veriff.js'></script>
-        <script type="module" src="{{ Vite::asset('resources/js/scripts/veriff.js') }}"></script>
-    @endif
     @if (in_array(Route::currentRouteName(), [\App\Enums\RouteApp::$generateKeys, \App\Enums\RouteApp::$wait]))
         <script type="module" src="{{ Vite::asset('resources/js/scripts/voter-keys.js') }}"></script>
     @endif
-    @if (Route::currentRouteName() == \App\Enums\RouteApp::$vote)
+    @if (in_array(Route::currentRouteName(), [\App\Enums\RouteApp::$vote, 'verify.now']))
         <script type="module" src="{{ Vite::asset('resources/js/scripts/vote.js') }}"></script>
     @endif
     @if (Route::currentRouteName() == \App\Enums\RouteApp::$tallyHome)

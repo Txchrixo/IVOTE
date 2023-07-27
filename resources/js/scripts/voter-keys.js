@@ -1,44 +1,37 @@
-/**
- * Voter keys
- * The secp256k1 key pair used for linkable ring signatures is generated in the browser:
- * the secret key never leaves the page, only the public key is kept so the waiting page
- * can show it again.
- */
+import { secp256k1 } from '@noble/curves/secp256k1';
+import { registrationDigest } from '../crypto/ballot.mjs';
 import { generateKeyPair } from '../crypto/lsag.js';
 
-const STORAGE_KEY = 'ivote.publicKey';
+const form = document.querySelector('[data-registration]');
 
-function remember(publicKey) {
-    try { localStorage.setItem(STORAGE_KEY, publicKey); } catch (e) { /* storage unavailable */ }
-}
+if (form) {
+    const publicKey = form.querySelector('.public-key-area');
+    const secretKey = form.querySelector('.private-key-area');
+    const storageKey = 'ivote.publicKey.' + form.dataset.voterElection;
 
-function recall() {
-    try { return localStorage.getItem(STORAGE_KEY); } catch (e) { return null; }
-}
-
-$(function () {
-    const $generate = $('.btn-generate');
-    if ($generate.length) {
-        $generate.on('click', async function () {
-            $generate.prop('disabled', true);
-            try {
-                const keys = generateKeyPair();
-                $('.public-key-area').val(keys.publicKey);
-                $('.private-key-area').val(keys.secretKey);
-                remember(keys.publicKey);
-            } finally {
-                $generate.prop('disabled', false);
-            }
-        });
-        return;
-    }
-
-    // Waiting page: show the public key generated earlier, renew it on demand
-    const publicKey = recall();
-    if (publicKey) {
-        $('.public-key-area').val(publicKey);
-    }
-    $('.btn-updatekey').on('click', function () {
-        window.location.href = $(this).data('href');
+    form.querySelector('.btn-generate').addEventListener('click', () => {
+        const keys = generateKeyPair();
+        publicKey.value = keys.publicKey;
+        secretKey.value = keys.secretKey;
+        form.querySelector('button[type=submit]').disabled = false;
     });
-});
+
+    form.addEventListener('submit', () => {
+        const digest = registrationDigest(form.dataset.voterElection, form.elements.code.value.trim());
+        form.elements.proof.value = secp256k1.sign(digest, secretKey.value).toCompactHex();
+        try {
+            localStorage.setItem(storageKey, publicKey.value);
+        } catch {
+            // Registration also works without browser storage.
+        }
+    });
+} else {
+    const field = document.querySelector('.public-key-area[data-voter-election]');
+    if (field) {
+        try {
+            field.value = localStorage.getItem('ivote.publicKey.' + field.dataset.voterElection) || '';
+        } catch {
+            // The voter can still open the ballot with their saved private key.
+        }
+    }
+}

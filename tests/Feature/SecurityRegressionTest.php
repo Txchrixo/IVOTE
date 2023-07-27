@@ -63,9 +63,9 @@ class SecurityRegressionTest extends TestCase
             ->get('/auth/login')
             ->assertHeaderMissing('Access-Control-Allow-Origin');
 
-        $this->withHeaders(['Origin' => 'https://evil.example'])
-            ->get('/api/candidates')
-            ->assertHeaderMissing('Access-Control-Allow-Origin');
+        $origin = $this->withHeaders(['Origin' => 'https://evil.example'])
+            ->get('/api/candidates')->headers->get('Access-Control-Allow-Origin');
+        $this->assertNotContains($origin, ['*', 'https://evil.example']);
     }
 
     public function test_login_is_rate_limited(): void

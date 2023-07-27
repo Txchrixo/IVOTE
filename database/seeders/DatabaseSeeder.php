@@ -11,9 +11,7 @@ use Illuminate\Support\Str;
 class DatabaseSeeder extends Seeder
 {
     /**
-     * Creates the election authority (EA) and registration authority (RA) accounts.
-     * Passwords come from SEED_EA_PASSWORD / SEED_RA_PASSWORD; when missing, a random
-     * password is generated and printed once. Existing accounts are never modified.
+     * Add missing authority accounts. If a seed password is unset, print a generated password once.
      */
     public function run(): void
     {
