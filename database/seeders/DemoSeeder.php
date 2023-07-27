@@ -153,7 +153,8 @@ class DemoSeeder extends Seeder
             Code::create([
                 'code' => strtoupper(Str::random(16)),
                 'is_used' => $data['stage'] === ElectionStage::Done && $i < $data['registered'] - 9,
-                'public_key' => $data['stage']->value >= ElectionStage::Waiting->value ? '0' . random_int(2, 3) . bin2hex(random_bytes(32)) : '0',
+                // Compressed secp256k1 public key, the ring member used by the linkable ring signature
+                'public_key' => $data['stage']->value >= ElectionStage::Waiting->value ? $this->wallet()['public'] : '0',
                 'item_id' => $election->id,
             ]);
         }
