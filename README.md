@@ -35,7 +35,7 @@
 | | |
 |---|---|
 | **Author** | NANA TCHOUNKEU Thierry Christian |
-| **Academic supervisor** | Dr. JDD NKAPKOP |
+| **Academic supervisor** | [Dr. Jean de Dieu NKAPKOP](https://orcid.org/0000-0001-7736-5145), University of Douala |
 | **Professional supervisor** | Mr. DJIMELI Christian (CODEC) |
 | **Degree** | Licence de Technologie, Software Engineering |
 | **Institution** | Institut Universitaire de Technologie (IUT), University of Douala |
@@ -410,7 +410,7 @@ If you build on this work, please cite the thesis. GitHub also offers a citation
 
 ## Acknowledgments
 
-Dr. JDD NKAPKOP for the academic supervision, Mr. DJIMELI Christian and the CODEC team for
+[Dr. Jean de Dieu NKAPKOP](https://orcid.org/0000-0001-7736-5145) for the academic supervision, Mr. DJIMELI Christian and the CODEC team for
 the internship and their blockchain expertise. IVote started from Yifan Wu's BlockVotes [8]
 and relies on the BitcoinECDSA.php library.
 
