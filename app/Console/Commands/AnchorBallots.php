@@ -12,7 +12,7 @@ class AnchorBallots extends Command
 {
     protected $signature = 'ivote:anchor {election : Election ID}';
 
-    protected $description = 'Publish ballot receipts to Bitcoin testnet or regtest';
+    protected $description = 'Publish ballot receipts to Bitcoin Testnet3, Testnet4 or regtest';
 
     public function handle(BitcoinBallotAnchor $anchor): int
     {

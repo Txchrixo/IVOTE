@@ -14,8 +14,8 @@ class BitcoinBallotAnchor
     public function checkNetwork(): void
     {
         $info = $this->rpc('getblockchaininfo');
-        if (!in_array($info['chain'] ?? null, ['test', 'regtest'], true)) {
-            throw new RuntimeException('Use a Bitcoin testnet or regtest wallet.');
+        if (!in_array($info['chain'] ?? null, ['test', 'testnet4', 'regtest'], true)) {
+            throw new RuntimeException('Use a Bitcoin Testnet3, Testnet4 or regtest wallet.');
         }
     }
 
