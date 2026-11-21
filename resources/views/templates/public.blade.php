@@ -24,7 +24,6 @@
     <div id="wrapper">
         <div class="vertical-align-wrap">
             <div class="vertical-align-middle">
-                <!--<div class="logo text-center"><img src="{{ Vite::image('logo-dark.svg') }}" alt="Logo"></div>-->
                 <div class="auth-box ">
                     @yield('content')
                 </div>

@@ -9,3 +9,5 @@
 /.github export-ignore
 CHANGELOG.md export-ignore
 .styleci.yml export-ignore
+/docs/screenshots/2023 export-ignore
+/docs/screenshots/14-voter-generate-keys.jpg export-ignore
